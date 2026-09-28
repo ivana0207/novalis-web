@@ -101,7 +101,7 @@
       },
       {
         id: 'hotel-novalis', category: 'smjestaj', name: 'Hotel Novalis',
-        desc: 'B&B u Novalji — sobe za obitelj, prijatelje i poslovne goste.',
+        desc: 'B&B u Novalji - sobe za obitelj, prijatelje i poslovne goste.',
         address: '[adresa], Novalja', phone: '053 662 222', tel: '+38553662222',
         brand: { wordmark: 'HOTEL NOVALIS', sub: 'B&B', topBg: '#9E0B0F', topFg: '#FFFFFF', btnBg: '#9E0B0F', btnFg: '#FFFFFF', link: '#9E0B0F', pin: '#9E0B0F', pinFg: '#FFFFFF' },
         promo: false, url: 'https://hotelnovalis.hr', external: true, pin: { x: 52, y: 72 },
@@ -112,8 +112,8 @@
     stories: [
       {
         id: 'gradnja', tab: 'Gradite ili uređujete dom?', title: 'Gradite ili uređujete dom?',
-        desc: 'Od građevinskog materijala i keramike do sanitarija, namještaja i kućanskih uređaja — sve potrebno za gradnju i uređenje možete riješiti kroz Novalis, uz dostavu na području Paga.',
-        photo: 'Foto: obitelj u kući koja se uređuje — keramika, alati, svjetlo kroz prozor',
+        desc: 'Od građevinskog materijala i keramike do sanitarija, namještaja i kućanskih uređaja - sve potrebno za gradnju i uređenje možete riješiti kroz Novalis, uz dostavu na području Paga.',
+        photo: 'Foto: obitelj u kući koja se uređuje - keramika, alati, svjetlo kroz prozor',
         steps: [
           { text: 'Građevinski materijal i keramika', unit: 'hiper-bau', label: 'Hiper Bau' },
           { text: 'Sanitarije i oprema za dom', unit: 'hiper-novalis' },
@@ -123,8 +123,8 @@
       },
       {
         id: 'apartman', tab: 'Pripremate apartman za sezonu?', title: 'Pripremate apartman za sezonu?',
-        desc: 'Opremite apartman, nabavite uređaje i tekstil, pripremite osnovne potrepštine za goste i riješite veću opskrbu — bez potrebe za odlaskom s otoka.',
-        photo: 'Foto: domaćin priprema apartman — namješta posteljinu, sunce kroz prozor',
+        desc: 'Opremite apartman, nabavite uređaje i tekstil, pripremite osnovne potrepštine za goste i riješite veću opskrbu - bez potrebe za odlaskom s otoka.',
+        photo: 'Foto: domaćin priprema apartman - namješta posteljinu, sunce kroz prozor',
         steps: [
           { text: 'Namještaj, posteljina i uređaji', unit: 'hiper-novalis' },
           { text: 'Potrepštine za goste', unit: 'market-novalis' },
@@ -134,7 +134,7 @@
       },
       {
         id: 'slavlje', tab: 'Organizirate slavlje?', title: 'Organizirate slavlje?',
-        desc: 'Od torte i večere do pića i smještaja za goste — više potreba za jedno slavlje možete riješiti unutar Novalisa.',
+        desc: 'Od torte i večere do pića i smještaja za goste - više potreba za jedno slavlje možete riješiti unutar Novalisa.',
         photo: 'Foto: obiteljsko slavlje na terasi u večernjem svjetlu',
         steps: [
           { text: 'Torta i slastice', unit: 'valis' },

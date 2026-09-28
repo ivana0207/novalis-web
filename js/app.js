@@ -273,7 +273,7 @@
       ? logoSVG(u.logo, u.topFg, u.logoH, u.name)
       : '<span class="card__word' + (u.serif ? ' card__word--serif' : '') + '">' + esc(u.wordmark) + '</span>' +
         (u.sub ? '<span class="card__sub">' + esc(u.sub) + '</span>' : '');
-    var moreAria = u.external ? u.name + ' — hotelnovalis.hr (nova kartica)' : 'Više o poslovnici ' + u.name;
+    var moreAria = u.external ? u.name + ' - hotelnovalis.hr (nova kartica)' : 'Više o poslovnici ' + u.name;
     return '<article class="card" id="' + u.id + '" style="--link:' + u.link + ';--btn-bg:' + u.btnBg + ';--btn-fg:' + u.btnFg + '">' +
       '<div class="card__media">' +
         slotHTML(u.photo, u.photoHint, u.name, u.imgBg) +
