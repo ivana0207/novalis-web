@@ -1,0 +1,63 @@
+/* Novalis design system tokens — imported from the claude.ai/design "Novalis design system"
+   (tokens/fonts.css, colors.css, typography.css, spacing.css). */
+
+/* Brand fonts are commercial (Karbon – Klim; Sharp Sans – Lucas Sharp; Pristina – Microsoft).
+   Google Fonts substitutes: Karbon → Figtree · Sharp Sans → Plus Jakarta Sans · Pristina → Dancing Script.
+   Replace with licensed @font-face rules when files are available. */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,700;0,800;1,300;1,700;1,800&family=Dancing+Script:wght@400;600&display=swap');
+
+:root {
+  /* Primary – "Osnovne boje" */
+  --nv-red: #D71920;          /* PANTONE 485 C · CMYK 0 100 100 10 */
+  --nv-red-dark: #9E0B0F;     /* CMYK 0 100 100 40 */
+  --nv-red-deep: #C4161C;
+  --nv-yellow: #FFCB05;       /* PANTONE 116 C · CMYK 0 20 100 0 */
+  --nv-orange: #F7941E;       /* CMYK 0 50 100 0 */
+  /* Secondary – "Sporedne boje" */
+  --nv-slate: #667A85;
+  --nv-slate-dark: #3D4A54;
+  --nv-sand: #CCAE8F;
+  --nv-brown: #6A503C;
+  --nv-lime: #A5CE39;
+  --nv-olive: #698639;
+  --nv-black: #000000;
+  --nv-white: #FFFFFF;
+  /* Neutrals */
+  --nv-gray-50: #F2F2F2;
+  --nv-gray-150: #D9D9DA;
+  --nv-gray-300: #B3B3B3;
+  --nv-gray-400: #939597;
+  --nv-gray-550: #737373;
+  --nv-gray-700: #575756;
+  --nv-gray-850: #262626;
+  --nv-ink: #2C2E35;
+
+  /* Brand gradients */
+  --grad-red: linear-gradient(90deg, #9E0B0F 0%, #B41218 39%, #D41920 96%, #D71920 100%);
+  --grad-yellow: linear-gradient(90deg, #F7941E 0%, #FBA819 38%, #FFC10E 82%, #FFCB05 100%);
+  --grad-signage: linear-gradient(90deg, #D71920 0%, #EE4023 55%, #F7941E 100%);
+
+  /* Semantic aliases */
+  --brand-primary: var(--nv-red);
+  --brand-primary-strong: var(--nv-red-dark);
+  --brand-accent: var(--nv-yellow);
+  --text-body: var(--nv-gray-850);
+  --text-muted: var(--nv-gray-700);
+  --border-subtle: var(--nv-gray-150);
+  --focus-ring: var(--nv-yellow);
+  --status-success: var(--nv-olive);
+
+  /* Typography */
+  --font-primary: 'Karbon', 'Figtree', system-ui, sans-serif;
+  --font-display: 'Sharp Sans', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-script: 'Pristina', 'Dancing Script', cursive;
+
+  /* Spacing */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+}
