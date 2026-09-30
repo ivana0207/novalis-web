@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O nama - Novalis</title>
+  <meta name="description" content="Novalis d.o.o. - obiteljska tvrtka iz Novalje od 1990. Kako trgovine, gradnja, gastro i smještaj Novalisa zajedno rješavaju stvarne životne potrebe.">
+  <meta name="theme-color" content="#D71920">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=block">
+  <link rel="stylesheet" href="css/ds.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-home="index.html">
+<div class="page" id="top">
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="index.html" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Glavna navigacija">
+        <div class="nav-drop" id="navDrop">
+          <button type="button" class="nav-link" id="navBtn" aria-expanded="false" aria-controls="navMenu">
+            <span data-picto="cart" data-picto-size="22"></span>Poslovnice<span class="ms ms--sm" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="dropdown" id="navMenu" hidden><!-- rendered by js/site.js --></div>
+        </div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="o-nama.html" aria-current="page">O nama</a>
+        <a class="nav-link" href="index.html#posao">Zaposli se</a>
+        <a class="nav-link" href="index.html#upit">Kontakt</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Jezik / Language">
+          <button type="button" class="lang__btn" data-lang="hr" aria-pressed="true" aria-label="Hrvatski" lang="hr">HR</button>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <button type="button" class="lang__btn" data-lang="en" aria-pressed="false" aria-label="English" lang="en">EN</button>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Izbornik"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="o-nama.html" aria-current="page">O nama</a>
+          <a href="index.html#posao">Zaposli se</a>
+          <a href="index.html#upit">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ O NAMA ============ -->
+    <section id="o-nama" class="section about about--page" aria-labelledby="h-onama">
+      <div class="head">
+        <span class="eyebrow">O nama</span>
+        <h1 id="h-onama" class="h2"><span data-years>36</span> godina uz Novalju</h1>
+      </div>
+      <div class="about__grid">
+        <div class="about__media"><div class="slot" data-placeholder="Foto: obitelj ispred prve trgovine u centru Novalje (arhiva, 1990.)" style="--bg:#E9E2D8"></div></div>
+        <div class="about__text about__text--lead">
+          <p>Novalis d.o.o. poznat je po kvaliteti i pouzdanosti. Sve je počelo 1990. malom trgovinom u centru Novalje - danas smo obiteljska tvrtka i pouzdan partner za cijeli otok, cijele godine.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRIČE ============ -->
+    <section class="stories" aria-labelledby="h-zivot">
+      <div class="stories__inner">
+        <div class="head">
+          <span class="eyebrow">Novalis u stvarnom životu</span>
+          <h2 id="h-zivot" class="h2 stories__h">Jedan projekt. Više Novalis rješenja.</h2>
+        </div>
+        <div class="story-tabs" id="storyTabs" role="tablist" aria-label="Priče"><!-- rendered by js/o-nama.js --></div>
+        <div id="storyPanels"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Uživanje, strast i povjerenje - od 1990. u Novalji.</p>
+        </div>
+        <nav class="footer__col" aria-label="Poslovnice">
+          <h2 class="footer__h">Poslovnice</h2>
+          <div class="footer__stack" id="footerCats"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Informacije">
+          <h2 class="footer__h">Informacije</h2>
+          <a href="o-nama.html" class="footer__link" aria-current="page">O nama</a>
+          <a href="index.html#posao" class="footer__link">Zaposli se</a>
+          <a href="index.html#cjenici" class="footer__link">Cjenici</a>
+          <a href="index.html#privatnost" class="footer__link">Pravila privatnosti</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Kontakt</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, otok Pag</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · Sva prava pridržana</span>
+        <div class="footer__lang" role="group" aria-label="Jezik / Language">
+          <button type="button" class="lang__btn lang__btn--long" data-lang="hr" aria-pressed="true" lang="hr">Hrvatski</button>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <button type="button" class="lang__btn lang__btn--long" data-lang="en" aria-pressed="false" lang="en">English</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK ACTIONS ============ -->
+  <nav class="quickbar" aria-label="Brze akcije">
+    <a href="tel:+38553662001" class="quickbar__call"><span class="ms ms--sm" aria-hidden="true">call</span>Nazovi</a>
+    <a href="index.html#poslovnice" class="quickbar__item">Poslovnice</a>
+    <a href="index.html#lokacije" class="quickbar__item">Karta</a>
+  </nav>
+</div>
+
+<script src="js/brand-paths.js"></script>
+<script src="data/units.js"></script>
+<script src="js/site.js"></script>
+<script src="js/o-nama.js"></script>
+</body>
+</html>
