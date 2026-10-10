@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://novalis-web.vercel.app/sitemap.xml

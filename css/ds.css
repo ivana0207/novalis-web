@@ -1,45 +1,44 @@
-/* Novalis design system tokens — imported from the claude.ai/design "Novalis design system"
-   (tokens/fonts.css, colors.css, typography.css, spacing.css). */
+/* Novalis design system tokens — from the claude.ai "Novalis Design System"
+   (https://claude.ai/artifact/DUZ3944vHmYWT1NPhY72YY, tokens.json). */
 
-/* Brand fonts are commercial (Karbon – Klim; Sharp Sans – Lucas Sharp; Pristina – Microsoft).
-   Google Fonts substitutes: Karbon → Figtree · Sharp Sans → Plus Jakarta Sans · Pristina → Dancing Script.
-   Replace with licensed @font-face rules when files are available.
-   (Figtree 600 is added on top of the DS import — the landing uses it for labels and status lines.) */
-@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,700;0,800;1,300;1,700;1,800&family=Dancing+Script:wght@400;600&display=swap');
+/* Brand fonts are commercial (Karbon – Klim; Sharp Sans No.1 – Lucas Sharp; Pristina – Microsoft).
+   Web stand-ins until licensed files exist: Karbon → Figtree · Sharp Sans → Outfit · Pristina → Dancing Script.
+   (Figtree 600 is added on top of the DS weights — the landing uses it for labels and status lines.)
+   The Google Fonts stylesheet is linked from each page's <head> (not @import here) so it loads in parallel. */
 
 :root {
-  /* Primary – "Osnovne boje" */
-  --nv-red: #D71920;          /* PANTONE 485 C · CMYK 0 100 100 10 */
-  --nv-red-dark: #9E0B0F;     /* CMYK 0 100 100 40 */
-  --nv-red-deep: #C4161C;     /* tile shadow / pictogram cut-outs */
-  --nv-yellow: #FFCB05;       /* PANTONE 116 C · CMYK 0 20 100 0 */
-  --nv-orange: #F7941E;       /* CMYK 0 50 100 0 */
-  /* Secondary – "Sporedne boje" */
+  /* Primary */
+  --nv-red: #D6191F;          /* novalis-red · PANTONE 485 C · CMYK 0 100 100 10 */
+  --nv-red-dark: #9E0B0F;     /* novalis-red-deep · CMYK 0 100 100 40 */
+  --nv-red-deep: #C51E25;     /* signage-red: category strips and their pictograms */
+  --nv-yellow: #FFCB04;       /* novalis-yellow · PANTONE 116 C · CMYK 0 20 100 0 */
+  --nv-orange: #F7941E;       /* novalis-orange · CMYK 0 50 100 0 */
+  /* Secondary — departments, shelf blades, quiet backgrounds; never the logo */
   --nv-slate: #667A85;        /* CMYK 64 44 39 8 */
-  --nv-slate-dark: #3D4A54;   /* CMYK 76 61 50 35 */
-  --nv-sand: #CCAE8F;         /* CMYK 21 30 45 0 */
-  --nv-brown: #6A503C;        /* CMYK 46 59 73 37 */
+  --nv-slate-dark: #3D4A54;   /* slate-deep · CMYK 76 61 50 35 */
+  --nv-sand: #CCB08F;         /* CMYK 21 30 45 0 */
+  --nv-brown: #6A503C;        /* earth · CMYK 46 59 73 37 */
   --nv-lime: #A5CE39;         /* CMYK 40 0 100 0 */
   --nv-olive: #698639;
   --nv-black: #000000;
   --nv-white: #FFFFFF;
-  /* Neutrals seen in the manual */
-  --nv-gray-50: #F2F2F2;      /* 5% black */
-  --nv-gray-150: #D9D9DA;     /* 15% black */
-  --nv-gray-300: #B3B3B3;     /* 30% black */
+  /* Sister brand: Valis Novalja (its own pages only) */
+  --nv-violet: #6E38FF;
+  /* Greys (black percentages from the manual) */
+  --nv-gray-50: #F2F2F2;      /* grey-05 */
+  --nv-gray-150: #D9D9D9;     /* grey-15 */
+  --nv-gray-300: #B3B3B3;     /* grey-30 */
   --nv-gray-400: #939597;     /* manual captions */
-  --nv-gray-550: #737373;     /* 55% black */
+  --nv-gray-550: #737373;     /* grey-55 · ink-muted */
   --nv-gray-700: #575756;
-  --nv-gray-850: #262626;     /* 85% black */
-  --nv-ink: #2C2E35;          /* technical drawing ink */
+  --nv-gray-850: #262626;     /* grey-85 · ink */
 
-  /* Brand gradients (dark → light, left → right) */
-  --grad-red: linear-gradient(90deg, #9E0B0F 0%, #B41218 39%, #D41920 96%, #D71920 100%);
-  --grad-yellow: linear-gradient(90deg, #F7941E 0%, #FBA819 38%, #FFC10E 82%, #FFCB05 100%);
-  --grad-slate: linear-gradient(90deg, #3D4A54 0%, #4D5C66 42%, #667A85 94%);
-  --grad-sand: linear-gradient(90deg, #CCAE8F 0%, #997D64 46%, #6A503C 100%);
-  --grad-lime: linear-gradient(90deg, #A5CE39 0%, #88AA3B 43%, #698639 100%);
-  --grad-signage: linear-gradient(90deg, #D71920 0%, #EE4023 55%, #F7941E 100%);
+  /* Brand gradients: each colour runs left → right into its darker partner */
+  --grad-red: linear-gradient(90deg, #D6191F, #9E0B0F);
+  --grad-yellow: linear-gradient(90deg, #FFCB04, #F7941E);
+  --grad-slate: linear-gradient(90deg, #667A85, #3D4A54);
+  --grad-sand: linear-gradient(90deg, #CCB08F, #6A503C);
+  --grad-lime: linear-gradient(90deg, #A5CE39, #698639);
 
   /* Semantic aliases */
   --brand-primary: var(--nv-red);
@@ -53,7 +52,7 @@
   --surface-inverse: var(--nv-slate-dark);
   --text-body: var(--nv-gray-850);
   --text-muted: var(--nv-gray-700);
-  --text-caption: var(--nv-gray-400);
+  --text-caption: var(--nv-gray-550);
   --text-brand: var(--nv-red);
   --text-on-brand: var(--nv-yellow);
   --text-on-accent: var(--nv-red);
@@ -61,43 +60,24 @@
   --border-subtle: var(--nv-gray-150);
   --border-strong: var(--nv-gray-300);
   --focus-ring: var(--nv-yellow);
-  --status-sale: var(--nv-red);
-  --status-success: var(--nv-olive);
-  --status-warning: var(--nv-orange);
-  --status-info: var(--nv-slate);
 
   /* Typography */
-  --font-primary: 'Karbon', 'Figtree', system-ui, sans-serif;           /* Osnovna tipografija */
-  --font-display: 'Sharp Sans', 'Plus Jakarta Sans', system-ui, sans-serif; /* Sporedna – headlines, AKCIJA */
-  --font-script: 'Pristina', 'Dancing Script', cursive;                /* rare accent only */
-  --fw-light: 300; --fw-regular: 400; --fw-bold: 700; --fw-extrabold: 800;
-  --fs-caption: 11px; --fs-small: 13px; --fs-body: 16px; --fs-lead: 20px;
-  --fs-h4: 24px; --fs-h3: 32px; --fs-h2: 44px; --fs-h1: 64px; --fs-display: 96px;
-  --lh-tight: 0.95; --lh-heading: 1.1; --lh-body: 1.5;
-  --ls-caps: 0.04em; --ls-display: -0.01em;
-  --type-display: var(--fw-extrabold) var(--fs-display)/var(--lh-tight) var(--font-display);
-  --type-h1: var(--fw-extrabold) var(--fs-h1)/var(--lh-heading) var(--font-display);
-  --type-h2: var(--fw-bold) var(--fs-h2)/var(--lh-heading) var(--font-display);
-  --type-h3: var(--fw-light) var(--fs-h3)/var(--lh-heading) var(--font-primary);
-  --type-body: var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-primary);
-  --type-caption: var(--fw-regular) var(--fs-caption)/1.4 var(--font-primary);
+  --font-primary: 'Karbon', 'Figtree', system-ui, sans-serif;                          /* body, UI, titles */
+  --font-display: 'Sharp Sans No1', 'Sharp Sans', 'Outfit', system-ui, sans-serif;     /* headlines, promo */
+  --font-script: 'Pristina', 'Dancing Script', cursive;                                /* rare accent only */
 
   /* Spacing */
   --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
   --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px;
 
-  /* Radii – brand shapes are soft rounded rectangles, often with ONE sharp corner */
-  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-xl: 28px; --radius-pill: 999px;
-  --radius-tile: 22%;                                                       /* cart tile */
-  --radius-leaf: 0 var(--radius-xl) var(--radius-xl) var(--radius-xl);     /* sharp top-left */
-  --radius-tab: 0 0 var(--radius-xl) var(--radius-xl);                     /* aisle sign: square top */
+  /* Shape — the Novalis tab: three rounded corners, bottom-left square */
+  --radius-sm: 8px;           /* inputs, small strips */
+  --radius-tab: 20px;         /* panels, cards, photos, badges */
+  --radius-pill: 9999px;      /* rounded end of promo tags and aisle signs */
+  --shape-tab: var(--radius-tab) var(--radius-tab) var(--radius-tab) 0;
 
-  /* Elevation – the brand uses flat, solid offsets rather than blur */
-  --shadow-tile: 6px 6px 0 var(--nv-red-deep);
-  --shadow-tile-yellow: 6px 6px 0 #E3A900;
-  --shadow-card: 0 1px 2px rgba(0,0,0,.08), 0 4px 14px rgba(0,0,0,.08);
-  --shadow-overlay: 0 12px 40px rgba(0,0,0,.22);
-  --tile-rotate: -8deg;
+  /* Elevation — flat; the only shadow is the solid offset under the cart badge */
+  --shadow-badge: 6px 6px 0 var(--nv-red-dark);
 
   /* Motion */
   --ease-out: cubic-bezier(.2, .7, .2, 1);

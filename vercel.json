@@ -1,0 +1,6 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/o-nama.html", "destination": "/o-nama/", "permanent": true }
+  ]
+}

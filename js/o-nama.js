@@ -4,16 +4,17 @@
 
   var NV = window.NV, D = NV.D, $ = NV.$, $$ = NV.$$, esc = NV.esc;
 
-  var unitName = {};
-  D.units.forEach(function (u) { unitName[u.id] = u.name; });
-
   function stepHTML(st, k) {
-    var href = NV.HOME + (st.href || '#' + (st.unit || 'poslovnice'));
-    return '<li><a class="step" href="' + esc(href) + '">' +
+    // A step names a unit (→ its store page) or an anchor on the landing page.
+    var u = NV.byId[st.unit];
+    var href = st.href ? NV.HOME + st.href : u ? NV.unitHref(u) : NV.HOME + '#poslovnice';
+    var external = !st.href && u && u.external;
+    return '<li><a class="step" href="' + esc(href) + '"' + (external ? ' target="_blank" rel="noopener"' : '') + '>' +
       '<span class="step__n">' + (k + 1) + '</span>' +
       '<span class="step__text"><span class="step__t">' + esc(st.text) + '</span>' +
-        '<span class="step__unit">' + esc(st.label || unitName[st.unit] || 'Novalis') + '</span></span>' +
-      '<span class="ms ms--sm" aria-hidden="true">arrow_forward</span></a></li>';
+        '<span class="step__unit" translate="no">' + esc(st.label || (u ? u.name : 'Novalis')) + '</span></span>' +
+      '<span class="ms ms--sm" aria-hidden="true">' + (external ? 'open_in_new' : 'arrow_forward') + '</span>' +
+      (external ? NV.NEW_TAB : '') + '</a></li>';
   }
 
   $('#storyTabs').innerHTML = D.stories.map(function (s, i) {

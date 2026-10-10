@@ -89,9 +89,9 @@ File: `assets/brand/valis-novalja-logo.jpg`. Keep it separate from the red/yello
 
 ## 5. Shapes
 
-- Signature **"leaf" rounded rectangle**: 3 rounded corners + **1 sharp corner** (usually bottom-left or top-right).
+- Signature **"tab" rounded rectangle**: 3 rounded corners + **1 square corner, bottom-left** (design system `radius-tab` 20px; web: `var(--shape-tab)`).
   Used for every card, badge, sign, business card, flag panel. Radius is generous (≈ 20–25 % of the shorter side for
-  small pills; ≈ 24–40 px for cards on web).
+  small pills; 20 px for panels, cards and photos on web).
 - Horizontal signs: full pill/half-round on one end, square on the other.
 
 ## 6. Typography
@@ -99,7 +99,7 @@ File: `assets/brand/valis-novalja-logo.jpg`. Keep it separate from the red/yello
 | Role | Font (print) | Web substitute (Google Fonts) until webfont licensed |
 |---|---|---|
 | Primary — body, UI, headings | **Karbon** (Light, Regular, Bold + italics) | **Figtree** (300/400/700) |
-| Secondary — promos, "AKCIJA", impact headings | **Sharp Sans** (Light, Bold, Extrabold + italics) | **Plus Jakarta Sans** (300/700/800) |
+| Secondary — promos, "AKCIJA", impact headings | **Sharp Sans** (Light, Bold, Extrabold + italics) | **Outfit** (300/700/800) |
 | Decorative script (sparingly) | Pristina | Dancing Script (avoid on web) |
 
 - Descriptor words in lockups/signage ("HIPER", "MARKET", aisle names "VINO · WINE · WEIN") → **light weight, uppercase, wide tracking**.
