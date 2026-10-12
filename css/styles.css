@@ -257,7 +257,8 @@ button { font: inherit; }
 .hero__call { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; font: 700 17px/1 var(--font-display); color: var(--ink); }
 .hero__call .ms { color: var(--nv-red); }
 .hero__call:hover { color: var(--nv-red); }
-.hero__media { position: relative; aspect-ratio: 4 / 3; border-radius: var(--shape-tab); overflow: hidden; }
+/* the photo panel only shows beside the copy (≥ 900); on smaller screens the hero is background + copy + CTAs */
+.hero__media { display: none; position: relative; aspect-ratio: 6 / 5; border-radius: var(--shape-tab); overflow: hidden; }
 .hero__media .slot { --bg: #EFEBE5; }
 .hero__corner {
   position: absolute; bottom: 0; left: 0; width: 64px; height: 64px; background: var(--nv-yellow);
@@ -652,7 +653,7 @@ button.footer__link { cursor: pointer; }
 /* two columns (≥ 900) */
 @media (min-width: 900px) {
   .hero__grid, .about__grid, .inquiry__grid, .story { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .hero__media { aspect-ratio: 6 / 5; }
+  .hero__media { display: block; }
   .hero__bg { --hero-wash: linear-gradient(90deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.45) 40%, rgba(255,255,255,.05) 72%, rgba(255,255,255,0) 100%); }
   .hero__bg img { object-position: 50% 45%; }
 }
