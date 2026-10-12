@@ -1,1 +1,8 @@
 .DS_Store
+
+# jira-work runtime state, agent worktrees and local QA tooling
+.jira-work/
+.claude/work/
+.claude/worktrees/
+.claude/workflow/node_modules/
+.claude/settings.local.json

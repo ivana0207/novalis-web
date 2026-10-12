@@ -1,5 +1,6 @@
 /* Novalis landing (design v4) — layout & components. Tokens live in ds.css.
-   Breakpoints follow the design: 560 · 700 (mobile) · 900 (two columns) · 1000 · 1080 (desktop nav, 4-col bento) */
+   Breakpoints follow the design: 560 · 700 (mobile) · 900 (two columns) · 1000 · 1080 (desktop nav, compact, 4-col bento)
+   · 1200 (desktop nav, standard) */
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
@@ -108,38 +109,61 @@ button { font: inherit; }
 .bar__logo { display: flex; align-items: center; min-height: 44px; flex: none; }
 .bar__end { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
-.mainnav { flex: 1; display: none; justify-content: center; align-items: center; gap: 4px; }
+/* standard look (≥ 1200); the compact look for 1080-1199 is in the media queries at the end */
+.mainnav {
+  flex: 1; display: none; justify-content: center; align-items: center; gap: 4px;
+  --nav-pad: var(--space-3); --cat-picto: 22px; --cat-gap: var(--space-2);
+}
+/* the category menus (rendered by site.js) sit in the nav row like its other items */
+.mainnav__cats { display: contents; }
+/* no JS: no lone separator. :empty only matches while #navCats has no whitespace inside it in the 8 pages */
+.mainnav__cats:empty + .mainnav__sep { display: none; }
 .nav-drop { position: relative; }
 .nav-link {
-  display: flex; align-items: center; gap: 8px; height: 72px; padding: 0 12px;
+  display: flex; align-items: center; gap: var(--cat-gap); height: 72px; padding: 0 var(--nav-pad);
   border: 0; background: transparent; box-shadow: inset 0 -2px 0 transparent;
-  font: 700 16px/1 var(--font-display); color: #fff; cursor: pointer;
+  font: 700 16px/1 var(--font-display); color: #fff; white-space: nowrap; cursor: pointer;
 }
-/* hover / open / current: white text + yellow underline (yellow 16px text on red is only 3.4:1) */
-.nav-link:hover, .nav-link[aria-expanded="true"], .nav-link[aria-current="page"] { color: #fff; box-shadow: inset 0 -2px 0 var(--nv-yellow); }
+/* hover / open / current: white text + yellow underline (yellow 16px text on red is only 3.4:1).
+   The hover underline only where hover is real, so a tap doesn't leave one behind that reads as "open". */
+.nav-link:hover { color: #fff; }   /* outside (hover: hover): must beat the global a:hover (dark red on red) where a tap leaves hover stuck */
+.nav-link[aria-expanded="true"], .nav-link[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--nv-yellow); }
+@media (hover: hover) {
+  .nav-link:hover { box-shadow: inset 0 -2px 0 var(--nv-yellow); }
+}
 .nav-link:focus-visible { outline-offset: -4px; }
+.nav-cat .picto { width: var(--cat-picto); height: var(--cat-picto); }
+.nav-cat[aria-expanded="true"] .picto { color: var(--nv-yellow); }
 .mainnav__sep { width: 1px; height: 20px; margin: 0 8px; background: rgba(255,255,255,.35); }
+/* forced colours (Windows high contrast) drop the box-shadow underline and force text colours:
+   underline the text instead, and the open pictogram follows the text colour */
+@media (forced-colors: active) {
+  .nav-link[aria-expanded="true"], .nav-link[aria-current="page"] { text-decoration: underline; }
+  .nav-cat[aria-expanded="true"] .picto { color: currentColor; }
+}
+@media (forced-colors: active) and (hover: hover) {
+  .nav-link:hover { text-decoration: underline; }
+}
 
 .dropdown {
   --ring: var(--nv-gray-850);
-  position: absolute; top: calc(100% + 1px); left: -8px; width: 340px; max-height: calc(100vh - 96px); overflow: auto;
+  position: absolute; top: calc(100% + 1px); max-height: calc(100vh - 96px); overflow: auto;
   background: #fff; border: 1px solid var(--nv-gray-150); border-top: 0; border-radius: 0 0 16px 0;
   padding: 6px 6px 10px; display: flex; flex-direction: column;
 }
-.dd-group { display: flex; flex-direction: column; padding: 10px 0 4px; border-top: 1px solid var(--nv-gray-50); }
-.dd-group:first-child { border-top: 0; }
-.dd-label, .mm-label {
-  display: flex; align-items: center; gap: 8px; min-height: 28px;
-  font: 700 11px/1 var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--nv-gray-400);
+/* One panel per category, as wide as its longest name. Item text starts under the trigger label:
+   43px = 1px border + 6px panel padding + 36px item padding. */
+.dd-panel {
+  left: calc(var(--nav-pad) + var(--cat-picto) + var(--cat-gap) - 43px);
+  width: max-content; min-width: 240px; max-width: 340px; margin: 0; list-style: none; white-space: normal;
 }
-.dd-label { padding: 0 14px; }
-.dd-label .picto, .mm-label .picto { color: var(--nv-red); }
 .dd-item {
-  display: flex; align-items: center; min-height: 40px; padding: 0 14px 0 36px;
+  display: flex; align-items: center; gap: var(--space-1); min-height: 40px; padding: 0 14px 0 36px;
   border-radius: 10px 10px 10px 0; color: var(--ink); font: 400 15px/1.2 var(--font-primary);
   transition: background .15s ease-out, color .15s ease-out;
 }
 .dd-item:hover { background: #F7F7F7; color: var(--nv-red); }
+.dd-item[aria-current="page"] { color: var(--nv-red); }
 
 .lang, .footer__lang { display: flex; align-items: center; }
 .lang__btn {
@@ -165,11 +189,29 @@ button { font: inherit; }
   border-bottom: 1px solid var(--nv-gray-150);
   padding: 8px var(--gut) 24px; max-height: 80vh; overflow: auto;
 }
-.mm-group { display: flex; flex-direction: column; padding: 14px 0 6px; border-bottom: 1px solid var(--nv-gray-50); }
+.mm-group { border-bottom: 1px solid var(--border-subtle); }
+.mm-toggle {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 48px; padding: 0;
+  border: 0; background: transparent; color: var(--nv-gray-850); font: 700 16px/1.2 var(--font-display);
+  text-align: left; cursor: pointer;
+}
+.mm-toggle > span:not(.ms) { min-width: 0; }
+.mm-toggle .picto { color: var(--nv-red); }
+.mm-toggle .ms {
+  margin-left: auto; width: 20px; overflow: hidden; color: var(--nv-red);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.mm-toggle[aria-expanded="true"] .ms { transform: rotate(180deg); }
+@media (hover: hover) {
+  .mm-toggle:hover { color: var(--nv-red); }
+}
+.mm-list { margin: 0; padding: 0 0 var(--space-2); list-style: none; }
+/* names start under the group label: 22px pictogram + 12px gap */
 .mm-item {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px;
-  padding-left: 22px; color: var(--ink); font: 400 16px/1.2 var(--font-primary);
+  padding-left: 34px; color: var(--ink); font: 400 16px/1.2 var(--font-primary);
 }
+.mm-item[aria-current="page"] { color: var(--nv-red); }
 .mm-item .ms { color: var(--nv-red); }
 .mm-extra { display: flex; flex-wrap: wrap; gap: 0 24px; margin-top: 16px; }
 .mm-extra a { display: flex; align-items: center; min-height: 44px; font: 700 16px/1 var(--font-display); color: var(--ink); }
@@ -182,7 +224,25 @@ button { font: inherit; }
 .h2 { margin: 0; font: 700 clamp(34px, 3.6vw, 52px)/1.05 var(--font-display); letter-spacing: -.025em; color: var(--ink); }
 
 /* ---------- Hero ---------- */
-.hero { padding-top: clamp(40px, 6vw, 96px); }
+.hero { position: relative; isolation: isolate; padding-bottom: clamp(56px, 6vw, 96px); }
+.hero__inner { padding-top: clamp(40px, 6vw, 96px); }
+.hero + .section { padding-top: clamp(32px, 3vw, 48px); }
+/* full-bleed toned photo (Hero Background 1a): washed out behind the copy, fades into the header and the next section */
+.hero__bg {
+  --hero-wash: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55));
+  position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #fff;
+}
+.hero__bg img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%;
+  opacity: .5; filter: saturate(.8) sepia(.15) contrast(1.05);
+}
+.hero__bg::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%) top / 100% 120px no-repeat,
+    linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 100%) bottom / 100% 220px no-repeat,
+    var(--hero-wash);
+}
 .hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(40px, 5vw, 88px); align-items: center; }
 .hero__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
 .hero__title {
@@ -593,6 +653,7 @@ button.footer__link { cursor: pointer; }
 @media (min-width: 900px) {
   .hero__grid, .about__grid, .inquiry__grid, .story { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .hero__media { aspect-ratio: 6 / 5; }
+  .hero__bg { --hero-wash: linear-gradient(90deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.45) 40%, rgba(255,255,255,.05) 72%, rgba(255,255,255,0) 100%); }
 }
 
 /* desktop (≥ 1000) */
@@ -609,6 +670,12 @@ button.footer__link { cursor: pointer; }
   .menu-btn, .mobile-menu { display: none !important; }
   .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .bento__a { grid-row: span 2; min-height: 576px; }
+}
+/* compact desktop row (1080-1199): the four category menus and three links fit one row with 16px+ to spare */
+@media (min-width: 1080px) and (max-width: 1199.98px) {
+  .bar { gap: var(--space-5); }
+  .mainnav { gap: 0; --nav-pad: var(--space-2); --cat-picto: 20px; }
+  .mainnav__sep { margin: 0 var(--space-1); }
 }
 
 /* Text for screen readers only */

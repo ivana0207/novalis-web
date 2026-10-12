@@ -22,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,700&family=Outfit:wght@300;400;600;700;800&family=Dancing+Script:wght@400;600&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=block">
-  <link rel="stylesheet" href="css/ds.css?v=20261010-2">
-  <link rel="stylesheet" href="css/styles.css?v=20261010-2">
+  <link rel="stylesheet" href="css/ds.css?v=20261012-5">
+  <link rel="stylesheet" href="css/styles.css?v=20261012-5">
 </head>
 <body>
 <div class="page" id="top">
@@ -35,12 +35,7 @@
       <a href="#top" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-color="yellow" data-logo-h="22"></a>
 
       <nav class="mainnav" aria-label="Glavna navigacija">
-        <div class="nav-drop" id="navDrop">
-          <button type="button" class="nav-link" id="navBtn" aria-expanded="false" aria-controls="navMenu">
-            <span data-picto="cart" data-picto-size="22"></span>Poslovnice<span class="ms ms--sm" aria-hidden="true">expand_more</span>
-          </button>
-          <div class="dropdown" id="navMenu" hidden><!-- rendered by js/site.js --></div>
-        </div>
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
         <span class="mainnav__sep" aria-hidden="true"></span>
         <a class="nav-link" href="o-nama/">O nama</a>
         <a class="nav-link" href="#posao">Zaposli se</a>
@@ -69,20 +64,23 @@
 
   <main id="main">
   <!-- ============ HERO ============ -->
-  <section class="section hero" aria-label="Uvod">
-    <div class="hero__grid">
-      <div class="hero__copy">
-        <span class="eyebrow">Lokalni brend od povjerenja</span>
-        <h1 class="hero__title">Sve za život na Pagu.</h1>
-        <p class="hero__lead">Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka. Novalis povezuje ponudu za vaš dom, odmor i poslovanje - sve na otoku.</p>
-        <div class="hero__actions">
-          <button type="button" class="btn btn--primary btn--lg" id="toLocations">Pronađi poslovnicu<span class="ms" aria-hidden="true">arrow_downward</span></button>
-          <a href="tel:+38553662001" class="hero__call"><span class="ms ms--sm" aria-hidden="true">call</span>+385 53 662 001</a>
+  <section class="hero" aria-label="Uvod">
+    <div class="hero__bg" aria-hidden="true"><img src="assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div>
+    <div class="section hero__inner">
+      <div class="hero__grid">
+        <div class="hero__copy">
+          <span class="eyebrow">Lokalni brend od povjerenja</span>
+          <h1 class="hero__title">Sve za život na Pagu.</h1>
+          <p class="hero__lead">Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka. Novalis povezuje ponudu za vaš dom, odmor i poslovanje - sve na otoku.</p>
+          <div class="hero__actions">
+            <button type="button" class="btn btn--primary btn--lg" id="toLocations">Pronađi poslovnicu<span class="ms" aria-hidden="true">arrow_downward</span></button>
+            <a href="tel:+38553662001" class="hero__call"><span class="ms ms--sm" aria-hidden="true">call</span>+385 53 662 001</a>
+          </div>
         </div>
-      </div>
-      <div class="hero__media">
-        <div class="slot" data-placeholder="Foto: Novalja s mora - luka, zvonik, zalazak"></div>
-        <span class="hero__corner" aria-hidden="true"></span>
+        <div class="hero__media">
+          <div class="slot" data-placeholder="Foto: Novalja s mora - luka, zvonik, zalazak"></div>
+          <span class="hero__corner" aria-hidden="true"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -276,9 +274,9 @@
   </nav>
 </div>
 
-<script src="js/brand-paths.js?v=20261010-2"></script>
-<script src="data/units.js?v=20261010-2"></script>
-<script src="js/site.js?v=20261010-2"></script>
-<script src="js/app.js?v=20261010-2"></script>
+<script src="js/brand-paths.js?v=20261012-5"></script>
+<script src="data/units.js?v=20261012-5"></script>
+<script src="js/site.js?v=20261012-5"></script>
+<script src="js/app.js?v=20261012-5"></script>
 </body>
 </html>

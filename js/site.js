@@ -1,5 +1,6 @@
-/* Novalis site — shared by every page: brand vectors, image slots, opening hours, header ("Poslovnice" dropdown,
-   mobile menu, language toggle) and footer. Page scripts (app.js, o-nama.js, poslovnica.js) build on window.NV.
+/* Novalis site — shared by every page: brand vectors, image slots, opening hours, header (one menu per business
+   category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, o-nama.js,
+   poslovnica.js) build on window.NV.
    Loaded at the end of <body>, so the markup it works on is already parsed. */
 window.NV = (function () {
   'use strict';
@@ -17,7 +18,8 @@ window.NV = (function () {
   var byId = {}, catLabel = {};
   D.units.forEach(function (u) { byId[u.id] = u; });
   D.categories.forEach(function (c) { catLabel[c.id] = c.label; });
-  var ui = { drop: false, menu: false };
+  // open: id of the category whose header panel is open (one at a time), or null
+  var ui = { open: null, menu: false };
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -172,9 +174,6 @@ window.NV = (function () {
     $$('[data-logo]').forEach(function (el) {
       el.innerHTML = logoSVG(el.dataset.logo, el.dataset.logoColor || 'red', +el.dataset.logoH || 24);
     });
-    $$('[data-picto]').forEach(function (el) {
-      el.outerHTML = pictoSVG(el.dataset.picto, +el.dataset.pictoSize || 22);
-    });
   }
 
   /* ---------------- Image slots ---------------- */
@@ -205,7 +204,6 @@ window.NV = (function () {
   /* ---------------- Header nav + footer ---------------- */
   // Every link to a unit goes to its store page, or to its own website in a new tab.
   var NEW_TAB = '<span class="vh"> (nova kartica)</span>';
-  var EXT_ICON = '<span class="ms ms--xs" aria-hidden="true">open_in_new</span>' + NEW_TAB;
   // Unit names are brand names: translate="no" keeps browser translation from turning "Pod Zvon" into "Under the Bell".
   function nameHTML(u) { return '<span translate="no">' + esc(u.name) + '</span>'; }
   function unitLinkAttrs(u, cls) {
@@ -215,71 +213,107 @@ window.NV = (function () {
   }
 
   function renderNav() {
+    // Categories in data order, each with its units in data order; a category without units gets no menu.
     var groups = D.categories.map(function (c) {
-      return { c: c, items: units.filter(function (u) { return u.category === c.id; }) };
-    });
+      return { c: c, id: esc(c.id), items: units.filter(function (u) { return u.category === c.id; }) };
+    }).filter(function (g) { return g.items.length; });
 
-    $('#navMenu').innerHTML = groups.map(function (g) {
-      return '<div class="dd-group" role="group" aria-labelledby="dd-' + g.c.id + '">' +
-        '<span class="dd-label" id="dd-' + g.c.id + '">' + pictoSVG(g.c.picto, 14) + esc(g.c.label) + '</span>' +
+    // Desktop: a disclosure button per category (pictogram + label) with its own panel of unit links.
+    $('#navCats').innerHTML = groups.map(function (g) {
+      return '<div class="nav-drop" data-cat="' + g.id + '">' +
+        '<button type="button" class="nav-link nav-cat" id="nav-' + g.id + '" aria-expanded="false" aria-controls="nav-panel-' + g.id + '">' +
+        pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</button>' +
+        '<ul class="dropdown dd-panel" id="nav-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
-          return '<a ' + unitLinkAttrs(u, 'dd-item') + '>' + nameHTML(u) +
-            (u.external ? EXT_ICON : '') + '</a>';
+          return '<li><a ' + unitLinkAttrs(u, 'dd-item') + '>' + nameHTML(u) +
+            (u.external ? NEW_TAB : '') + '</a></li>';
         }).join('') +
-        '</div>';
+        '</ul></div>';
     }).join('');
 
+    // Mobile: the same categories as groups that expand one by one, independently of each other.
     $('#mobileGroups').innerHTML = groups.map(function (g) {
-      return '<div class="mm-group" role="group" aria-labelledby="mm-' + g.c.id + '">' +
-        '<span class="mm-label" id="mm-' + g.c.id + '">' + pictoSVG(g.c.picto, 14) + esc(g.c.label) + '</span>' +
+      return '<div class="mm-group">' +
+        '<button type="button" class="mm-toggle" id="mm-' + g.id + '" aria-expanded="false" aria-controls="mm-panel-' + g.id + '">' +
+        pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span><span class="ms ms--sm" aria-hidden="true">expand_more</span></button>' +
+        '<ul class="mm-list" id="mm-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
-          return '<a ' + unitLinkAttrs(u, 'mm-item') + '>' + nameHTML(u) +
-            '<span class="ms ms--xs" aria-hidden="true">' + (u.external ? 'open_in_new' : 'arrow_forward') + '</span>' +
-            (u.external ? NEW_TAB : '') + '</a>';
-        }).join('') + '</div>';
+          return '<li><a ' + unitLinkAttrs(u, 'mm-item') + '>' + nameHTML(u) +
+            (u.external ? NEW_TAB : '<span class="ms ms--xs" aria-hidden="true">arrow_forward</span>') + '</a></li>';
+        }).join('') +
+        '</ul></div>';
     }).join('');
 
     var footerUnits = $('#footerUnits');
     if (footerUnits) footerUnits.innerHTML = units.map(function (u) {
       return '<a ' + unitLinkAttrs(u, 'footer__link') + '>' + nameHTML(u) +
-        (u.external ? EXT_ICON : '') + '</a>';
+        (u.external ? NEW_TAB : '') + '</a>';
     }).join('');
   }
 
-  function setDrop(open) {
-    ui.drop = open;
-    $('#navBtn').setAttribute('aria-expanded', open);
-    $('#navBtn .ms').textContent = open ? 'expand_less' : 'expand_more';
-    $('#navMenu').hidden = !open;
+  // Opens the header panel of category `id` and closes the others; null closes them all.
+  function setOpen(id) {
+    ui.open = id || null;
+    $$('#navCats .nav-drop').forEach(function (d) {
+      var open = d.dataset.cat === ui.open;
+      $('.nav-cat', d).setAttribute('aria-expanded', open);
+      $('.dd-panel', d).hidden = !open;
+    });
+  }
+
+  function setGroup(btn, open) {
+    btn.setAttribute('aria-expanded', open);
+    document.getElementById(btn.getAttribute('aria-controls')).hidden = !open;
   }
 
   function setMenu(open) {
     ui.menu = open;
+    // the menu always opens with every category group collapsed
+    if (open) $$('#mobileGroups .mm-toggle').forEach(function (b) { setGroup(b, false); });
     $('#mobileMenu').hidden = !open;
     $('#menuBtn').setAttribute('aria-expanded', open);
     $('#menuBtn .ms').textContent = open ? 'close' : 'menu';
   }
 
   function bind() {
-    $('#navBtn').addEventListener('click', function () { setDrop(!ui.drop); });
-    $('#navMenu').addEventListener('click', function (e) { if (e.target.closest('a')) setDrop(false); });
-    // tabbing out of the open dropdown closes it
-    $('#navDrop').addEventListener('focusout', function (e) {
-      if (ui.drop && e.relatedTarget && !this.contains(e.relatedTarget)) setDrop(false);
+    var cats = $('#navCats');
+    cats.addEventListener('click', function (e) {
+      var btn = e.target.closest('.nav-cat'), a = e.target.closest('a');
+      if (btn) { var id = btn.parentNode.dataset.cat; setOpen(ui.open === id ? null : id); }
+      // a link opening a new tab keeps the user here: focus its trigger, or it drops to <body> with the panel
+      else if (a) { if (a.target === '_blank') $('.nav-cat', a.closest('.nav-drop')).focus(); setOpen(null); }
+    });
+    // tabbing out of the open category closes it
+    cats.addEventListener('focusout', function (e) {
+      var drop = e.target.closest('.nav-drop');
+      if (ui.open && drop && drop.dataset.cat === ui.open && e.relatedTarget && !drop.contains(e.relatedTarget)) setOpen(null);
     });
     document.addEventListener('click', function (e) {
-      if (ui.drop && !e.target.closest('#navDrop')) setDrop(false);
+      if (ui.open && !e.target.closest('.nav-drop')) setOpen(null);
     });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
-      if (ui.drop) { setDrop(false); $('#navBtn').focus(); }
+      if (ui.open) { var btn = document.getElementById('nav-' + ui.open); setOpen(null); btn.focus(); }
       if (ui.menu) { setMenu(false); $('#menuBtn').focus(); }
     });
 
     $('#menuBtn').addEventListener('click', function () { setMenu(!ui.menu); });
-    $('#mobileMenu').addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+    $('#mobileMenu').addEventListener('click', function (e) {
+      var btn = e.target.closest('.mm-toggle'), a = e.target.closest('a');
+      if (btn) {
+        // one category open at a time, like the desktop panels
+        var open = btn.getAttribute('aria-expanded') !== 'true';
+        $$('#mobileGroups .mm-toggle').forEach(function (b) { setGroup(b, open && b === btn); });
+      }
+      else if (a) { if (a.target === '_blank') $('#menuBtn').focus(); setMenu(false); }
+    });
+    // tabbing out of the open menu closes it, so it can't cover what gets focus (Shift+Tab to the menu button keeps it)
+    $('#mobileMenu').addEventListener('focusout', function (e) {
+      var to = e.relatedTarget;
+      if (ui.menu && to && !this.contains(to) && !$('#menuBtn').contains(to)) setMenu(false);
+    });
     window.matchMedia('(min-width: 1080px)').addEventListener('change', function (e) {
-      if (e.matches) setMenu(false); else setDrop(false);
+      if (e.matches) setMenu(false); else setOpen(null);
     });
 
     // language switch (visual only — content is Croatian until translations exist)
