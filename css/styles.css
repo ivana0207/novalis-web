@@ -230,6 +230,7 @@ button { font: inherit; }
 /* full-bleed toned photo (Hero Background 1a): washed out behind the copy, fades into the header and the next section */
 .hero__bg {
   --hero-wash: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55));
+  --hero-fade: 220px;
   position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #fff;
 }
 .hero__bg img {
@@ -240,8 +241,14 @@ button { font: inherit; }
   content: ""; position: absolute; inset: 0;
   background:
     linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%) top / 100% 120px no-repeat,
-    linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 100%) bottom / 100% 220px no-repeat,
+    linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 100%) bottom / 100% var(--hero-fade) no-repeat,
     var(--hero-wash);
+}
+/* phones: the hero fills the first screen (header to the bottom, behind the quick bar) with a shorter fade,
+   so the photo runs down to the quick bar instead of ending in a white band */
+@media (max-width: 699px) {
+  .hero { min-height: calc(100vh - 73px); min-height: calc(100svh - 73px); }
+  .hero__bg { --hero-fade: 140px; }
 }
 .hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(40px, 5vw, 88px); align-items: center; }
 .hero__copy { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
