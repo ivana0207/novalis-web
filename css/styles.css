@@ -233,7 +233,7 @@ button { font: inherit; }
   position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #fff;
 }
 .hero__bg img {
-  width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%;
+  width: 100%; height: 100%; object-fit: cover; object-position: 30% 45%; /* mobile: keep the bridge in view */
   opacity: .5; filter: saturate(.8) sepia(.15) contrast(1.05);
 }
 .hero__bg::after {
@@ -654,6 +654,7 @@ button.footer__link { cursor: pointer; }
   .hero__grid, .about__grid, .inquiry__grid, .story { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .hero__media { aspect-ratio: 6 / 5; }
   .hero__bg { --hero-wash: linear-gradient(90deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.45) 40%, rgba(255,255,255,.05) 72%, rgba(255,255,255,0) 100%); }
+  .hero__bg img { object-position: 50% 45%; }
 }
 
 /* desktop (≥ 1000) */
