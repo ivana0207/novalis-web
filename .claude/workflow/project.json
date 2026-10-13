@@ -1,0 +1,269 @@
+{
+  "name": "Novalis website",
+  "description": "Static marketing site for Novalis d.o.o. (Novalja, Pag): landing page, O nama and six store pages. Plain HTML/CSS/JS, no build step.",
+  "instructions": [
+    "CLAUDE.md",
+    "BRAND.md"
+  ],
+  "jira": {
+    "site": "dabushka.atlassian.net",
+    "cloudId": "0d23ee9f-7987-4e1e-b167-c08c51e0e2bf",
+    "projectKeys": [
+      "WEB"
+    ],
+    "mcpTools": "mcp__plugin_design_atlassian__* (Atlassian MCP from the synced 'design' plugin); read tools are listed in .claude/agents/jira-requirements-analyst.md",
+    "readFields": [
+      "summary",
+      "description",
+      "status",
+      "issuetype",
+      "priority",
+      "labels",
+      "components",
+      "assignee",
+      "reporter",
+      "created",
+      "updated",
+      "comment",
+      "attachment",
+      "issuelinks",
+      "subtasks",
+      "parent",
+      "duedate"
+    ],
+    "acceptanceCriteria": {
+      "location": "Ticket description, under a heading 'Acceptance criteria' (also accepted: 'AC', 'Kriteriji prihvaćanja') as a bullet or numbered list; the project has no dedicated AC field.",
+      "whenMissing": "propose-and-ask"
+    },
+    "sprints": false,
+    "myOpenTicketsJql": "project = WEB AND assignee = currentUser() AND statusCategory != Done AND status != \"On hold\" ORDER BY priority DESC, created ASC",
+    "writePolicy": "read-only; every Jira write (comment, transition, edit, worklog, link) needs the Product Owner's explicit approval for that operation"
+  },
+  "git": {
+    "defaultBranch": "main",
+    "remote": "origin (github.com/ivana0207/novalis-web, public)",
+    "commitPolicy": "never commit automatically; commit only when the Product Owner asks"
+  },
+  "stack": {
+    "type": "static-site",
+    "languages": [
+      "HTML",
+      "CSS",
+      "JavaScript (ES2017, no modules, no framework)"
+    ],
+    "build": null,
+    "dependencies": "none at runtime (Google Fonts only)",
+    "structure": {
+      "pages": [
+        "index.html",
+        "o-nama/index.html",
+        "hiper-novalis/index.html",
+        "market-novalis/index.html",
+        "hiper-bau/index.html",
+        "veleprodaja/index.html",
+        "valis/index.html",
+        "pod-zvon/index.html"
+      ],
+      "redirectStubs": [
+        "o-nama.html"
+      ],
+      "shared": [
+        "js/site.js",
+        "css/ds.css",
+        "css/styles.css",
+        "data/units.js",
+        "js/brand-paths.js"
+      ],
+      "pageScripts": {
+        "index.html": "js/occasions.js + js/app.js",
+        "o-nama/index.html": "js/occasions.js",
+        "store pages": "js/poslovnica.js"
+      },
+      "data": "data/units.js (units, categories, hours, occasions, store-page content)",
+      "seoFiles": [
+        "robots.txt",
+        "sitemap.xml",
+        "vercel.json"
+      ]
+    }
+  },
+  "commands": {
+    "nodeSetup": "source ~/.nvm/nvm.sh",
+    "preview": "python3 -m http.server <port> --bind 127.0.0.1",
+    "previewNote": "Serve the workspace root; pages live at /, /o-nama/, /<store-slug>/. The site must also work from file:// (site.js appends index.html on click).",
+    "smoke": "node .claude/workflow/smoke.js --baseline .jira-work/<KEY>/evidence/smoke-baseline.json",
+    "smokeTargeted": "node .claude/workflow/smoke.js --pages index,valis --widths 390,1440 --baseline .jira-work/<KEY>/evidence/smoke-baseline.json",
+    "smokeBaseline": "node .claude/workflow/smoke.js --json .jira-work/<KEY>/evidence/smoke-baseline.json",
+    "smokeOptions": "--root <workspace> (default: repo root), --pages <slugs>, --widths <px,...>, --no-axe, --shots <dir>, --json <file>, --baseline <json from an earlier --json run: its failures are KNOWN, only new ones fail>. Full run ~60 s (8 pages x 3 widths with axe).",
+    "knownIssues": "Baseline 2026-10-10: index.html links to #posao, #privatnost, #cjenici have no target (jobs/privacy/price-list pages not built yet; WEB-20, WEB-23).",
+    "build": null,
+    "lint": null,
+    "typecheck": null,
+    "unitTests": null
+  },
+  "browser": {
+    "automation": "playwright-skill (~/.claude/skills/playwright-skill, run scripts with its run.js or require its node_modules/playwright)",
+    "channel": "chrome",
+    "channelNote": "macOS 13: Playwright's bundled Chromium is unsupported; always launch system Google Chrome (channel 'chrome', PW_CHANNEL=chrome is set in user settings). Do not run `playwright install`.",
+    "viewports": {
+      "mobile": [
+        390,
+        844
+      ],
+      "tablet": [
+        820,
+        1180
+      ],
+      "desktop": [
+        1440,
+        900
+      ]
+    },
+    "extraChecks": [
+      320
+    ]
+  },
+  "design": {
+    "system": {
+      "name": "Novalis Design System",
+      "artifact": "https://claude.ai/artifact/DUZ3944vHmYWT1NPhY72YY",
+      "wins": true
+    },
+    "storePagesCanvas": {
+      "artifact": "https://claude.ai/artifact/Rd3o8cEGiSNr8J4zq5i9rR",
+      "approved": "2026-10-09"
+    },
+    "designProject": {
+      "id": "d4d27162-ec6f-45fa-b6e0-5225716be768",
+      "files": [
+        "Novalis-Landing-v4.dc.html",
+        "O-nama.dc.html",
+        "units-v3.json"
+      ],
+      "tool": "DesignSync list_files / get_file (256 KiB cap)"
+    },
+    "tokens": "css/ds.css",
+    "brandGuide": "BRAND.md",
+    "rules": "CLAUDE.md (tab shape R R R 0, no soft shadows, Outfit/Figtree stand-ins, logo only from vector paths/files, low-poly footer art is the client's own work)",
+    "newDesignsGoThrough": "a claude.ai Design artifact for Product Owner approval before build (design first, build after approval)"
+  },
+  "content": {
+    "primaryLanguage": "hr",
+    "plannedLanguages": [
+      "en"
+    ],
+    "factSources": [
+      "data/units.js",
+      "https://novalis.hr",
+      "material supplied by Novalis"
+    ],
+    "unconfirmed": "Opening hours are placeholders except Pod Zvon; Market phone number and some claims are awaiting Novalis (see memory/notes). Never present them as confirmed.",
+    "style": "CLAUDE.md copy style: hyphens not em/en dashes, ranges with spaced hyphen (07:00 - 19:00), Croatian dates (15. 5.), unit names in translate=\"no\", new-tab links announce ' (nova kartica)'."
+  },
+  "seo": {
+    "canonicalBase": "https://novalis-web.vercel.app/",
+    "futureBase": "https://novalis.hr/",
+    "perPageHead": "title, description, canonical, Open Graph per page; keep in sync with data/units.js",
+    "structuredData": "JSON-LD built from data/units.js; only hours with hoursConfirmed: true are published",
+    "files": [
+      "robots.txt",
+      "sitemap.xml",
+      "vercel.json"
+    ]
+  },
+  "quality": {
+    "accessibility": "WCAG 2.2 AA (automated axe + manual keyboard/contrast spot checks; not a certification)",
+    "contrast": "text on brand colours must reach 4.5:1 (3:1 for large text and UI parts)",
+    "browsers": "Chrome (automated); Safari/iOS and Firefox are manual-only and must be listed as untested unless checked",
+    "performance": "no build step: check image weights/dimensions, render-blocking resources and layout shift on changed pages"
+  },
+  "conventions": [
+    "Every page starts with a skip link to its <main>.",
+    "Store pages are identical shells: <body data-unit=\"…\" data-root=\"../\" data-home=\"../\">; same sections in the same order; only the hero takes the store theme.",
+    "Link to store pages with NV.unitHref(u) (clean slug/ URLs).",
+    "Use css/ds.css variables; no new brand colours.",
+    "Content changes go through data/units.js, not hard-coded in page scripts."
+  ],
+  "integration": {
+    "orchestratorOnly": [
+      "Cache busting: when any CSS or JS file changed, bump ?v=YYYYMMDD (or -2, -3 the same day) in all 8 HTML pages, once per integration, after all tickets in the batch are applied."
+    ],
+    "afterIntegration": [
+      "node .claude/workflow/smoke.js (full)"
+    ]
+  },
+  "deploy": {
+    "target": "git push origin main -> GitHub Pages (ivana0207.github.io/novalis-web) and Vercel (novalis-web.vercel.app)",
+    "policy": "Only on the Product Owner's explicit instruction in the current conversation. The guard hook asks before any push."
+  },
+  "resources": {
+    "note": "Checkpoints, not hard limits. WARN: the orchestrator reassesses its strategy (duplication, repeated attempts, unneeded re-verification) and continues. APPROVAL: it pauses before further expensive work and asks the Product Owner. Per ticket; work shared by several tickets is split between them. Cost = measured tokens x list prices (pricing) - an estimate. estFiveHourWindowPct converts it with the subscription calibration below. null disables a limit.",
+    "perTicket": {
+      "warn": {
+        "estFiveHourWindowPct": 35,
+        "estCostUsd": null,
+        "agentInvocations": 15,
+        "fixRounds": 4,
+        "elapsedMinutes": 120
+      },
+      "approval": {
+        "estFiveHourWindowPct": 70,
+        "estCostUsd": null,
+        "agentInvocations": 30,
+        "fixRounds": 8,
+        "elapsedMinutes": 300
+      }
+    },
+    "noProgress": {
+      "sameFailureRepeats": 2,
+      "sameDefectAttemptsWarn": 3
+    },
+    "subscription": {
+      "plan": "claude.ai subscription with 5-hour and 7-day usage windows (rate-limit events show overage disabled)",
+      "usdPerFiveHourPercent": 0.4,
+      "calibration": "2026-10-10: the 5-hour window moved 58% -> 95% while $14.75 (list-price estimate) was measured across the WEB-25 dry run and the concurrent setup session: about $0.40 per 1%. One sample, approximate - recalibrate from rate_limit_event lines of a headless run (claude -p --output-format stream-json) or from /usage.",
+      "reference": "WEB-25 dry run (analysis + planning + one design spec, stopped before ingest): $7.26 ~ 18% of a 5-hour window"
+    }
+  },
+  "safety": {
+    "extraAskBashPatterns": []
+  },
+  "pricing": {
+    "source": "claude-api skill model table + shared/prompt-caching.md (Anthropic first-party list prices)",
+    "asOf": "2026-06-24",
+    "unit": "USD per million tokens; cache writes are priced as 1.25x input (5-minute TTL) or 2x input (1-hour TTL)",
+    "note": "Estimates at API list price. Subscription plans are not billed per token. Update when Anthropic prices change.",
+    "models": {
+      "claude-opus-5-5": {
+        "input": 4.0,
+        "output": 20.0,
+        "cacheRead": 0.2
+      },
+      "claude-sonnet-5": {
+        "input": 2.0,
+        "output": 10.0,
+        "cacheRead": 0.2
+      },
+      "claude-haiku-4-5": {
+        "input": 1.0,
+        "output": 5.0,
+        "cacheRead": 0.1
+      },
+      "claude-haiku-4-5-20251001": {
+        "input": 1.0,
+        "output": 5.0,
+        "cacheRead": 0.1
+      },
+      "claude-fable-5-1": {
+        "input": 10.0,
+        "output": 50.0,
+        "cacheRead": 0.25
+      },
+      "claude-opus-5": {
+        "input": 5.0,
+        "output": 25.0,
+        "cacheRead": 0.5
+      }
+    }
+  }
+}

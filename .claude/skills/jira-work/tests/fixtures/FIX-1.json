@@ -1,0 +1,12 @@
+{
+  "fixture": true,
+  "note": "Synthetic test ticket for validating the jira-work orchestrator. Not in Jira. Never implement it outside a validation run.",
+  "key": "FIX-1",
+  "summary": "Remove dead links to pages that do not exist yet",
+  "type": "Task",
+  "status": "To Do",
+  "updated": "2026-10-10T19:40:00+02:00",
+  "description": "On the landing page, 'Zaposli se', 'Cjenici' and 'Pravila privatnosti' link to #posao, #cjenici and #privatnost. Those anchors do not exist, so clicking does nothing (the smoke test reports them as missing anchor targets). The real pages come later (WEB-20, WEB-23).\n\nAcceptance criteria\n- AC-1: The header navigation and the mobile menu on every page no longer show a 'Zaposli se' link.\n- AC-2: The footer on every page no longer shows the 'Zaposli se', 'Cjenici' and 'Pravila privatnosti' links; all other footer links are unchanged.\n- AC-3: The consent sentence in the contact form keeps its exact text, but 'Pravilima o privatnosti' is plain text instead of a link.\n- AC-4: The smoke test reports no missing anchor targets and no new failures on any page.\n\nOut of scope: creating the jobs, price-list or privacy pages.",
+  "comments": [],
+  "links": [{"type": "relates to", "key": "WEB-20"}, {"type": "relates to", "key": "WEB-23"}]
+}

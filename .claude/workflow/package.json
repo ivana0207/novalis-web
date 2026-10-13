@@ -1,0 +1,11 @@
+{
+  "name": "workflow-qa-tools",
+  "private": true,
+  "description": "Local QA tooling for the jira-work workflow (not part of the website). Playwright comes from ~/.claude/skills/playwright-skill.",
+  "scripts": {
+    "smoke": "node smoke.js"
+  },
+  "dependencies": {
+    "axe-core": "^4.14.0"
+  }
+}

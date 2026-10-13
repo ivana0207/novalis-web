@@ -1,0 +1,51 @@
+{
+  "worktree": {
+    "baseRef": "head"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3 .claude/skills/jira-work/scripts/wf.py:*)",
+      "Bash(python3 .claude/skills/jira-work/scripts/usage.py:*)",
+      "Bash(node .claude/workflow/smoke.js:*)",
+      "mcp__plugin_design_atlassian__getJiraIssue",
+      "mcp__plugin_design_atlassian__searchJiraIssuesUsingJql",
+      "mcp__plugin_design_atlassian__getJiraIssueRemoteIssueLinks",
+      "mcp__plugin_design_atlassian__getAccessibleAtlassianResources",
+      "mcp__plugin_design_atlassian__getVisibleJiraProjects",
+      "mcp__plugin_design_atlassian__atlassianUserInfo"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "mcp__plugin_design_atlassian__addCommentToJiraIssue",
+      "mcp__plugin_design_atlassian__addWorklogToJiraIssue",
+      "mcp__plugin_design_atlassian__createIssueLink",
+      "mcp__plugin_design_atlassian__createJiraIssue",
+      "mcp__plugin_design_atlassian__editJiraIssue",
+      "mcp__plugin_design_atlassian__transitionJiraIssue",
+      "mcp__plugin_design_atlassian__createConfluencePage",
+      "mcp__plugin_design_atlassian__updateConfluencePage"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit|Artifact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.py\""
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.py\""
+          }
+        ]
+      }
+    ]
+  }
+}
