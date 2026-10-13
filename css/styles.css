@@ -813,11 +813,15 @@ button { font: inherit; }
 .about__text--lead p { max-width: 48ch; font: 400 18px/1.6 var(--font-primary); color: var(--muted); }
 
 /* ---------- Inquiry ---------- */
-.inquiry { padding-bottom: clamp(88px, 9vw, 144px); }
-.inquiry__grid {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(40px, 6vw, 96px);
-  padding-top: clamp(48px, 5vw, 80px); border-top: 1px solid var(--line);
+/* The same inset panel on the muted surface (light grey) as the occasions band; the last section before the footer. */
+.inquiry {
+  --inq-r: clamp(24px, 2.6vw, 40px);
+  margin: clamp(88px, 9vw, 144px) clamp(8px, 1.2vw, 20px);
+  border-radius: var(--inq-r) var(--inq-r) var(--inq-r) 0;
+  background: var(--surface-muted);
 }
+.inquiry__inner { max-width: 1408px; margin: 0 auto; padding: clamp(56px, 7vw, 112px) var(--gut); }
+.inquiry__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); }
 .inquiry__intro { gap: 16px; }
 .inquiry__h { margin: 0; font: 700 clamp(38px, 4.4vw, 64px)/1 var(--font-display); letter-spacing: -.03em; color: var(--ink); }
 .inquiry__intro p { margin: 0; max-width: 38ch; font: 400 18px/1.55 var(--font-primary); color: var(--muted); text-wrap: pretty; }
