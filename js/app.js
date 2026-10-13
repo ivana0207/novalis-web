@@ -1,12 +1,12 @@
 /* Novalis landing (design v4) — page behaviour on top of js/site.js.
-   Renders unit cards, map and location list, computes live open/closed status in Europe/Zagreb time,
-   and wires up filters, the map/list toggle and the inquiry form. */
+   Renders unit cards, map and location list, computes live open/closed status in Europe/Zagreb time, and wires up
+   filters, the map/list toggle and the inquiry form. The "Novalis za svaku priliku" band is js/occasions.js. */
 (function () {
   'use strict';
 
   var NV = window.NV, D = NV.D, $ = NV.$, $$ = NV.$$, esc = NV.esc, setHTML = NV.setHTML;
 
-  var urlCat = new URLSearchParams(location.search).get('kategorija');
+  var params = new URLSearchParams(location.search), urlCat = params.get('kategorija');
   var state = { cat: NV.CAT_IDS.indexOf(urlCat) >= 0 ? urlCat : 'all', openOnly: false, view: 'map', sel: null, hov: null };
   var units = []; // view models, rebuilt every render()
 
@@ -94,7 +94,7 @@
     var u = unitById(previewId || state.sel);
     if (!u) { setHTML($('#mapCard'), ''); return; }
     setHTML($('#mapCard'),
-      '<div class="map-card map-card--' + (u.x <= 50 ? 'l' : 'r') + (previewId ? ' is-preview" aria-hidden="true"' : '" role="dialog"') +
+      '<div class="map-card map-card--' + (u.x <= 50 ? 'l' : 'r') + (previewId ? ' is-preview" aria-hidden="true" inert' : '" role="dialog"') +
         ' aria-label="' + esc(u.name) + '" style="--x:' + u.x + ';--y:' + u.y + '">' +
         '<div class="map-card__img">' + NV.slotHTML(u.photo, u.photoHint, u.name) +
           '<span class="map-card__n">' + u.nPad + '</span>' +
@@ -219,6 +219,8 @@
     $$('.seg__btn').forEach(function (b) {
       b.addEventListener('click', function () { setView(b.dataset.view); });
     });
+    // "Svi kontakti" (#prilike) jumps to Pronađite nas like any anchor and opens its list, where every unit's contacts are
+    $('#allContacts').addEventListener('click', function () { setView('list'); });
     $$('.pin').forEach(function (p) {
       var id = p.dataset.id;
       var hoverOn = function () { state.hov = id; syncMap(); };
@@ -246,7 +248,8 @@
     });
   }
 
-  // Search engines: the company and its units (each store page describes its own unit in full).
+  // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
+  // opening hours are published there only, once confirmed).
   function addStructuredData() {
     var C = D.company;
     NV.addJSONLD({
@@ -257,7 +260,10 @@
           alternateName: 'Novalis', foundingDate: String(C.founded), telephone: C.tel, email: C.email,
           address: NV.postalAddress(C.address),
           subOrganization: NV.units.map(function (u) {
-            return Object.assign({}, u.schema, { '@id': NV.unitId(u), name: u.name, url: NV.absUrl(NV.unitHref(u)) });
+            return Object.assign({}, u.schema, {
+              '@id': NV.unitId(u), name: u.name, url: NV.absUrl(NV.unitHref(u)),
+              address: NV.postalAddress(u.address), telephone: u.tel || C.tel
+            });
           })
         })
       ]
@@ -269,6 +275,8 @@
   renderPins();
   syncMap();
   bind();
+  // O nama's "Svi kontakti" lands here as ?prikaz=popis#lokacije: open the list, where every unit's contacts are
+  if (params.get('prikaz') === 'popis') setView('list');
 
   // keep open/closed status live
   setInterval(render, 60000);

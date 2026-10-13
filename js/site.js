@@ -1,5 +1,5 @@
 /* Novalis site — shared by every page: brand vectors, image slots, opening hours, header (one menu per business
-   category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, o-nama.js,
+   category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, occasions.js,
    poslovnica.js) build on window.NV.
    Loaded at the end of <body>, so the markup it works on is already parsed. */
 window.NV = (function () {
@@ -163,6 +163,19 @@ window.NV = (function () {
       d.p.map(function (p) { return '<path d="' + p + '" fill="currentColor"/>'; }).join('') + '</svg>';
   }
 
+  // The cart badge (brand mark) is drawn red with a yellow cart; on red it flips to a yellow badge with a red cart.
+  // The dark-red shadow plate stays in both.
+  var TILE_FLIP = { '#d71920': 'var(--nv-yellow)', '#ffcb05': 'var(--nv-red)' };
+
+  function tileSVG(variant, h) {
+    var d = P.tile;
+    var w = +(h * d.w / d.h).toFixed(2);
+    return '<svg class="logo-mark" aria-hidden="true" focusable="false" viewBox="0 0 ' + d.w + ' ' + d.h + '" width="' + w +
+      '" height="' + h + '">' + d.p.map(function (p) {
+        return '<path d="' + p[0] + '" style="fill:' + (variant === 'yellow' && TILE_FLIP[p[1]] || p[1]) + '"/>';
+      }).join('') + '</svg>';
+  }
+
   function pictoSVG(name, size) {
     var d = P.pictos[name];
     if (!d) return '';
@@ -171,8 +184,11 @@ window.NV = (function () {
   }
 
   function renderBrand() {
+    // data-logo-mark="red|yellow" puts the cart badge left of the wordmark, about twice its height.
     $$('[data-logo]').forEach(function (el) {
-      el.innerHTML = logoSVG(el.dataset.logo, el.dataset.logoColor || 'red', +el.dataset.logoH || 24);
+      var h = +el.dataset.logoH || 24;
+      el.innerHTML = (el.dataset.logoMark ? tileSVG(el.dataset.logoMark, Math.round(h * 1.8)) : '') +
+        logoSVG(el.dataset.logo, el.dataset.logoColor || 'red', h);
     });
   }
 
@@ -206,6 +222,12 @@ window.NV = (function () {
   var NEW_TAB = '<span class="vh"> (nova kartica)</span>';
   // Unit names are brand names: translate="no" keeps browser translation from turning "Pod Zvon" into "Under the Bell".
   function nameHTML(u) { return '<span translate="no">' + esc(u.name) + '</span>'; }
+  // Header menu links end in the → the "Za svaku priliku" links use, also for a unit's own website (B&B Novalis);
+  // that one still says it opens a new tab.
+  function navIcoHTML(u) {
+    return '<svg class="nav-go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg>' +
+      (u.external ? NEW_TAB : '');
+  }
   function unitLinkAttrs(u, cls) {
     var current = document.body.dataset.unit === u.id ? ' aria-current="page"' : '';
     return 'class="' + cls + '" href="' + esc(unitHref(u)) + '"' + current +
@@ -225,8 +247,7 @@ window.NV = (function () {
         pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</button>' +
         '<ul class="dropdown dd-panel" id="nav-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
-          return '<li><a ' + unitLinkAttrs(u, 'dd-item') + '>' + nameHTML(u) +
-            (u.external ? NEW_TAB : '') + '</a></li>';
+          return '<li><a ' + unitLinkAttrs(u, 'dd-item') + '>' + nameHTML(u) + navIcoHTML(u) + '</a></li>';
         }).join('') +
         '</ul></div>';
     }).join('');
@@ -238,8 +259,7 @@ window.NV = (function () {
         pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span><span class="ms ms--sm" aria-hidden="true">expand_more</span></button>' +
         '<ul class="mm-list" id="mm-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
-          return '<li><a ' + unitLinkAttrs(u, 'mm-item') + '>' + nameHTML(u) +
-            (u.external ? NEW_TAB : '<span class="ms ms--xs" aria-hidden="true">arrow_forward</span>') + '</a></li>';
+          return '<li><a ' + unitLinkAttrs(u, 'mm-item') + '>' + nameHTML(u) + navIcoHTML(u) + '</a></li>';
         }).join('') +
         '</ul></div>';
     }).join('');

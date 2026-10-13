@@ -1,5 +1,5 @@
 /*
- * Jedini izvor podataka za kartice, izbornik, kartu, popis lokacija, priče i stranice poslovnica
+ * Jedini izvor podataka za kartice, izbornik, kartu, popis lokacija, prilike i stranice poslovnica
  * (dizajn v4 · units-v3.json; tekstovi i fotografije poslovnica prema novalis.hr).
  * Radno vrijeme: indeks 0 = ponedjeljak … 6 = nedjelja; null = zatvoreno.
  * Radna vremena su PLACEHOLDER dok ih Novalis ne potvrdi (Pod Zvon je potvrđen na novalis.hr).
@@ -45,7 +45,7 @@
         id: 'hiper-novalis', slug: 'hiper-novalis', category: 'trgovine', name: 'Hiper Novalis',
         desc: 'Veliki hipermarket s bogatim izborom proizvoda.',
         address: 'Čiponjac III/2, Novalja', phone: '053 663 300', tel: '+38553663300',
-        promo: false, pin: { x: 62, y: 30 }, schema: { '@type': 'ShoppingCenter' },
+        promo: false, pin: { x: 62, y: 30 }, schema: { '@type': 'Store' },
         hours: {
           summer: daily(wk('07:00', '22:00')),
           winter: week(wk('07:00', '19:00'), wk('07:00', '19:00'), wk('07:00', '12:30'))
@@ -111,7 +111,7 @@
         id: 'hiper-bau', slug: 'hiper-bau', category: 'trgovine', name: 'Hiper Bau',
         desc: 'Trgovina građevinskim materijalom i opremom za dom.',
         address: 'Čiponjac III/3, Novalja', phone: '099 5476 792', tel: '+385995476792',
-        promo: false, pin: { x: 72, y: 20 }, schema: { '@type': 'HardwareStore' },
+        promo: false, pin: { x: 72, y: 20 }, schema: { '@type': 'HomeAndConstructionBusiness' },
         hours: {
           summer: week(wk('07:00', '20:00'), wk('07:00', '14:00'), null),
           winter: week(wk('07:00', '17:00'), wk('07:00', '13:00'), null)
@@ -176,7 +176,7 @@
         id: 'valis', slug: 'valis', category: 'gastro', name: 'Bistro i slastičarna Valis',
         desc: 'Usluge bistroa i slastičarne.',
         address: 'Trg Bazilike 3, Novalja', phone: '099 258 6317', tel: '+385992586317',
-        promo: false, pin: { x: 38, y: 62 }, schema: { '@type': ['CafeOrCoffeeShop', 'IceCreamShop'] },
+        promo: false, pin: { x: 38, y: 62 }, schema: { '@type': ['Bakery', 'CafeOrCoffeeShop'] },
         hours: {
           summer: daily(wk('08:00', '24:00')),
           winter: [wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '22:00'), wk('08:00', '22:00'), wk('09:00', '21:00')]
@@ -206,7 +206,7 @@
         id: 'pod-zvon', slug: 'pod-zvon', category: 'gastro', name: 'Bistro Pod Zvon',
         desc: 'Nalazi se tik pod zvonom župne crkve, u centru grada.',
         address: 'Ulica kralja Zvonimira 1a, Novalja', phone: '053 679 555', tel: '+38553679555', email: 'zvon@novalis.com.hr',
-        promo: false, pin: { x: 33, y: 52 }, schema: { '@type': 'Restaurant', servesCuisine: ['Pizza', 'Dalmatinska kuhinja'] },
+        promo: false, pin: { x: 33, y: 52 }, schema: { '@type': 'Restaurant', servesCuisine: ['Mediterranean', 'Pizza'] },
         hoursConfirmed: true,
         hours: {
           summer: daily(wk('16:00', '24:00')),
@@ -244,39 +244,45 @@
         photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis'
       }
     ],
-    // "Novalis u stvarnom životu" (o-nama/). A step links to its unit's store page, or to `href` on the landing page.
-    stories: [
+    // "Novalis za svaku priliku" (landing and O nama pages, #prilike): one card per need, with the units that cover it in order.
+    // id is the card's anchor (/#gradnja) · icon: an outline icon in js/occasions.js · photo: the card's picture (null = a
+    // placeholder showing photoHint until the real photo exists) · a step names a unit by id and links to its store page
+    // (or website); label shortens the unit name where the copy does.
+    occasions: [
       {
-        id: 'gradnja', tab: 'Gradite ili uređujete dom?', title: 'Gradite ili uređujete dom?',
-        desc: 'Od građevinskog materijala i keramike do sanitarija, namještaja i kućanskih uređaja - sve potrebno za gradnju i uređenje možete riješiti kroz Novalis, uz dostavu na području Paga.',
-        photo: 'Foto: obitelj u kući koja se uređuje - keramika, alati, svjetlo kroz prozor',
+        id: 'gradnja', icon: 'gradnja', title: 'Gradnja i uređenje',
+        photo: null, photoHint: 'Foto: uređenje doma - pločice, alati, svjetlo kroz prozor',
+        desc: 'Od građevinskog materijala do namještaja po mjeri - cijeli projekt u Novalji, bez odlaska na kopno.',
         steps: [
-          { text: 'Građevinski materijal i keramika', unit: 'hiper-bau' },
-          { text: 'Sanitarije i oprema za dom', unit: 'hiper-novalis' },
-          { text: 'Namještaj i kućanski uređaji', unit: 'hiper-novalis' },
-          { text: 'Dostava na adresu', unit: null, label: 'Novalis dostava', href: '#upit' }
+          { unit: 'hiper-bau', text: 'Građevinski materijal, suha gradnja, podne obloge, boje, stolarija i alati' },
+          { unit: 'hiper-novalis', text: 'Keramika, uvoz iz Italije prema narudžbi' },
+          { unit: 'hiper-novalis', text: 'Namještaj po mjeri s montažom' },
+          { unit: 'hiper-novalis', text: 'Sanitarije i bijela tehnika' },
+          { unit: 'hiper-novalis', text: 'Tekstil i opremanje' }
         ]
       },
       {
-        id: 'apartman', tab: 'Pripremate apartman za sezonu?', title: 'Pripremate apartman za sezonu?',
-        desc: 'Opremite apartman, nabavite uređaje i tekstil, pripremite osnovne potrepštine za goste i riješite veću opskrbu - bez potrebe za odlaskom s otoka.',
-        photo: 'Foto: domaćin priprema apartman - namješta posteljinu, sunce kroz prozor',
+        id: 'proslave', icon: 'proslave', title: 'Proslave i događanja',
+        photo: null, photoHint: 'Foto: obiteljsko slavlje, stol s tortom u Pod Zvonu',
+        desc: 'Pričesti, krizme, krštenja i obiteljska slavlja u Novalji - prostor za proslave, torta, smještaj za goste i nabava na jednom mjestu.',
         steps: [
-          { text: 'Namještaj, posteljina i uređaji', unit: 'hiper-novalis' },
-          { text: 'Potrepštine za goste', unit: 'market-novalis' },
-          { text: 'Piće i veće količine', unit: 'veleprodaja' },
-          { text: 'Dostava do objekta', unit: null, label: 'Novalis dostava', href: '#upit' }
+          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Prostor za privatna događanja i proslave uz župnu crkvu, mediteranska i dalmatinska kuhinja' },
+          { unit: 'valis', label: 'Valis', text: 'Torte po narudžbi i kolači iz vlastite proizvodnje' },
+          { unit: 'hotel-novalis', text: 'Smještaj za goste u samom centru Novalje' },
+          { unit: 'hiper-novalis', text: 'Supermarket s namirnicama i pićem za proslavu kod kuće, uz veliko parkiralište' },
+          { unit: 'market-novalis', text: 'Sve što zatreba u zadnji čas, u centru grada' }
         ]
       },
       {
-        id: 'slavlje', tab: 'Organizirate slavlje?', title: 'Organizirate slavlje?',
-        desc: 'Od torte i večere do pića i smještaja za goste - više potreba za jedno slavlje možete riješiti unutar Novalisa.',
-        photo: 'Foto: obiteljsko slavlje na terasi u večernjem svjetlu',
+        id: 'boravak', icon: 'boravak', title: 'Boravak u Novalji',
+        photo: null, photoHint: 'Foto: jutarnja kava na terasi, pogled na Novalju',
+        desc: 'Smještaj, nabava, kava i večera - sve što vam treba za opušten boravak, na dohvat ruke.',
         steps: [
-          { text: 'Torta i slastice', unit: 'valis', label: 'Slastičarna Valis' },
-          { text: 'Večera', unit: 'pod-zvon' },
-          { text: 'Piće za veće društvo', unit: 'veleprodaja' },
-          { text: 'Smještaj za goste', unit: 'hotel-novalis' }
+          { unit: 'hotel-novalis', text: 'Sobe u centru Novalje s hidromasažnim kadama na terasama' },
+          { unit: 'hiper-novalis', text: 'Velika nabava uz veliko parkiralište, izvan gužve u centru' },
+          { unit: 'market-novalis', text: 'Namirnice i drogerija u centru' },
+          { unit: 'valis', label: 'Valis', text: 'Kava, domaći sladoled, bistro i kavana s izborom vina' },
+          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Napolitanska pizza i mediteranska kuhinja uz crkvu' }
         ]
       }
     ]

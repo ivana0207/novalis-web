@@ -1,5 +1,5 @@
 /* Novalis landing (design v4) — layout & components. Tokens live in ds.css.
-   Breakpoints follow the design: 560 · 700 (mobile) · 900 (two columns) · 1000 · 1080 (desktop nav, compact, 4-col bento)
+   Breakpoints follow the design: 560 · 700 (mobile) · 900 (two columns) · 1000 · 1024 (occasions row) · 1080 (desktop nav, compact)
    · 1200 (desktop nav, standard) */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -106,7 +106,14 @@ button { font: inherit; }
   position: relative; max-width: 1408px; margin: 0 auto; height: 72px; padding: 0 var(--gut);
   display: flex; align-items: center; gap: 32px;
 }
-.bar__logo { display: flex; align-items: center; min-height: 44px; flex: none; }
+.bar__logo { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; flex: none; }
+/* the cart badge left of the wordmark: smaller on small phones, none below 360 (no room beside the language toggle and menu) */
+@media (max-width: 374.98px) {
+  .bar { gap: var(--space-4); }
+  .bar__logo { gap: var(--space-2); }
+  .logo-mark { width: 32px; height: 32px; }
+}
+@media (max-width: 359.98px) { .logo-mark { display: none; } }
 .bar__end { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
 /* standard look (≥ 1200); the compact look for 1080-1199 is in the media queries at the end */
@@ -158,12 +165,18 @@ button { font: inherit; }
   width: max-content; min-width: 240px; max-width: 340px; margin: 0; list-style: none; white-space: normal;
 }
 .dd-item {
-  display: flex; align-items: center; gap: var(--space-1); min-height: 40px; padding: 0 14px 0 36px;
+  display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px 0 36px;
   border-radius: 10px 10px 10px 0; color: var(--ink); font: 400 15px/1.2 var(--font-primary);
   transition: background .15s ease-out, color .15s ease-out;
 }
 .dd-item:hover { background: #F7F7F7; color: var(--nv-red); }
 .dd-item[aria-current="page"] { color: var(--nv-red); }
+/* arrow after each unit name (desktop panels and mobile menu), drawn like the .occ-step__go arrow */
+.nav-go {
+  flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.25;
+  stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur-fast) var(--ease-out);
+}
+.dd-item:hover .nav-go { transform: translateX(3px); }
 
 .lang, .footer__lang { display: flex; align-items: center; }
 .lang__btn {
@@ -212,7 +225,7 @@ button { font: inherit; }
   padding-left: 34px; color: var(--ink); font: 400 16px/1.2 var(--font-primary);
 }
 .mm-item[aria-current="page"] { color: var(--nv-red); }
-.mm-item .ms { color: var(--nv-red); }
+.mm-item .nav-go { color: var(--nv-red); }
 .mm-extra { display: flex; flex-wrap: wrap; gap: 0 24px; margin-top: 16px; }
 .mm-extra a { display: flex; align-items: center; min-height: 44px; font: 700 16px/1 var(--font-display); color: var(--ink); }
 .mm-extra a[aria-current="page"] { color: var(--nv-red); }
@@ -340,79 +353,345 @@ button { font: inherit; }
 }
 .no-results p { margin: 0; font: 700 18px/1.4 var(--font-display); color: var(--ink); }
 
-/* ---------- Why (bento) ---------- */
-.why .head { gap: 20px; }
-.why__h {
-  margin: 0; max-width: 14ch; font: 700 clamp(40px, 4.6vw, 68px)/.98 var(--font-display);
-  letter-spacing: -.035em; color: var(--ink); text-wrap: balance;
+/* ---------- Occasions ("Novalis za svaku priliku") ---------- */
+/* An inset panel on the design system's muted surface (light grey) with an image carousel (js/occasions.js initOccasions).
+   Desktop (>= 1024): three tall photo cards in a row; the open card widens and a red panel wipes up over its photo
+   with the description and the units. Below 1024: a swipe row (scroll snap) of open cards, photo on top, red panel
+   below. The JS only sets .is-active and the entrance classes; the motion is CSS and stops with reduced motion. */
+.occasions {
+  --occ-ease: cubic-bezier(.22, 1, .36, 1); /* quick start, long soft landing */
+  --occ-r: clamp(24px, 2.6vw, 40px);
+  margin: clamp(88px, 9vw, 144px) clamp(8px, 1.2vw, 20px) 0;
+  border-radius: var(--occ-r) var(--occ-r) var(--occ-r) 0;
+  background: var(--surface-muted); color: var(--nv-gray-850);
+  overflow: clip;
 }
-.bento { margin-top: clamp(40px, 4.5vw, 64px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
-.bento__tile {
-  position: relative; min-height: 280px; border-radius: var(--shape-tab); overflow: hidden; color: #fff;
-  display: flex; flex-direction: column; justify-content: space-between; gap: 32px;
+/* O nama: the band is the last section before the footer */
+.occasions--last { margin-bottom: clamp(88px, 9vw, 144px); }
+.occasions__inner { max-width: 1408px; margin: 0 auto; padding: clamp(56px, 7vw, 112px) var(--gut) clamp(40px, 5vw, 80px); }
+.occasions__top {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-5) var(--space-7);
 }
-.bento__top {
-  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.28);
-  font: 700 12px/1 var(--font-display); letter-spacing: .12em; color: #fff;
-}
-.bento__top span:first-child { letter-spacing: .16em; text-transform: uppercase; }
-.bento__text { position: relative; display: flex; flex-direction: column; gap: 12px; }
-.bento__big { font: 800 clamp(64px, 6.4vw, 96px)/.85 var(--font-display); letter-spacing: -.05em; color: #fff; }
-.bento__h { margin: 0; font: 700 clamp(22px, 2vw, 28px)/1.15 var(--font-display); letter-spacing: -.01em; color: #fff; }
-.bento__h--sm { font-size: clamp(20px, 1.8vw, 26px); }
-.bento__tile p { margin: 0; font: 400 17px/1.5 var(--font-primary); color: #fff; }
-.bento__copy { display: flex; flex-direction: column; gap: 6px; }
-
-.bento__a { min-height: 440px; background: #2B2521; justify-content: center; }
-.bento__a .slot { align-items: flex-end; padding-bottom: 16px; }
-.bento__a .slot__ph { flex-direction: row; color: rgba(255,255,255,.7); font-size: 13px; }
-.bento__a .slot__ph .ms { font-size: 20px; }
-.bento__scrim {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse at center, rgba(24,19,16,.9) 0%, rgba(24,19,16,.7) 55%, rgba(24,19,16,.45) 100%);
-}
-.bento__a-copy {
-  position: relative; padding: clamp(28px, 3.4vw, 48px); pointer-events: none;
-  display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center;
-}
-.bento__a .bento__top { align-self: stretch; }
-.bento__a .bento__text { align-items: center; gap: 8px; }
-.bento__a p { max-width: 36ch; }
-.bento__big--yellow { font-size: clamp(72px, 8.4vw, 128px); letter-spacing: -.055em; color: var(--nv-yellow); }
-
-.bento__b { padding: clamp(28px, 3.2vw, 44px); background: var(--grad-red); }
-.bento__glow {
-  position: absolute; right: -6%; top: -30%; width: 62%; aspect-ratio: 1; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle, rgba(247,148,30,.45) 0%, rgba(247,148,30,0) 68%);
-}
-.bento__ghost {
-  position: absolute; right: clamp(28px, 3.2vw, 44px); bottom: clamp(20px, 2.4vw, 32px);
-  font-size: clamp(120px, 12vw, 176px); color: rgba(255,255,255,.1); pointer-events: none;
+.occasions__head { gap: var(--space-4); max-width: 46rem; }
+.occasions__intro {
+  margin: 0; max-width: 54ch; font: 400 clamp(16px, 1.3vw, 18px)/1.55 var(--font-primary); color: var(--nv-gray-700);
+  text-wrap: pretty;
 }
 
-.bento__c, .bento__d { padding: clamp(24px, 2.8vw, 40px); }
-.bento__c .bento__text, .bento__d .bento__text { gap: 16px; }
-.bento__c p, .bento__d p { font-size: 16px; }
-.bento__c { background: var(--nv-yellow); }
-.bento__c .bento__top { border-bottom-color: rgba(158,11,15,.25); color: var(--nv-red-dark); }
-.bento__c .bento__h { color: var(--nv-red-dark); }
-.bento__c p { color: var(--ink); }
-.bento__d { --ring: var(--focus-ring); background: var(--nv-slate-dark); }
-.bento__d .bento__top { border-bottom-color: rgba(255,255,255,.22); }
-.bento__link {
-  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
-  font: 700 15px/1 var(--font-display); letter-spacing: .01em; color: var(--nv-yellow);
-}
-.bento__link:hover { color: #fff; }
+/* all icons in the section: inline outline SVG on a 24 grid, drawn in currentColor */
+.occ-ico { flex: none; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
 
-/* rotated leaf badge with a flat offset shadow */
-.stamp {
-  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-  background: var(--bg); color: var(--fg); border-radius: 14px 14px 14px 0;
-  transform: rotate(-8deg); box-shadow: 3px 3px 0 var(--sh);
+/* controls: position dots (swipe row only) and round prev / next buttons */
+.occ-nav { flex: none; display: flex; align-items: center; gap: var(--space-3); }
+.occ-dots { display: flex; align-items: center; gap: 6px; margin-right: auto; }
+.occ-dot {
+  width: 20px; height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--nv-gray-850) 20%, transparent);
+  transition: width var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
 }
-.stamp .ms { font-size: 26px; transform: rotate(8deg); }
+.occ-dot.is-on { width: 36px; background: var(--nv-red); }
+.occ-arrow {
+  width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; padding: 0;
+  border: 1.5px solid var(--nv-gray-550); border-radius: 50%;
+  background: transparent; color: var(--nv-gray-850); cursor: pointer;
+  transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.occ-arrow .occ-ico { width: 22px; height: 22px; transition: transform var(--dur-base) var(--ease-out); }
+.occ-arrow:active { transform: scale(.94); }
+@media (hover: hover) {
+  .occ-arrow:hover { border-color: var(--nv-gray-850); background: var(--nv-gray-850); color: var(--nv-white); }
+  .occ-arrow:hover .occ-ico { transform: translateX(-2px); }
+  .occ-arrow--next:hover .occ-ico { transform: translateX(2px); }
+}
+
+/* cards */
+.occ-track { position: relative; display: flex; gap: clamp(12px, 1.2vw, 16px); margin-top: clamp(28px, 3.6vw, 48px); }
+.occ-card {
+  --ring: var(--focus-ring); /* the links sit on the red panel */
+  position: relative; isolation: isolate; min-width: 0; display: flex; flex-direction: column;
+  border-radius: var(--shape-tab); overflow: clip; background: var(--grad-red); color: var(--nv-white);
+  overflow-wrap: break-word; scroll-margin-top: var(--space-5);
+}
+.occ-card__media { position: relative; overflow: clip; }
+/* placeholder tones until the photos exist (data/units.js occasions[].photo) */
+.occ-card__media .slot { --bg: var(--nv-slate-dark); }
+.occ-card:nth-child(3n+2) .occ-card__media .slot { --bg: var(--nv-brown); }
+.occ-card:nth-child(3n) .occ-card__media .slot { --bg: var(--nv-slate); }
+.occ-card .slot__ph { color: color-mix(in srgb, var(--nv-white) 78%, transparent); }
+.occ-card__plus { display: none; }
+.occ-card__body { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: clamp(20px, 2.4vw, 32px); }
+.occ-card__icon {
+  width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center;
+  border-radius: 14px 14px 14px 0; background: var(--nv-yellow); color: var(--nv-red-dark);
+}
+.occ-card__icon .occ-ico { width: 32px; height: 32px; stroke-width: 1.75; }
+.occ-card__h {
+  margin: 0; font: 700 clamp(22px, 2vw, 28px)/1.15 var(--font-display); letter-spacing: -.015em; color: var(--nv-white);
+  text-wrap: balance;
+}
+.occ-card__more { display: grid; grid-template-rows: 1fr; width: 100%; }
+.occ-card__more-in { min-height: 0; }
+.occ-card__desc { margin: var(--space-3) 0 0; font: 400 16px/1.5 var(--font-primary); color: var(--nv-white); text-wrap: pretty; }
+
+/* the units in order, numbered and joined by a thin rail */
+.occ-steps {
+  list-style: none; margin: var(--space-4) 0 0; padding: var(--space-3) 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--nv-white) 30%, transparent);
+}
+.occ-step { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: var(--space-3); padding-bottom: var(--space-2); }
+.occ-step:last-child { padding-bottom: 0; }
+/* rail: from 4px under this number to 4px above the next one (number = 28px) */
+.occ-step:not(:last-child)::before {
+  content: ""; position: absolute; left: 13px; top: 32px; bottom: 4px; width: 2px; border-radius: 1px;
+  background: color-mix(in srgb, var(--nv-white) 35%, transparent); transform-origin: top;
+}
+.occ-step__n {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid color-mix(in srgb, var(--nv-white) 65%, transparent); border-radius: 8px 8px 8px 0;
+  font: 700 14px/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--nv-white);
+}
+.occ-step__body { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+/* what you need is the main line (its first line centred on the number); the unit that has it sits under it as the
+   link: white on the red panel, with an arrow (or new-tab icon) after it */
+.occ-step__need { margin: 0; padding-top: 3px; font: 700 17px/1.3 var(--font-display); color: var(--nv-white); text-wrap: pretty; }
+.occ-step__link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 28px;
+  font: 600 15px/1.2 var(--font-primary); color: var(--nv-white);
+}
+.occ-step__link:hover { color: var(--nv-white); }
+.occ-step__link:hover .occ-step__name { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.occ-step__go { width: 16px; height: 16px; transition: transform var(--dur-fast) var(--ease-out); }
+.occ-step__link:hover .occ-step__go--in { transform: translateX(3px); }
+
+/* "Veliki izbor, domaći pristup.": the company's strengths as four white Novalis tabs on the grey panel (static in index.html).
+   The article count leads with its figure (red "+"); the three icon facts carry the open card's yellow icon tile. Every tab
+   repeats its pictogram large and faint, cropped into the bottom-right corner and tilted like the cart badge, so the lower
+   half of the card is drawn rather than left empty. On hover each tab answers the same way: the tile turns red (the
+   badge's other colourway; on the lead card the "+" turns a quarter, like the occasion cards' plus) and the corner
+   pictogram warms to yellow and lifts. Only Veleprodaja is a link.
+   From 700px the cards share row tracks (subgrid): figures, titles, texts and the link line up across a row. */
+.occ-why {
+  margin-top: clamp(40px, 5vw, 72px); padding-top: clamp(24px, 3vw, 40px);
+  border-top: 1px solid color-mix(in srgb, var(--nv-gray-850) 12%, transparent);
+}
+.occ-why__h {
+  margin: 0; font: 700 clamp(22px, 2vw, 28px)/1.15 var(--font-display); letter-spacing: -.015em; color: var(--nv-gray-850);
+  text-wrap: balance;
+}
+.occ-facts {
+  --fig: clamp(44px, 13vw, 60px); --gap: clamp(10px, 1.2vw, 16px);
+  list-style: none; margin: clamp(20px, 2.6vw, 36px) 0 0; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap);
+}
+.occ-fact {
+  --mark: 92px; --mark-c: var(--nv-gray-50);
+  position: relative; isolation: isolate; overflow: hidden; min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  padding: clamp(20px, 2.2vw, 32px); border-radius: var(--shape-tab); background: var(--nv-white);
+}
+.occ-fact__mark {
+  position: absolute; z-index: -1; right: calc(var(--mark) * -.1); bottom: calc(var(--mark) * -.12);
+  width: var(--mark); height: auto; color: var(--mark-c); rotate: -12deg; pointer-events: none;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.occ-fact__mark.ms { width: auto; font-size: calc(var(--mark) * 1.08); }
+.occ-fact__fig { display: flex; align-items: flex-start; margin-bottom: var(--space-5); }
+.occ-fact__num {
+  font: 800 var(--fig)/.8 var(--font-display); letter-spacing: -.04em; color: var(--nv-gray-850); white-space: nowrap;
+}
+.occ-fact__plus { display: inline-block; color: var(--nv-red); transition: transform var(--dur-base) var(--ease-out); }
+.occ-fact--lead { --mark: clamp(120px, 11vw, 168px); }
+.occ-fact__ico {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border-radius: 12px 12px 12px 0; background: var(--nv-yellow); color: var(--nv-red-dark);
+  transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.occ-fact__ico .ms { font-size: 26px; }
+.occ-fact__ico .picto { width: 24px; height: 24px; }
+.occ-fact__t { margin: 0; font: 700 clamp(16px, 1.4vw, 19px)/1.25 var(--font-display); color: var(--nv-gray-850); text-wrap: balance; }
+.occ-fact__d {
+  margin: 6px 0 0; font: 400 clamp(14px, 1.15vw, 16px)/1.5 var(--font-primary); color: var(--nv-gray-700); text-wrap: pretty;
+}
+/* Veleprodaja: the link covers the whole tab */
+.occ-fact__link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: var(--space-1);
+  font: 700 clamp(15px, 1.2vw, 16px)/1 var(--font-display); color: var(--nv-red);
+}
+.occ-fact__link::after { content: ""; position: absolute; inset: 0; border-radius: var(--shape-tab); }
+.occ-fact__link:focus-visible { outline: none; }
+.occ-fact__link:focus-visible::after { outline: 3px solid var(--nv-gray-850); outline-offset: -3px; }
+.occ-fact__link:hover { color: var(--nv-red-dark); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.occ-fact__link .occ-ico { width: 18px; height: 18px; transition: transform var(--dur-fast) var(--ease-out); }
+.occ-fact__link:hover .occ-ico, .occ-fact__link:focus-visible .occ-ico { transform: translateX(3px); }
+/* hover (mouse only, so a tap on a phone doesn't leave a tab lit) and keyboard focus on the link */
+.occ-fact--link:focus-within { --mark-c: color-mix(in srgb, var(--nv-yellow) 24%, var(--nv-white)); }
+.occ-fact--link:focus-within .occ-fact__ico { background: var(--nv-red); color: var(--nv-yellow); }
+@media (hover: hover) {
+  .occ-fact:hover { --mark-c: color-mix(in srgb, var(--nv-yellow) 24%, var(--nv-white)); }
+  .occ-fact:hover .occ-fact__ico { background: var(--nv-red); color: var(--nv-yellow); }
+  .occ-fact:hover .occ-fact__plus { transform: rotate(90deg); }
+}
+/* phones: the lead card on top, then the three as short rows (tile left, text right) */
+@media (max-width: 699.98px) {
+  .occ-fact:not(.occ-fact--lead) { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: var(--space-4); align-items: start; }
+  .occ-fact:not(.occ-fact--lead) .occ-fact__fig { grid-row: 1 / span 3; margin: 0; }
+  .occ-fact:not(.occ-fact--lead) > :not(.occ-fact__fig) { grid-column: 2; justify-self: start; }
+  .occ-fact:not(.occ-fact--lead) .occ-fact__t { margin-top: 2px; }
+}
+/* tablets: the lead card across the top, the three below it */
+@media (min-width: 700px) {
+  .occ-facts { --fig: min(6vw, 60px); grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 0; }
+  .occ-fact { --mark: clamp(100px, 8.4vw, 124px); grid-row: span 4; display: grid; grid-template-rows: subgrid; row-gap: 0; justify-items: start; }
+  .occ-fact--lead { --mark: clamp(120px, 11vw, 168px); grid-column: 1 / -1; margin-bottom: var(--gap); }
+  .occ-fact__t { align-self: end; } /* a one-line title sits on its text when a neighbour's title wraps */
+}
+/* desktop: one row, the article count wider than the three icon facts */
+@media (min-width: 1024px) {
+  .occ-facts { --fig: min(5.6vw, 84px); grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); }
+  .occ-fact--lead { grid-column: auto; margin-bottom: 0; }
+  .occ-fact__fig { margin-bottom: var(--space-6); }
+  .occ-fact__ico { width: 52px; height: 52px; border-radius: 14px 14px 14px 0; }
+  .occ-fact__ico .ms { font-size: 30px; }
+  .occ-fact__ico .picto { width: 28px; height: 28px; }
+}
+
+/* closing line + button under the carousel */
+.occasions__close {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-6);
+  margin-top: clamp(32px, 4vw, 56px); padding-top: clamp(24px, 3vw, 40px);
+  border-top: 1px solid color-mix(in srgb, var(--nv-gray-850) 12%, transparent);
+}
+.occasions__close p {
+  margin: 0; max-width: 46ch; font: 400 clamp(16px, 1.3vw, 18px)/1.5 var(--font-primary); color: var(--nv-gray-850);
+  text-wrap: balance;
+}
+.occasions__close .occ-ico { width: 20px; height: 20px; }
+
+/* swipe row (< 1024): every card open; the peek of the next card, the dots and the arrows say there is more */
+@media (max-width: 1023.98px) {
+  .occ-nav { width: 100%; }
+  .occ-track {
+    overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gut)); padding: 0 var(--gut); scroll-padding-inline: var(--gut);
+  }
+  .occ-track::-webkit-scrollbar { display: none; }
+  .occ-card { flex: 0 0 min(86%, 360px); scroll-snap-align: start; }
+  .occ-card__media { height: clamp(132px, 36vw, 176px); }
+  .occ-card__body {
+    flex: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; align-content: start;
+    column-gap: var(--space-3);
+  }
+  .occ-card__icon { width: 44px; height: 44px; border-radius: 12px 12px 12px 0; }
+  .occ-card__icon .occ-ico { width: 28px; height: 28px; }
+  .occ-card__more { grid-column: 1 / -1; }
+  .occ-card__desc { font-size: 15px; }
+  .occ-steps { margin-top: var(--space-4); padding-top: var(--space-2); }
+  .occ-step__need { padding-top: 4px; font-size: 16px; }
+}
+@media (min-width: 700px) and (max-width: 1023.98px) {
+  .occ-card { flex-basis: min(58%, 440px); }
+  .occ-card__media { height: 200px; }
+}
+
+/* desktop (>= 1024): photo cards in one row; the open one widens and turns into the red panel */
+@media (min-width: 1024px) {
+  .occ-dots { display: none; }
+  /* as tall as the screen allows under the sticky header (72px + border), with room around it, up to 600px; never
+     shorter than the tallest open card (Proslave, 5 units) needs at any desktop width, so switching cards never
+     moves the page */
+  .occ-track { min-height: clamp(560px, calc(100svh - 73px - 48px), 600px); }
+  .occ-card { flex: 1 1 0; background: var(--nv-gray-700); cursor: pointer; transition: flex-grow 750ms var(--occ-ease); }
+  .occ-card.is-active { flex-grow: 2.5; cursor: auto; }
+  /* the photo fills the card; a dark fade at the foot keeps the title readable on any photo */
+  .occ-card__media { position: absolute; inset: 0; z-index: -2; }
+  .occ-card__media::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(0deg, color-mix(in srgb, var(--nv-gray-850) 88%, transparent) 0%, transparent 60%);
+  }
+  .occ-card__media .slot { transition: transform 1.4s var(--occ-ease); }
+  .occ-card.is-active .occ-card__media .slot { transform: scale(1.1); }
+  /* red panel: wipes up over the photo when the card opens, and back down when it closes */
+  .occ-card::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; background: var(--grad-red);
+    clip-path: inset(100% 0 0 0); transition: clip-path 650ms var(--occ-ease);
+  }
+  .occ-card.is-active::before { clip-path: inset(0 0 0 0); }
+  /* "+" on a closed card: it can be opened */
+  .occ-card__plus {
+    position: absolute; top: 20px; right: 20px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid color-mix(in srgb, var(--nv-white) 60%, transparent); border-radius: 50%; color: var(--nv-white);
+    transition: opacity 300ms var(--ease-out), transform 500ms var(--occ-ease), background var(--dur-base), color var(--dur-base);
+  }
+  .occ-card__plus .occ-ico { width: 22px; height: 22px; }
+  .occ-card.is-active .occ-card__plus { opacity: 0; transform: rotate(90deg) scale(.6); }
+  /* title at the foot of the card; the open card's icon sits beside it (closed cards keep its column at 0 wide) */
+  .occ-card__body { flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: end; }
+  .occ-card__more { grid-column: 1 / -1; }
+  .occ-card__icon {
+    width: 0; overflow: clip; opacity: 0; transform: scale(.8);
+    transition: width 750ms var(--occ-ease), margin 750ms var(--occ-ease), opacity 200ms, transform 200ms;
+  }
+  .occ-card.is-active .occ-card__icon {
+    width: 52px; margin-right: var(--space-4); opacity: 1; transform: none;
+    transition: width 750ms var(--occ-ease), margin 750ms var(--occ-ease),
+      opacity 500ms var(--occ-ease) 250ms, transform 700ms var(--occ-ease) 250ms;
+  }
+  .occ-card__h { font-size: clamp(24px, 2.1vw, 30px); }
+  /* the text under the title opens with the card (0fr -> 1fr) and fades in once the card is nearly wide */
+  .occ-card__more { grid-template-rows: 0fr; transition: grid-template-rows 750ms var(--occ-ease); }
+  .occ-card.is-active .occ-card__more { grid-template-rows: 1fr; }
+  .occ-card__more-in { overflow: clip; opacity: 0; transition: opacity 150ms; }
+  .occ-card.is-active .occ-card__more-in { opacity: 1; transition: opacity 450ms var(--occ-ease) 200ms; }
+  /* then its lines rise in one after another and the rail draws itself down */
+  .occ-card.is-active .occ-card__desc,
+  .occ-card.is-active .occ-step { animation: occ-rise 700ms var(--occ-ease) both; }
+  .occ-card.is-active .occ-card__desc { animation-delay: 220ms; }
+  .occ-card.is-active .occ-step { animation-delay: calc(300ms + var(--k) * 70ms); }
+  .occ-card.is-active .occ-step:not(:last-child)::before {
+    animation: occ-draw 600ms var(--occ-ease) both; animation-delay: calc(420ms + var(--k) * 70ms);
+  }
+}
+@media (min-width: 1024px) and (hover: hover) {
+  .occ-card:not(.is-active):hover .occ-card__media .slot { transform: scale(1.06); }
+  .occ-card:not(.is-active):hover .occ-card__plus { background: var(--nv-white); color: var(--nv-gray-850); transform: rotate(90deg); }
+}
+
+/* entrance: the cards slide in from the right, one after another, the first time the section is in view */
+@media (prefers-reduced-motion: no-preference) {
+  .occ-anim .occ-card { opacity: 0; }
+  .occ-anim.is-in .occ-card { opacity: 1; animation: occ-enter 1100ms var(--occ-ease) both; animation-delay: calc(var(--i) * 110ms); }
+  .occ-anim:not(.is-in) .occ-card *,
+  .occ-anim:not(.is-in) .occ-card *::before { animation-play-state: paused; }
+  /* the facts row rises in on its own, when it reaches the screen (the count runs up in js/app.js) */
+  .occ-why--anim .occ-fact { opacity: 0; }
+  .occ-why--anim.is-in .occ-fact { opacity: 1; animation: occ-rise 900ms var(--occ-ease) both; animation-delay: calc(var(--j) * 100ms); }
+  /* its corner pictogram follows, sliding in from the corner and settling at its tilt ("backwards" so hover can move it after) */
+  .occ-why--anim.is-in .occ-fact__mark { animation: occ-mark 1300ms var(--occ-ease) backwards; animation-delay: calc(var(--j) * 100ms + 250ms); }
+  .occ-fact__mark { transition: color var(--dur-base) var(--ease-out), translate 500ms var(--ease-out), rotate 500ms var(--ease-out); }
+  .occ-fact--link:focus-within .occ-fact__mark { translate: -6% -6%; rotate: -4deg; }
+  @media (hover: hover) { .occ-fact:hover .occ-fact__mark { translate: -6% -6%; rotate: -4deg; } }
+}
+/* desktop photos drift slightly against the scroll (browsers with scroll-driven animations only) */
+@supports (animation-timeline: view()) {
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    .occ-card__media .slot { inset: -6% 0; animation: occ-drift linear both; animation-timeline: view(); }
+  }
+}
+@keyframes occ-enter { from { opacity: 0; transform: translateX(clamp(64px, 10vw, 160px)); } }
+@keyframes occ-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes occ-mark { from { opacity: 0; translate: 18% 18%; rotate: 4deg; } }
+@keyframes occ-draw { from { transform: scaleY(0); } }
+@keyframes occ-drift { from { translate: 0 -5%; } to { translate: 0 5%; } }
+@media (prefers-reduced-motion: reduce) {
+  .occasions *, .occasions *::before, .occasions *::after { animation: none !important; }
+}
+
+/* Windows high contrast: backgrounds are dropped, so give the cards an edge and keep photos out from under the text */
+@media (forced-colors: active) {
+  .occ-card, .occ-fact { border: 1px solid CanvasText; }
+  .occ-card.is-active .occ-card__media { visibility: hidden; }
+  .occ-fact__mark { display: none; }
+}
 
 /* ---------- Find us (map / list) ---------- */
 .find__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; margin-top: 32px; }
@@ -529,36 +808,9 @@ button { font: inherit; }
   color: var(--ink); text-wrap: pretty;
 }
 
-/* O nama page: shorter lead, stories band below */
+/* O nama page: shorter lead, the "Zašto Novalis" band below */
 .about--page { padding-top: clamp(56px, 6vw, 96px); }
 .about__text--lead p { max-width: 48ch; font: 400 18px/1.6 var(--font-primary); color: var(--muted); }
-
-/* ---------- Stories (O nama page) ---------- */
-.stories { margin: clamp(88px, 9vw, 144px) 0; background: #F5F5F5; }
-.stories__inner { max-width: 1408px; margin: 0 auto; padding: clamp(64px, 7vw, 112px) var(--gut); }
-.stories__h { max-width: 18ch; text-wrap: balance; }
-.story-tabs {
-  display: flex; gap: 28px; margin-top: 32px; border-bottom: 1px solid #DCDCDC;
-  overflow-x: auto; scrollbar-width: none;
-}
-.story-tabs::-webkit-scrollbar { display: none; }
-.story-tabs .tab { color: var(--muted); }   /* --label grey is under 4.5:1 on the grey band */
-.story-tabs .tab[aria-selected="true"], .story-tabs .tab:hover { color: var(--ink); }
-.story { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 80px); margin-top: 40px; align-items: start; }
-.story:focus-visible { outline-offset: 8px; }
-.story__media { position: relative; aspect-ratio: 4 / 3; border-radius: var(--shape-tab); overflow: hidden; }
-.story__media .slot { --bg: #E6E1DA; }
-.story__body { display: flex; flex-direction: column; gap: 16px; }
-.story__h { margin: 0; font: 700 clamp(26px, 2.4vw, 34px)/1.15 var(--font-display); letter-spacing: -.015em; color: var(--ink); }
-.story__desc { margin: 0; max-width: 52ch; font: 400 17px/1.6 var(--font-primary); color: var(--muted); text-wrap: pretty; }
-.steps { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid #DCDCDC; }
-.steps li { border-bottom: 1px solid #DCDCDC; }
-.step { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 12px 0; color: var(--ink); }
-.step:hover { color: var(--nv-red); }
-.step__n { width: 24px; flex: none; font: 700 14px/1 var(--font-display); color: var(--label); }
-.step__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.step__t { font: 700 17px/1.3 var(--font-primary); text-wrap: pretty; }
-.step__unit { font: 700 14px/1.2 var(--font-display); color: var(--nv-red); }
 
 /* ---------- Inquiry ---------- */
 .inquiry { padding-bottom: clamp(88px, 9vw, 144px); }
@@ -645,8 +897,6 @@ button.footer__link { cursor: pointer; }
 /* tablet+ (≥ 700) */
 @media (min-width: 700px) {
   .quickbar { display: none; }
-  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bento__a, .bento__b { grid-column: span 2; }
   .map { height: 460px; }
   .map-card { left: auto; right: auto; bottom: auto; width: 296px; top: clamp(16px, calc(var(--y) * 1% - 130px), calc(100% - 340px)); }
   .map-card--l { left: calc(var(--x) * 1% + 30px); }
@@ -659,8 +909,10 @@ button.footer__link { cursor: pointer; }
 
 /* two columns (≥ 900) */
 @media (min-width: 900px) {
-  .hero__grid, .about__grid, .inquiry__grid, .story { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .hero__media { display: block; }
+  .hero__grid, .about__grid, .inquiry__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* less air above the hero, and the photo panel never taller than the screen below the header, so copy and CTAs sit high */
+  .hero__inner { --hero-top: clamp(32px, 3vw, 48px); padding-top: var(--hero-top); }
+  .hero__media { display: block; width: 100%; max-height: calc(100svh - 73px - 2 * var(--hero-top)); }
   .hero__bg { --hero-wash: linear-gradient(90deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.45) 40%, rgba(255,255,255,.05) 72%, rgba(255,255,255,0) 100%); }
   .hero__bg img { object-position: 50% 45%; }
 }
@@ -673,12 +925,10 @@ button.footer__link { cursor: pointer; }
   .footer__cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
 }
 
-/* desktop nav + 4-col bento (≥ 1080) */
+/* desktop nav (≥ 1080) */
 @media (min-width: 1080px) {
   .mainnav { display: flex; }
   .menu-btn, .mobile-menu { display: none !important; }
-  .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .bento__a { grid-row: span 2; min-height: 576px; }
 }
 /* compact desktop row (1080-1199): the four category menus and three links fit one row with 16px+ to spare */
 @media (min-width: 1080px) and (max-width: 1199.98px) {

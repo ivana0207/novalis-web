@@ -178,7 +178,7 @@
           '<span class="rel__kicker">' + esc(NV.catLabel[r.category] + ' · ' + r.address.split(',')[0]) + '</span>' +
           '<span class="rel__name" translate="no">' + esc(r.name) + '</span>' +
           '<span class="rel__desc">' + esc(r.desc) + '</span>' +
-          '<span class="rel__more">' + (r.external ? esc(new URL(r.url).hostname.replace(/^www\./, '')) + ico('open_in_new', 'xs') + NEW_TAB : 'Otvori poslovnicu' + ico('arrow_forward', 'xs')) + '</span>' +
+          '<span class="rel__more">' + (r.external ? esc(new URL(r.url).hostname.replace(/^www\./, '')) + ico('arrow_forward', 'xs') + NEW_TAB : 'Otvori poslovnicu' + ico('arrow_forward', 'xs')) + '</span>' +
         '</a></li>';
       }).join('') + '</ul></section>';
   }

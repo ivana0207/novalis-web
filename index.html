@@ -22,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,700&family=Outfit:wght@300;400;600;700;800&family=Dancing+Script:wght@400;600&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=block">
-  <link rel="stylesheet" href="css/ds.css?v=20261012-8">
-  <link rel="stylesheet" href="css/styles.css?v=20261012-8">
+  <link rel="stylesheet" href="css/ds.css?v=20261013-18">
+  <link rel="stylesheet" href="css/styles.css?v=20261013-18">
 </head>
 <body>
 <div class="page" id="top">
@@ -32,7 +32,7 @@
   <!-- ============ HEADER ============ -->
   <header class="site-header">
     <div class="bar">
-      <a href="#top" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-color="yellow" data-logo-h="22"></a>
+      <a href="#top" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
 
       <nav class="mainnav" aria-label="Glavna navigacija">
         <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
@@ -110,55 +110,58 @@
     </div>
   </section>
 
-  <!-- ============ ZAŠTO NOVALIS ============ -->
-  <section id="zasto" class="section why" aria-labelledby="h-zasto">
-    <div class="head">
-      <span class="eyebrow">Zašto Novalis</span>
-      <h2 id="h-zasto" class="why__h">Veliki izbor, domaći pristup.</h2>
-    </div>
-    <div class="bento">
-      <div class="bento__tile bento__a">
-        <div class="slot" data-placeholder="Foto: police Hiper Novalisa, široki kadar" style="--bg:#2B2521"></div>
-        <div class="bento__scrim" aria-hidden="true"></div>
-        <div class="bento__a-copy">
-          <div class="bento__top"><span>Asortiman</span><span>01</span></div>
-          <span class="bento__big bento__big--yellow">100.000+</span>
-          <div class="bento__text">
-            <h3 class="bento__h">Najveći izbor artikala</h3>
-            <p>Preko 100.000 artikala u ponudi - od svježeg kruha do alata.</p>
-          </div>
+  <!-- ============ NOVALIS ZA SVAKU PRILIKU ============ -->
+  <section id="prilike" class="occasions" aria-labelledby="h-prilike">
+    <div class="occasions__inner">
+      <div class="occasions__top">
+        <div class="head occasions__head">
+          <span class="eyebrow">Zašto Novalis</span>
+          <h2 id="h-prilike" class="h2">Novalis za svaku priliku</h2>
+          <p class="occasions__intro">Naše poslovne jedinice u Novalji najbolje funkcioniraju zajedno. Odaberite što planirate i pogledajte kako vam možemo pomoći od početka do kraja.</p>
+        </div>
+        <!-- carousel controls: shown by js/occasions.js once the cards are there -->
+        <div class="occ-nav" id="occNav" hidden>
+          <div class="occ-dots" id="occDots" aria-hidden="true"></div>
+          <button type="button" class="occ-arrow" id="occPrev" aria-controls="occasions" aria-label="Prethodna prilika"><svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
+          <button type="button" class="occ-arrow occ-arrow--next" id="occNext" aria-controls="occasions" aria-label="Sljedeća prilika"><svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
         </div>
       </div>
-      <div class="bento__tile bento__b">
-        <span class="bento__glow" aria-hidden="true"></span>
-        <span class="bento__ghost ms" aria-hidden="true">local_shipping</span>
-        <div class="bento__top"><span>Dostava</span><span>02</span></div>
-        <div class="bento__text">
-          <span class="bento__big">24 h</span>
-          <h3 class="bento__h">Isporuka do vaših vrata</h3>
-          <p>Dostava unutar 24 sata ili po dogovoru.</p>
-        </div>
+      <div class="occ-track" id="occasions"><!-- rendered by js/occasions.js --></div>
+      <p class="vh" id="occLive" aria-live="polite"></p>
+      <!-- what every occasion has in common: four facts on white Novalis tabs -->
+      <div class="occ-why" id="occWhy">
+        <h3 class="occ-why__h">Veliki izbor, domaći pristup.</h3>
+        <ul class="occ-facts" role="list">
+          <li class="occ-fact occ-fact--lead" style="--j:0">
+            <span class="occ-fact__fig occ-fact__num" aria-hidden="true"><span data-count="100000">100.000</span><span class="occ-fact__plus">+</span></span>
+            <p class="occ-fact__t">Najveći izbor artikala</p>
+            <p class="occ-fact__d">Preko 100.000 artikala u ponudi - od svježeg kruha do alata.</p>
+            <svg class="occ-fact__mark" viewBox="4 13 92 82" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6 20a5 5 0 0 1 5-5h8a6 6 0 0 1 6 5l1 5h60a5 5 0 0 1 5 6l-5 26a7 7 0 0 1-7 6H34l1 5h45a5 5 0 0 1 0 10H31a6 6 0 0 1-6-5L15 25h-4a5 5 0 0 1-5-5zM29 86a7 7 0 1 0 14 0a7 7 0 1 0-14 0zM67 86a7 7 0 1 0 14 0a7 7 0 1 0-14 0z"/></svg>
+          </li>
+          <li class="occ-fact" style="--j:1">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><span class="ms" aria-hidden="true">local_shipping</span></span></span>
+            <p class="occ-fact__t">Isporuka do vaših vrata</p>
+            <p class="occ-fact__d">Dostava po dogovoru.</p>
+            <span class="occ-fact__mark ms" aria-hidden="true">local_shipping</span>
+          </li>
+          <li class="occ-fact" style="--j:2">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><span class="ms" aria-hidden="true">directions_boat</span></span></span>
+            <p class="occ-fact__t">Vlastiti uvoz</p>
+            <p class="occ-fact__d">Asortiman direktno iz Italije.</p>
+            <span class="occ-fact__mark ms" aria-hidden="true">directions_boat</span>
+          </li>
+          <li class="occ-fact occ-fact--link" style="--j:3">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><svg class="picto" viewBox="6 14 88 80" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M8 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2zM23 56h10v10H23zM52 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H54a2 2 0 0 1-2-2zM67 56h10v10H67zM30 18a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2zM45 16h10v10H45z"/></svg></span></span>
+            <p class="occ-fact__t">Veleprodaja</p>
+            <p class="occ-fact__d">Dodatne pogodnosti za partnere.</p>
+            <a class="occ-fact__link" href="veleprodaja/">Postanite partner<svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+            <svg class="occ-fact__mark" viewBox="6 14 88 80" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M8 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2zM23 56h10v10H23zM52 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H54a2 2 0 0 1-2-2zM67 56h10v10H67zM30 18a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2zM45 16h10v10H45z"/></svg>
+          </li>
+        </ul>
       </div>
-      <div class="bento__tile bento__c">
-        <div class="bento__top"><span>Uvoz</span><span>03</span></div>
-        <div class="bento__text">
-          <span class="stamp" style="--bg:var(--nv-red);--fg:var(--nv-yellow);--sh:var(--nv-red-dark)"><span class="ms" aria-hidden="true">directions_boat</span></span>
-          <div class="bento__copy">
-            <h3 class="bento__h bento__h--sm">Vlastiti uvoz</h3>
-            <p>Asortiman direktno iz Italije.</p>
-          </div>
-        </div>
-      </div>
-      <div class="bento__tile bento__d">
-        <div class="bento__top"><span>Partneri</span><span>04</span></div>
-        <div class="bento__text">
-          <span class="stamp" style="--bg:#fff;--fg:#2E3840;--sh:var(--nv-slate)"><span class="ms" aria-hidden="true">handshake</span></span>
-          <div class="bento__copy">
-            <h3 class="bento__h bento__h--sm">Veleprodaja</h3>
-            <p>Dodatne pogodnosti za partnere.</p>
-          </div>
-          <a href="#veleprodaja" class="bento__link">Postanite partner<span class="ms ms--xs" aria-hidden="true">arrow_forward</span></a>
-        </div>
+      <div class="occasions__close">
+        <p>Kontakte svih poslovnih jedinica pronađite na jednom mjestu.</p>
+        <a class="btn btn--primary btn--lg" id="allContacts" href="#lokacije">Svi kontakti<svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v15M6 13l6 6 6-6"/></svg></a>
       </div>
     </div>
   </section>
@@ -182,23 +185,6 @@
       <div id="mapCard"></div>
     </div>
     <ul class="loc-list" id="locList" hidden></ul>
-  </section>
-
-  <!-- ============ O NAMA ============ -->
-  <section id="o-nama" class="section about" aria-labelledby="h-onama">
-    <div class="head">
-      <span class="eyebrow">O nama</span>
-      <h2 id="h-onama" class="h2"><span data-years>36</span> godina uz Novalju</h2>
-    </div>
-    <div class="about__grid">
-      <div class="about__media"><div class="slot" data-placeholder="Foto: obitelj ispred prve trgovine u centru Novalje (arhiva, 1990.)" style="--bg:#E9E2D8"></div></div>
-      <div class="about__text">
-        <p>Novalis d.o.o. poznat je po kvaliteti i pouzdanosti. Sve je počelo 1990. malom trgovinom u centru Novalje - danas smo obiteljska tvrtka i pouzdan partner za cijeli otok, cijele godine.</p>
-        <p>Iz jedne trgovine izrasli smo u mrežu prodavaonica, shopping centar Hiper Novalis i prvu privatnu robnu kuću u Novalji. Uz vlastiti uvoz iz Italije nudimo namirnice, tehniku, alate, tekstil i nautičku opremu - sve na jednom mjestu.</p>
-        <p>Vodimo se vrijednostima koje nas prate od prvog dana: uživanje, strast i povjerenje. Zato smo tu za mještane zimi jednako kao i za goste ljeti.</p>
-        <a href="o-nama/" class="link-arrow">Saznajte više<span class="ms ms--xs" aria-hidden="true">arrow_forward</span></a>
-      </div>
-    </div>
   </section>
 
   <!-- ============ UPIT ============ -->
@@ -274,9 +260,10 @@
   </nav>
 </div>
 
-<script src="js/brand-paths.js?v=20261012-8"></script>
-<script src="data/units.js?v=20261012-8"></script>
-<script src="js/site.js?v=20261012-8"></script>
-<script src="js/app.js?v=20261012-8"></script>
+<script src="js/brand-paths.js?v=20261013-18"></script>
+<script src="data/units.js?v=20261013-18"></script>
+<script src="js/site.js?v=20261013-18"></script>
+<script src="js/occasions.js?v=20261013-18"></script>
+<script src="js/app.js?v=20261013-18"></script>
 </body>
 </html>

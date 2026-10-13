@@ -1,0 +1,3 @@
+# Keep Claude Code workflow files out of the deployed site
+.claude
+.jira-work
