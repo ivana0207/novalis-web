@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>O nama - obiteljska tvrtka iz Novalje od 1990. | Novalis</title>
-  <meta name="description" content="Novalis d.o.o. - obiteljska tvrtka iz Novalje od 1990. Kako trgovine, gradnja, gastro i smještaj Novalisa zajedno rješavaju stvarne životne potrebe.">
+  <title>O nama - obiteljska tvrtka koja raste s Novaljom | Novalis</title>
+  <meta name="description" content="Obiteljska tvrtka iz Novalje, osnovana 1990. Počeli smo trgovinom u središtu grada, a danas povezujemo trgovinu, gradnju, ugostiteljstvo, smještaj i veleprodaju.">
   <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
   <link rel="canonical" href="https://novalis-web.vercel.app/o-nama/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Novalis">
   <meta property="og:locale" content="hr_HR">
   <meta property="og:url" content="https://novalis-web.vercel.app/o-nama/">
-  <meta property="og:title" content="O nama - obiteljska tvrtka iz Novalje od 1990. | Novalis">
-  <meta property="og:description" content="Novalis d.o.o. - obiteljska tvrtka iz Novalje od 1990. Kako trgovine, gradnja, gastro i smještaj Novalisa zajedno rješavaju stvarne životne potrebe.">
+  <meta property="og:title" content="O nama - obiteljska tvrtka koja raste s Novaljom | Novalis">
+  <meta property="og:description" content="Obiteljska tvrtka iz Novalje, osnovana 1990. Počeli smo trgovinom u središtu grada, a danas povezujemo trgovinu, gradnju, ugostiteljstvo, smještaj i veleprodaju.">
   <meta property="og:image" content="https://novalis-web.vercel.app/assets/img/poslovnice/market-novalis.jpg">
-  <meta property="og:image:alt" content="Zgrada robne kuće Novalis s lučnim prozorima u centru Novalje">
+  <meta property="og:image:alt" content="Zgrada robne kuće Novalis s lučnim prozorima u središtu Novalje">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#D6191F">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
@@ -22,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,700&family=Outfit:wght@300;400;600;700;800&family=Dancing+Script:wght@400;600&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=block">
-  <link rel="stylesheet" href="../css/ds.css?v=20261013-19">
-  <link rel="stylesheet" href="../css/styles.css?v=20261013-19">
+  <link rel="stylesheet" href="../css/ds.css?v=20261014-4">
+  <link rel="stylesheet" href="../css/styles.css?v=20261014-4">
 </head>
 <body data-root="../" data-home="../">
 <div class="page" id="top">
@@ -63,17 +63,69 @@
   </header>
 
   <main id="main">
-    <!-- ============ O NAMA ============ -->
-    <section id="o-nama" class="section about about--page" aria-labelledby="h-onama">
-      <div class="head">
-        <span class="eyebrow">O nama</span>
-        <h1 id="h-onama" class="h2"><span data-years>36</span> godina uz Novalju</h1>
+    <!-- ============ PRIČA (three story sections; on desktop the [data-reveal] groups appear as they scroll in, js/o-nama.js) ============ -->
+    <!-- Photo placeholders: each .story-ph is a brief for the photographer (subject + format). To add the photo, replace the
+         .story-ph div with <img src alt width height> (loading="lazy" below the fold), write a real alt text and drop
+         aria-hidden from .story-photo. Each slot keeps one aspect ratio at every width (css --ar), so shoot with room to crop. -->
+    <!-- 1 · Obiteljski počeci -->
+    <section id="o-nama" class="story origin" aria-labelledby="h-onama">
+      <div class="story__inner story__grid origin__grid">
+        <hgroup class="origin__head">
+          <p class="eyebrow">O nama</p>
+          <!-- data-years: years since D.company.founded (1990), set by js/site.js; 36 in 2026 -->
+          <h1 id="h-onama" class="origin__h1"><span class="origin__line"><span data-years>36</span> godina</span> <span class="origin__line">uz Novalju</span></h1>
+          <p class="origin__sub">Obiteljska priča koja raste s otokom.</p>
+        </hgroup>
+        <div class="origin__media">
+          <div class="story-photo" aria-hidden="true"><div class="slot" data-placeholder="Foto: Robna kuća Novalis u središtu Novalje"><div class="story-ph"><span class="story-ph__fmt"><span class="ms">photo_camera</span>uspravno 4:5</span><span class="story-ph__brief">Robna kuća Novalis u središtu Novalje: pročelje i ulica u jutarnjem svjetlu, s prolaznicima. Može i obitelj vlasnika ispred ulaza.</span></div></div></div>
+        </div>
+        <div class="origin__text">
+          <p>Novalis je počeo kao malo obiteljsko poduzeće u središtu Novalje, s trgovinom kao temeljem poslovanja. Kako su se mijenjale potrebe ljudi koji ovdje žive, rade i dolaze na odmor, tako se razvijala i naša priča.</p>
+          <p>Širili smo ponudu, otvarali nove prostore i razvijali nove djelatnosti. Iz malog trgovačkog prostora postupno je izrasla tvrtka koja danas povezuje trgovinu, gradnju i uređenje, ugostiteljstvo, smještaj i veleprodaju. Obiteljski karakter i povezanost s otokom Pagom ostali su temelj našeg poslovanja.</p>
+        </div>
       </div>
-      <div class="about__grid">
-        <div class="about__media"><div class="slot" data-placeholder="Foto: obitelj ispred prve trgovine u centru Novalje (arhiva, 1990.)" style="--bg:#E9E2D8"></div></div>
-        <div class="about__text about__text--lead">
-          <p>Novalis d.o.o. poznat je po kvaliteti i pouzdanosti. Sve je počelo 1990. malom trgovinom u centru Novalje - danas smo obiteljska tvrtka i pouzdan partner za cijeli otok, cijele godine.</p>
-          <p>Kako su rasle potrebe otoka, na zaobilaznici oko Novalje otvorili smo shopping centar <span translate="no">Hiper Novalis</span>, s velikim parkingom podalje od ljetnih gužvi u gradu. Godine 2011. u samom centru Novalje otvorili smo <span translate="no">Valis</span>, a 2019. <span translate="no">Hiper Bau</span> na 15.000 m² i bistro <span translate="no">Pod Zvon</span>.</p>
+    </section>
+
+    <!-- 2 · Rasli smo s otokom: two columns throughout (left 1-8, right 9-12): heading | standfirst · large photo | small photo
+         of the same height · the businesses | what connects them -->
+    <section class="story island" aria-labelledby="h-otok">
+      <div class="story__inner story__grid island__grid">
+        <div class="island__head" data-reveal>
+          <p class="eyebrow">Dio života na otoku</p>
+          <h2 id="h-otok" class="story__h">Rasli smo osluškujući potrebe otoka</h2>
+        </div>
+        <p class="island__lead" data-reveal>Svakodnevna kupovina, uređenje doma, priprema turističke sezone ili vođenje poslovanja - život na otoku traži dostupnu ponudu i partnera na kojeg se možete osloniti.</p>
+        <div class="island__main" data-reveal="photo">
+          <div class="story-photo" aria-hidden="true"><div class="slot" data-placeholder="Foto: Hiper Novalis ili Hiper Bau iznutra"><div class="story-ph"><span class="story-ph__fmt"><span class="ms">photo_camera</span>položeno 3:2</span><span class="story-ph__brief">Hiper Novalis ili Hiper Bau iznutra: široki kadar prodajnog prostora s kupcima i djelatnicima na poslu.</span></div></div></div>
+        </div>
+        <div class="island__side" data-reveal="photo">
+          <div class="story-photo" aria-hidden="true"><div class="slot" data-placeholder="Foto: Valis ili Pod Zvon, detalj usluge"><div class="story-ph"><span class="story-ph__fmt"><span class="ms">photo_camera</span>uspravno 3:4</span><span class="story-ph__brief">Valis ili Pod Zvon: detalj usluge, npr. kava na terasi, kolači u vitrini ili jelo s kaminskog ložišta.</span></div></div></div>
+        </div>
+        <div class="island__foot">
+          <p class="island__body" data-reveal><a href="../hiper-novalis/" translate="no">Hiper Novalis</a> i <a href="../market-novalis/" translate="no">Market Novalis</a> odgovaraju na potrebe svakodnevne kupovine, dok <a href="../hiper-bau/" translate="no">Hiper Bau</a> donosi ponudu za gradnju i uređenje. <a href="../valis/" translate="no">Valis</a> okuplja bistro, slastičarnu i kavanu, a <a href="../pod-zvon/" translate="no">Pod Zvon</a> njeguje tradicionalnu dalmatinsku pripremu hrane. <a href="https://hotelnovalis.hr" target="_blank" rel="noopener"><span translate="no">Bed &amp; Breakfast Novalis</span><span class="vh"> (nova kartica)</span></a> gostima pruža ugodan boravak u središtu grada, dok kroz veleprodaju i dostavu podržavamo poslovne korisnike.</p>
+          <div class="island__close" data-reveal>
+            <p class="island__label">Što nas povezuje</p>
+            <p class="island__sum">Različite djelatnosti povezuje isti pristup: razumjeti što ljudima treba i razvijati ponudu koja im olakšava život i poslovanje na otoku.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · Naša misija: an inset slate panel (same shape as the "Zašto Novalis" band). The statement is proposed wording,
+         not a quotation, so no quote marks or attribution. -->
+    <section class="story mission" aria-labelledby="h-misija">
+      <div class="story__inner story__grid mission__grid">
+        <div class="mission__head" data-reveal>
+          <p class="eyebrow">Naša misija</p>
+          <h2 id="h-misija" class="mission__h">Više mogućnosti za život na otoku.</h2>
+        </div>
+        <p class="mission__statement" data-reveal>Naša je misija stanovnicima, gostima i poslovnim partnerima olakšati svakodnevicu na otoku kroz dostupnu ponudu, kvalitetnu uslugu i odnos koji se temelji na povjerenju.</p>
+        <div class="mission__media" data-reveal="photo">
+          <div class="story-photo" aria-hidden="true"><div class="slot" data-placeholder="Foto: život na otoku"><div class="story-ph"><span class="story-ph__fmt"><span class="ms">photo_camera</span>položeno 4:3</span><span class="story-ph__brief">Život na otoku: Novalja s mora ili iz zraka, ili Novalisova dostava na otočkoj cesti.</span></div></div></div>
+        </div>
+        <div class="mission__text" data-reveal>
+          <p>Želimo da što više svojih potreba možete ostvariti ovdje - od kupovine i uređenja prostora do ugostiteljstva, smještaja i opskrbe poslovanja.</p>
+          <p>Zato nastavljamo ulagati u ponudu i uslugu, osluškivati kupce i partnerima pristupati individualno. Obiteljski karakter tvrtke i povezanost s Novaljom ostaju temelj načina na koji radimo.</p>
         </div>
       </div>
     </section>
@@ -181,9 +233,10 @@
   </nav>
 </div>
 
-<script src="../js/brand-paths.js?v=20261013-19"></script>
-<script src="../data/units.js?v=20261013-19"></script>
-<script src="../js/site.js?v=20261013-19"></script>
-<script src="../js/occasions.js?v=20261013-19"></script>
+<script src="../js/brand-paths.js?v=20261014-4"></script>
+<script src="../data/units.js?v=20261014-4"></script>
+<script src="../js/site.js?v=20261014-4"></script>
+<script src="../js/occasions.js?v=20261014-4"></script>
+<script src="../js/o-nama.js?v=20261014-4"></script>
 </body>
 </html>

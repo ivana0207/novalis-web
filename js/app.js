@@ -25,11 +25,12 @@
       units: NV.units.map(function (u, i) {
         var st = unitStatus(u, season, z);
         return {
-          id: u.id, n: i + 1, nPad: (i < 9 ? '0' : '') + (i + 1), name: u.name, desc: u.desc, address: u.address,
-          category: u.category, categoryLabel: NV.catLabel[u.category],
+          id: u.id, n: i + 1, nPad: (i < 9 ? '0' : '') + (i + 1), name: u.name, address: u.address, category: u.category,
           photo: NV.asset(u.photo), photoHint: u.photoHint, promo: !!u.promo,
-          open: st.open, statusText: st.text, label: st.label, today: st.today, hasToday: st.hasToday,
-          callHref: NV.telHref(u), callLabel: NV.telLabel(u),
+          open: st.open, label: st.label, today: st.today, hasToday: st.hasToday,
+          // card: today's hours with open/closed ("Otvoreno · Danas 07:00 - 19:00"), else the status ("Zatvoreno · otvara sutra u 07:00")
+          hoursLine: st.open && st.hasToday ? 'Otvoreno · ' + st.today : st.text,
+          callHref: NV.telHref(u),
           moreHref: NV.unitHref(u), external: !!u.external,
           mapsHref: NV.mapsHref(u),
           x: u.pin.x, y: u.pin.y
@@ -53,31 +54,71 @@
     $('#openOnly').setAttribute('aria-pressed', state.openOnly);
   }
 
-  function cardHTML(u) {
-    var moreAria = u.external ? 'Više: ' + u.name + ', web stranica (nova kartica)' : 'Više o poslovnici ' + u.name;
-    return '<article class="card" id="' + u.id + '">' +
-      '<div class="card__media">' + NV.slotHTML(u.photo, u.photoHint, u.name) +
+  // One link per card: the name, stretched over the whole card (.card__link::after), so a click anywhere opens the unit.
+  // The photo is decorative (the name follows it). The ghost copy of the name keeps its line free in the hover panel;
+  // Više is only a visual cue. --i staggers the entrance.
+  function cardHTML(u, i) {
+    return '<article class="card" id="' + u.id + '" style="--i:' + Math.min(i, 8) + '">' +
+      '<div class="card__media">' + NV.slotHTML(u.photo, u.photoHint, '') +
         (u.promo ? '<span class="card__promo">Akcija</span>' : '') + '</div>' +
-      '<div class="card__body">' +
-        '<span class="card__cat">' + esc(u.categoryLabel) + '</span>' +
-        '<h3 class="card__name" translate="no">' + esc(u.name) + '</h3>' +
-        '<p class="card__desc">' + esc(u.desc) + '</p>' +
-        statusHTML('card__status', u.open, u.statusText) +
-      '</div>' +
-      '<div class="card__foot">' +
-        '<a class="card__call" href="' + esc(u.callHref) + '"><span class="ms ms--xs" aria-hidden="true">call</span>' + esc(u.callLabel) + '</a>' +
-        '<a class="card__more" href="' + esc(u.moreHref) + '"' + (u.external ? ' target="_blank" rel="noopener"' : '') +
-          ' aria-label="' + esc(moreAria) + '">Više<span class="ms ms--xs" aria-hidden="true">arrow_forward</span></a>' +
-      '</div>' +
+      '<div class="card__head"><h3 class="card__name"><a class="card__link" href="' + esc(u.moreHref) + '"' +
+        (u.external ? ' target="_blank" rel="noopener"' : '') + '><span class="card__nm" translate="no">' + esc(u.name) + '</span>' +
+        (u.external ? NV.NEW_TAB : '') + '</a></h3></div>' +
+      '<div class="card__info"><span class="card__ghost" aria-hidden="true" translate="no">' + esc(u.name) + '</span>' +
+        '<div class="card__meta"><p class="card__addr">' + esc(u.address) + '</p>' +
+          '<p class="card__hours status' + (u.open ? ' is-open' : '') + '"><span class="dot"></span><span>' + esc(u.hoursLine) + '</span></p></div>' +
+        '<span class="card__more" aria-hidden="true">Više<span class="ms ms--xs">arrow_forward</span></span></div>' +
     '</article>';
   }
 
-  function renderCards() {
+  // swap: a filter changed the selection. That ends the entrance and fades the new cards in (none with reduced motion).
+  // The minute refresh replaces the cards only when a status text changed, without motion; if that happens while the
+  // entrance runs, the entrance ends there, so it never replays.
+  var cardsShown = null;
+  function renderCards(swap) {
     var visible = units.filter(function (u) {
       return (state.cat === 'all' || u.category === state.cat) && (!state.openOnly || u.open);
     });
-    setHTML($('#cards'), visible.map(cardHTML).join(''));
+    var grid = $('#cards'), html = visible.map(cardHTML).join(''), changed = html !== cardsShown;
+    if (swap || (changed && unitsSec.classList.contains('is-in'))) endEntrance();
+    if (swap && changed && !NV.reduceMotion) {
+      grid.classList.add('cards--swap');
+      clearTimeout(grid._swap);
+      grid._swap = setTimeout(function () { grid.classList.remove('cards--swap'); }, 260);
+    }
+    // new markup replaces the focused link: give focus back to the same card, so keyboard users keep their place
+    var focused = changed && grid.contains(document.activeElement) && document.activeElement.closest('.card');
+    setHTML(grid, html);
+    cardsShown = html;
+    var again = focused && document.getElementById(focused.id);
+    if (again) again.querySelector('.card__link').focus({ preventScroll: true });
     $('#noResults').hidden = visible.length > 0;
+  }
+
+  /* ---------------- Card entrance ---------------- */
+  // The cards rise in one after another the first time the grid comes into view (css .units--anim). The classes come
+  // off again once it has run, or as soon as the cards change, so re-renders never replay it and no card stays hidden.
+  // Without IntersectionObserver, or with reduced motion, it never starts.
+  var unitsSec = $('#poslovnice'), unitsIO = null, unitsT = 0;
+
+  function endEntrance() {
+    clearTimeout(unitsT);
+    if (unitsIO) { unitsIO.disconnect(); unitsIO = null; }
+    unitsSec.classList.remove('units--anim', 'is-in');
+  }
+
+  function initEntrance() {
+    if (NV.reduceMotion || !('IntersectionObserver' in window)) return;
+    unitsIO = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      unitsIO.disconnect(); unitsIO = null;
+      unitsSec.classList.add('is-in');
+      unitsT = setTimeout(endEntrance, 1300); // the 7th card lands at 1180 ms
+    }, { rootMargin: '0px 0px -15% 0px' });
+    unitsSec.classList.add('units--anim');
+    unitsIO.observe($('#cards'));
+    // Tab can bring a card link to the screen's very edge before the grid counts as in view: show the cards at once
+    $('#cards').addEventListener('focusin', function () { if (unitsIO) endEntrance(); });
   }
 
   /* ---------------- Map + list ---------------- */
@@ -191,15 +232,15 @@
       var tab = e.target.closest('[data-cat]');
       if (!tab) return;
       setCat(tab.dataset.cat);
-      renderFilters(); renderCards();
+      renderFilters(); renderCards(true);
     });
     $('#openOnly').addEventListener('click', function () {
       state.openOnly = !state.openOnly;
-      renderFilters(); renderCards();
+      renderFilters(); renderCards(true);
     });
     $('#resetFilters').addEventListener('click', function () {
       setCat('all'); state.openOnly = false;
-      renderFilters(); renderCards();
+      renderFilters(); renderCards(true);
     });
     // links to a unit card that is currently filtered out: clear filters first
     document.addEventListener('click', function (e) {
@@ -209,6 +250,7 @@
       if (unitById(id) && !document.getElementById(id)) {
         e.preventDefault();
         setCat('all'); state.openOnly = false;
+        endEntrance(); // the page scrolls straight to the card: show it at once
         renderFilters(); renderCards();
         document.getElementById(id).scrollIntoView({ behavior: NV.reduceMotion ? 'auto' : 'smooth' });
         history.replaceState(null, '', '#' + id);
@@ -277,6 +319,7 @@
   bind();
   // O nama's "Svi kontakti" lands here as ?prikaz=popis#lokacije: open the list, where every unit's contacts are
   if (params.get('prikaz') === 'popis') setView('list');
+  initEntrance();
 
   // keep open/closed status live
   setInterval(render, 60000);
