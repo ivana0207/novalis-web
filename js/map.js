@@ -19,7 +19,8 @@ window.NV.map = (function () {
     creditLink('https://www.openmaptiles.org/', '&copy; OpenMapTiles') + ' Podaci: ' +
     creditLink('https://www.openstreetmap.org/copyright', '&copy; OpenStreetMap suradnici');
 
-  // Croatian labels for MapLibre's buttons, the map itself and the two-finger hint
+  // Croatian labels for MapLibre's buttons, the map itself and the two-finger hint (touch screens only; css/styles.css
+  // hides the desktop one)
   var LOCALE = {
     'Map.Title': 'Karta',
     'NavigationControl.ZoomIn': 'Povećaj',
@@ -27,8 +28,6 @@ window.NV.map = (function () {
     'GeolocateControl.FindMyLocation': 'Prikaži moju lokaciju',
     'GeolocateControl.LocationNotAvailable': 'Lokacija nije dostupna',
     'AttributionControl.ToggleAttribution': 'Prikaži ili sakrij izvore karte',
-    'CooperativeGesturesHandler.WindowsHelpText': 'Za zumiranje držite Ctrl i pomičite kotačić miša',
-    'CooperativeGesturesHandler.MacHelpText': 'Za zumiranje držite ⌘ i pomičite kotačić miša',
     'CooperativeGesturesHandler.MobileHelpText': 'Kartu pomičite s dva prsta'
   };
 

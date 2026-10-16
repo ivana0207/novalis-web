@@ -933,6 +933,11 @@ a.pin--store:hover { transform: scale(1.1); }
 .maplibregl-ctrl-attrib { font: 400 12px/1.5 var(--font-primary); }
 .maplibregl-ctrl-attrib a { color: var(--ink); }
 .maplibregl-cooperative-gesture-screen { font: 600 18px/1.4 var(--font-primary); }
+/* mouse or trackpad: no "hold ⌘ and scroll" overlay. The wheel still scrolls the page; ⌘/Ctrl + wheel, a trackpad pinch
+   and the + and - buttons zoom. Touch screens keep the two-finger hint (MapLibre shows it for hover: none or pointer: coarse) */
+@media (hover: hover) and (pointer: fine) {
+  .maplibregl-cooperative-gesture-screen { display: none; }
+}
 /* phones: while a card is open the two-finger hint stays away (it would cover the card), and so does the credits
    button the card sits over (it would peek out at the card's corner) */
 @media (max-width: 699.98px) {
@@ -1257,7 +1262,7 @@ button.footer__link { cursor: pointer; }
 /* tablet+ (≥ 700) */
 @media (min-width: 700px) {
   .quickbar { display: none; }
-  .map { height: 460px; }
+  .map { height: 380px; }
   .map-card { left: auto; right: auto; bottom: auto; width: 296px; top: clamp(16px, calc(var(--y) * 1% - 130px), calc(100% - 340px)); }
   .map-card--l { left: calc(var(--x) * 1% + 30px); }
   .map-card--r { right: calc((100 - var(--x)) * 1% + 30px); }
@@ -1275,7 +1280,7 @@ button.footer__link { cursor: pointer; }
 
 /* desktop (≥ 1000) */
 @media (min-width: 1000px) {
-  .map { height: 560px; }
+  .map { height: 420px; }
   .loc { grid-template-columns: 26px minmax(0, 2fr) minmax(0, 1.3fr) auto; }
   .loc__actions { grid-column: auto; }
   .footer__cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
