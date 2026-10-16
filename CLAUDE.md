@@ -33,5 +33,8 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   (`/info-o-cijenama/`, legally required for supermarkets) need a home, plus privacy, cookie and jobs pages.
 - Shapes: the Novalis "tab" — three rounded corners, bottom-left square: `border-radius: R R R 0`; panels, cards and photos use `var(--shape-tab)` (20px). No soft shadows.
 - Fonts: Figtree stands in for Karbon (body), Outfit for Sharp Sans (headlines) until licensed files exist.
+  Material Symbols loads only the icons the site uses (`icon_names=` in the font link of all 8 pages, alphabetical; ~4 KB instead of 460 KB).
+  A new icon name must be added there on every page, or it shows as text.
+- Landing hero entrance: an inline script in `index.html` `<head>` holds it (`.hero-wait`, max 1.2 s) until fonts, icons, photo and scripts are ready.
 - Content language: Croatian first (HR/EN toggle is visual only for now). Copy style: hyphens, no em/en dashes; ranges with a spaced
   hyphen (`07:00 - 19:00`, `Ponedjeljak - subota`); dates Croatian style (`15. 5.`); store copy only from novalis.hr or Novalis itself.

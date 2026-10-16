@@ -301,6 +301,7 @@ button { font: inherit; }
 .hero__call {
   background: rgba(255,255,255,.62); box-shadow: inset 0 0 0 1px rgba(38,38,38,.2); color: var(--ink);
   -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4);
+  transition: background var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
 }
 .hero__call:hover { background: #fff; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
 .hero__call .hero__btn-icon { background: rgba(38,38,38,.08); }
@@ -325,8 +326,8 @@ button { font: inherit; }
 }
 
 /* entrance: the photo comes up out of white light and settles, then the label, the headline word by word, the lead
-   and the buttons come into focus in reading order. CSS only (nothing waits for JS), transform, opacity and a
-   short blur only. "backwards" fill, so once it has run the buttons' own hover and press transforms work again */
+   and the buttons come into focus in reading order. Transform, opacity and a short blur only; without JS it plays at
+   once. "backwards" fill, so once it has run the buttons' own hover and press transforms work again */
 @media (prefers-reduced-motion: no-preference) {
   .hero__bg img { animation: hero-zoom 2600ms var(--occ-ease) backwards; }
   .hero__bg::before { animation: hero-clear 1800ms var(--ease-out) 120ms backwards; }
@@ -335,6 +336,10 @@ button { font: inherit; }
   .hero__lead { animation: hero-in 900ms var(--occ-ease) 660ms backwards; }
   .hero__actions > * { animation: hero-in 900ms var(--occ-ease) 780ms backwards; }
   .hero__actions > * + * { animation-delay: 860ms; }
+  /* held at its first frame while the page gets ready (index.html <head>, at most 1.2 s); the photo's scroll drift
+     (below) keeps running */
+  .hero-wait .hero__bg img, .hero-wait .hero__bg::before, .hero-wait .hero__eyebrow, .hero-wait .hero__w,
+  .hero-wait .hero__lead, .hero-wait .hero__actions > * { animation-play-state: paused, running; }
   @media (hover: hover) {
     .hero__cta:hover .hero__btn-icon .ms { animation: hero-arrow 560ms var(--occ-ease); }
     .hero__call:hover .hero__btn-icon .ms { animation: hero-ring 640ms ease-in-out; }

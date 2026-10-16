@@ -18,8 +18,8 @@ window.NV = (function () {
   var byId = {};
   D.units.forEach(function (u) { byId[u.id] = u; });
   // open: id of the category whose header panel is open (one at a time), or null;
-  // byHover: that panel was opened by the mouse resting on it (see hoverTo)
-  var ui = { open: null, byHover: false, menu: false };
+  // hoverAt: when the mouse opened that panel by resting on it, 0 when it was opened otherwise (see hoverTo)
+  var ui = { open: null, hoverAt: 0, menu: false };
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -31,9 +31,6 @@ window.NV = (function () {
   // Only touch the DOM when the markup changed, so periodic re-renders don't steal focus or hover.
   function setHTML(el, html) {
     if (el._html !== html) { el.innerHTML = html; el._html = html; }
-  }
-  function scrollToY(y) {
-    window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
   function headerOffset() {
     return $('.site-header').offsetHeight;
@@ -198,7 +195,7 @@ window.NV = (function () {
   }
 
   function slotHTML(src, placeholder, alt) {
-    var inner = src ? '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy">' : placeholderHTML(placeholder);
+    var inner = src ? '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy" decoding="async">' : placeholderHTML(placeholder);
     return '<div class="slot" data-placeholder="' + esc(placeholder) + '">' + inner + '</div>';
   }
 
@@ -274,7 +271,7 @@ window.NV = (function () {
   // Opens the header panel of category `id` and closes the others; null closes them all.
   function setOpen(id) {
     clearTimeout(hover.timer); hover.id = undefined;
-    ui.open = id || null; ui.byHover = false;
+    ui.open = id || null; ui.hoverAt = 0;
     $$('#navCats .nav-drop').forEach(function (d) {
       var open = d.dataset.cat === ui.open;
       $('.nav-cat', d).setAttribute('aria-expanded', open);
@@ -285,14 +282,24 @@ window.NV = (function () {
   // A mouse also opens a category by resting on it: after a short pause, so sweeping across the bar doesn't flash
   // panels, and it closes a moment after the pointer leaves, which also bridges the 1px gap above the panel.
   // Touch and pen keep tap-to-open; the keyboard keeps Enter/Space.
-  var HOVER_OPEN = 80, HOVER_CLOSE = 200;
+  // HOVER_CLICK: a mouse click this soon after the hover opened the panel was aimed at opening it.
+  var HOVER_OPEN = 80, HOVER_CLOSE = 200, HOVER_CLICK = 600;
   var hover = { id: undefined, timer: 0 };   // id: the change on its way (a category, or null = close)
   function hoverTo(id, delay) {
     if (hover.id === id) return;
     clearTimeout(hover.timer); hover.id = undefined;
     if (id === ui.open) return;   // already showing: just cancel the pending change
     hover.id = id;
-    hover.timer = setTimeout(function () { setOpen(id); ui.byHover = !!id; }, delay);
+    hover.timer = setTimeout(function () { setOpen(id); if (id) ui.hoverAt = Date.now(); }, delay);
+  }
+
+  // Keyboard focus keeps the open category from closing when the mouse leaves it: focus in its panel (hiding the panel
+  // would drop it to <body>), or on its trigger when the keyboard opened it. Focus left by a mouse click doesn't count.
+  function keyboardHolds(drop) {
+    var f = document.activeElement;
+    if (drop.dataset.cat !== ui.open || !drop.contains(f)) return false;
+    try { if (!f.matches(':focus-visible')) return false; } catch (err) { /* no :focus-visible: any focus counts */ }
+    return !ui.hoverAt || $('.dd-panel', drop).contains(f);
   }
 
   function setGroup(btn, open) {
@@ -313,10 +320,12 @@ window.NV = (function () {
     var cats = $('#navCats');
     cats.addEventListener('click', function (e) {
       var btn = e.target.closest('.nav-cat'), a = e.target.closest('a');
-      // clicking a panel the mouse just opened keeps it open (the click meant "open"); the next click closes it
+      // a mouse click right after the hover opened the panel keeps it open (the click meant "open"); later clicks and
+      // Enter/Space (detail 0) toggle it
       if (btn) {
         var id = btn.parentNode.dataset.cat;
-        if (ui.open === id && ui.byHover) ui.byHover = false; else setOpen(ui.open === id ? null : id);
+        if (ui.open === id && e.detail && Date.now() - ui.hoverAt < HOVER_CLICK) ui.hoverAt = 0;
+        else setOpen(ui.open === id ? null : id);
       }
       // a link opening a new tab keeps the user here: focus its trigger, or it drops to <body> with the panel
       else if (a) { if (a.target === '_blank') $('.nav-cat', a.closest('.nav-drop')).focus(); setOpen(null); }
@@ -328,9 +337,7 @@ window.NV = (function () {
     });
     cats.addEventListener('pointerout', function (e) {
       var drop = e.target.closest('.nav-drop');
-      if (e.pointerType !== 'mouse' || !drop || drop.contains(e.relatedTarget)) return;
-      // a keyboard user inside the panel keeps it: hiding it would drop their focus to <body>
-      if ($('.dd-panel', drop).contains(document.activeElement)) return;
+      if (e.pointerType !== 'mouse' || !drop || drop.contains(e.relatedTarget) || keyboardHolds(drop)) return;
       hoverTo(null, HOVER_CLOSE);
     });
     // tabbing out of the open category closes it
@@ -410,7 +417,7 @@ window.NV = (function () {
   // with reduced motion). The minute refresh replaces the cards only when a status text changed, without motion; if
   // that happens while the entrance runs, the entrance ends there, so it never replays.
   function cardGrid(grid) {
-    var io = null, t = 0, shown = null;
+    var io = null, t = 0, swapT = 0, shown = null;
 
     function end() {
       clearTimeout(t);
@@ -423,8 +430,8 @@ window.NV = (function () {
       if (swap || (changed && grid.classList.contains('is-in'))) end();
       if (swap && changed && !reduceMotion) {
         grid.classList.add('cards--swap');
-        clearTimeout(grid._swap);
-        grid._swap = setTimeout(function () { grid.classList.remove('cards--swap'); }, 260);
+        clearTimeout(swapT);
+        swapT = setTimeout(function () { grid.classList.remove('cards--swap'); }, 260);
       }
       // new markup replaces the focused link: give focus back to the same card, so keyboard users keep their place
       var focused = changed && grid.contains(document.activeElement) && document.activeElement.closest('.card');
@@ -436,7 +443,8 @@ window.NV = (function () {
 
     if (!reduceMotion && 'IntersectionObserver' in window) {
       io = new IntersectionObserver(function (entries) {
-        if (!entries[0].isIntersecting) return;
+        // the latest entry: several can queue up before the callback runs (a scroll during load)
+        if (!entries[entries.length - 1].isIntersecting) return;
         io.disconnect(); io = null;
         grid.classList.add('is-in');
         // the last card lands 760 ms after its start, 70 ms after the one before it (the stagger stops at the 9th)
@@ -461,7 +469,7 @@ window.NV = (function () {
 
   return {
     D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
-    $: $, $$: $$, esc: esc, setHTML: setHTML, scrollToY: scrollToY, headerOffset: headerOffset,
+    $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
     asset: asset, unitHref: unitHref, mapsHref: mapsHref, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,

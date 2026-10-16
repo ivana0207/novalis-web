@@ -222,14 +222,11 @@
     });
   }
 
-  // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
-  // opening hours are published there only, once confirmed).
   // hero: the petal light leans toward the pointer and eases back when it leaves (mouse only, motion allowed).
   // One transform on one layer per frame, and only while it is still moving
   function heroLight() {
     var hero = $('.hero'), glow = $('.hero__glow');
-    if (!hero || !glow || !matchMedia('(hover: hover) and (pointer: fine)').matches ||
-        matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!hero || !glow || NV.reduceMotion || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     var tx = 0, ty = 0, x = 0, y = 0, raf = 0;
     function step() {
       x += (tx - x) * 0.06; y += (ty - y) * 0.06;
@@ -241,21 +238,25 @@
     hero.addEventListener('pointerleave', function () { aim(0, 0); });
   }
 
-  // phones: the quick bar holds back while the hero's buttons are on screen (they are the same actions).
-  // The first state is set without the slide, so the bar doesn't flash in and out on load
+  // phones: the quick bar holds back while the hero's buttons are on screen (they are the same actions); buttons that
+  // have slid under the sticky header count as gone. The first state is set without the slide, so the bar doesn't
+  // flash in and out on load
   function holdQuickbar() {
     var bar = $('.quickbar'), actions = $('.hero__actions');
     if (!bar || !actions || !('IntersectionObserver' in window)) return;
-    var r = actions.getBoundingClientRect();
+    var top = NV.headerOffset(), r = actions.getBoundingClientRect();
     bar.style.transition = 'none';
-    bar.classList.toggle('is-held', r.bottom > 0 && r.top < innerHeight);
+    bar.classList.toggle('is-held', r.bottom > top && r.top < innerHeight);
     void bar.offsetWidth;
     bar.style.transition = '';
     new IntersectionObserver(function (entries) {
-      bar.classList.toggle('is-held', entries[0].isIntersecting);
-    }).observe(actions);
+      // the latest entry: several can queue up before the callback runs
+      bar.classList.toggle('is-held', entries[entries.length - 1].isIntersecting);
+    }, { rootMargin: -top + 'px 0px 0px 0px' }).observe(actions);
   }
 
+  // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
+  // opening hours are published there only, once confirmed).
   function addStructuredData() {
     var C = D.company;
     NV.addJSONLD({

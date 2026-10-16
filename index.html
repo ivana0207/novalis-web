@@ -21,9 +21,33 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,700&family=Outfit:wght@300;400;600;700;800&family=Dancing+Script:wght@400;600&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=block">
-  <link rel="stylesheet" href="css/ds.css?v=20261016-9">
-  <link rel="stylesheet" href="css/styles.css?v=20261016-9">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&icon_names=ac_unit,arrow_downward,arrow_forward,call,close,directions,directions_boat,expand_more,format_list_bulleted,image,local_shipping,mail,map,menu,open_in_new,photo_camera,sunny&display=block">
+  <link rel="stylesheet" href="css/ds.css?v=20261016-11">
+  <link rel="stylesheet" href="css/styles.css?v=20261016-11">
+  <!-- The hero entrance (css/styles.css) holds its first frame until the headline fonts, the icons and the photo are
+       ready and the page scripts have run, at most 1.2 s. Otherwise, on a first visit it plays over an empty photo,
+       swaps fonts halfway through and stutters while the scripts run. Asking for the fonts here also starts their
+       download before the page is laid out. Without JS the entrance plays at once -->
+  <script>
+    (function (d) {
+      var root = d.documentElement, done = false;
+      function go() {
+        if (done) return;
+        done = true;
+        requestAnimationFrame(function () { root.classList.remove('hero-wait'); });
+      }
+      root.classList.add('hero-wait');
+      setTimeout(go, 1200);
+      if (!d.fonts || !window.Promise) return;
+      var ready = [d.fonts.load('700 1em Outfit', 'Sve za život'), d.fonts.load('400 1em Figtree', 'Od svakodnevne kupnje'),
+        d.fonts.load('1em "Material Symbols Rounded"', 'call')];
+      d.addEventListener('DOMContentLoaded', function () {
+        var img = d.querySelector('.hero__bg img');
+        if (img && img.decode) ready.push(img.decode());
+        Promise.all(ready).then(go, go);
+      });
+    })(document);
+  </script>
 </head>
 <body>
 <div class="page" id="top">
@@ -254,10 +278,10 @@
   </nav>
 </div>
 
-<script src="js/brand-paths.js?v=20261016-9"></script>
-<script src="data/units.js?v=20261016-9"></script>
-<script src="js/site.js?v=20261016-9"></script>
-<script src="js/occasions.js?v=20261016-9"></script>
-<script src="js/app.js?v=20261016-9"></script>
+<script src="js/brand-paths.js?v=20261016-11"></script>
+<script src="data/units.js?v=20261016-11"></script>
+<script src="js/site.js?v=20261016-11"></script>
+<script src="js/occasions.js?v=20261016-11"></script>
+<script src="js/app.js?v=20261016-11"></script>
 </body>
 </html>
