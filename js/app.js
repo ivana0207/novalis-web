@@ -24,17 +24,13 @@
       season: season,
       units: NV.units.map(function (u, i) {
         var st = unitStatus(u, season, z);
-        return {
-          id: u.id, n: i + 1, nPad: (i < 9 ? '0' : '') + (i + 1), name: u.name, address: u.address, category: u.category,
-          photo: NV.asset(u.photo), photoHint: u.photoHint, promo: !!u.promo,
-          open: st.open, label: st.label, today: st.today, hasToday: st.hasToday,
-          // card: today's hours with open/closed ("Otvoreno · Danas 07:00 - 19:00"), else the status ("Zatvoreno · otvara sutra u 07:00")
-          hoursLine: st.open && st.hasToday ? 'Otvoreno · ' + st.today : st.text,
-          callHref: NV.telHref(u),
-          moreHref: NV.unitHref(u), external: !!u.external,
-          mapsHref: NV.mapsHref(u),
+        // the card's fields (NV.cardData) plus what the map and the list show
+        return Object.assign(NV.cardData(u, st), {
+          n: i + 1, nPad: (i < 9 ? '0' : '') + (i + 1), category: u.category,
+          label: st.label, today: st.today, hasToday: st.hasToday,
+          callHref: NV.telHref(u), mapsHref: NV.mapsHref(u),
           x: u.pin.x, y: u.pin.y
-        };
+        });
       })
     };
   }
@@ -54,71 +50,14 @@
     $('#openOnly').setAttribute('aria-pressed', state.openOnly);
   }
 
-  // One link per card: the name, stretched over the whole card (.card__link::after), so a click anywhere opens the unit.
-  // The photo is decorative (the name follows it). The ghost copy of the name keeps its line free in the hover panel;
-  // Više is only a visual cue. --i staggers the entrance.
-  function cardHTML(u, i) {
-    return '<article class="card" id="' + u.id + '" style="--i:' + Math.min(i, 8) + '">' +
-      '<div class="card__media">' + NV.slotHTML(u.photo, u.photoHint, '') +
-        (u.promo ? '<span class="card__promo">Akcija</span>' : '') + '</div>' +
-      '<div class="card__head"><h3 class="card__name"><a class="card__link" href="' + esc(u.moreHref) + '"' +
-        (u.external ? ' target="_blank" rel="noopener"' : '') + '><span class="card__nm" translate="no">' + esc(u.name) + '</span>' +
-        (u.external ? NV.NEW_TAB : '') + '</a></h3></div>' +
-      '<div class="card__info"><span class="card__ghost" aria-hidden="true" translate="no">' + esc(u.name) + '</span>' +
-        '<div class="card__meta"><p class="card__addr">' + esc(u.address) + '</p>' +
-          '<p class="card__hours status' + (u.open ? ' is-open' : '') + '"><span class="dot"></span><span>' + esc(u.hoursLine) + '</span></p></div>' +
-        '<span class="card__more" aria-hidden="true">Više<span class="ms ms--xs">arrow_forward</span></span></div>' +
-    '</article>';
-  }
-
-  // swap: a filter changed the selection. That ends the entrance and fades the new cards in (none with reduced motion).
-  // The minute refresh replaces the cards only when a status text changed, without motion; if that happens while the
-  // entrance runs, the entrance ends there, so it never replays.
-  var cardsShown = null;
+  // The cards are NV.cardHTML; the grid (entrance, filter fade, focus kept on re-render) is NV.cardGrid.
+  var cards = NV.cardGrid($('#cards'));
   function renderCards(swap) {
     var visible = units.filter(function (u) {
       return (state.cat === 'all' || u.category === state.cat) && (!state.openOnly || u.open);
     });
-    var grid = $('#cards'), html = visible.map(cardHTML).join(''), changed = html !== cardsShown;
-    if (swap || (changed && unitsSec.classList.contains('is-in'))) endEntrance();
-    if (swap && changed && !NV.reduceMotion) {
-      grid.classList.add('cards--swap');
-      clearTimeout(grid._swap);
-      grid._swap = setTimeout(function () { grid.classList.remove('cards--swap'); }, 260);
-    }
-    // new markup replaces the focused link: give focus back to the same card, so keyboard users keep their place
-    var focused = changed && grid.contains(document.activeElement) && document.activeElement.closest('.card');
-    setHTML(grid, html);
-    cardsShown = html;
-    var again = focused && document.getElementById(focused.id);
-    if (again) again.querySelector('.card__link').focus({ preventScroll: true });
+    cards.render(visible.map(NV.cardHTML).join(''), swap);
     $('#noResults').hidden = visible.length > 0;
-  }
-
-  /* ---------------- Card entrance ---------------- */
-  // The cards rise in one after another the first time the grid comes into view (css .units--anim). The classes come
-  // off again once it has run, or as soon as the cards change, so re-renders never replay it and no card stays hidden.
-  // Without IntersectionObserver, or with reduced motion, it never starts.
-  var unitsSec = $('#poslovnice'), unitsIO = null, unitsT = 0;
-
-  function endEntrance() {
-    clearTimeout(unitsT);
-    if (unitsIO) { unitsIO.disconnect(); unitsIO = null; }
-    unitsSec.classList.remove('units--anim', 'is-in');
-  }
-
-  function initEntrance() {
-    if (NV.reduceMotion || !('IntersectionObserver' in window)) return;
-    unitsIO = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      unitsIO.disconnect(); unitsIO = null;
-      unitsSec.classList.add('is-in');
-      unitsT = setTimeout(endEntrance, 1300); // the 7th card lands at 1180 ms
-    }, { rootMargin: '0px 0px -15% 0px' });
-    unitsSec.classList.add('units--anim');
-    unitsIO.observe($('#cards'));
-    // Tab can bring a card link to the screen's very edge before the grid counts as in view: show the cards at once
-    $('#cards').addEventListener('focusin', function () { if (unitsIO) endEntrance(); });
   }
 
   /* ---------------- Map + list ---------------- */
@@ -194,12 +133,12 @@
 
   /* ---------------- Render loop ---------------- */
   function render() {
-    var vm = buildUnits(), s = D.seasons.summer;
+    var vm = buildUnits();
     units = vm.units;
     var openCount = units.filter(function (u) { return u.open; }).length;
 
     $('#seasonIcon').textContent = vm.season === 'summer' ? 'sunny' : 'ac_unit';
-    $('#seasonLabel').textContent = vm.season === 'summer' ? 'Ljetno radno vrijeme · do ' + NV.dayMonth(s.end) : 'Zimsko radno vrijeme · do ' + NV.dayMonth(s.start, -1);
+    $('#seasonLabel').textContent = vm.season === 'summer' ? 'Ljetno radno vrijeme' : 'Zimsko radno vrijeme';
     $('#openStatus').textContent = 'Trenutno otvoreno ' + openCount + ' od ' + units.length + ' poslovnica';
 
     renderFilters();
@@ -220,11 +159,6 @@
   function bind() {
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && (state.sel || state.hov)) { state.sel = null; state.hov = null; syncMap(); }
-    });
-
-    // hero CTA → "Pronađite nas"
-    $('#toLocations').addEventListener('click', function () {
-      NV.scrollToY($('#locHead').getBoundingClientRect().top + window.scrollY - NV.headerOffset() - 32);
     });
 
     // filters (the category stays in the URL, so a filtered list can be shared: ?kategorija=gastro)
@@ -250,7 +184,7 @@
       if (unitById(id) && !document.getElementById(id)) {
         e.preventDefault();
         setCat('all'); state.openOnly = false;
-        endEntrance(); // the page scrolls straight to the card: show it at once
+        cards.end(); // the page scrolls straight to the card: show it at once
         renderFilters(); renderCards();
         document.getElementById(id).scrollIntoView({ behavior: NV.reduceMotion ? 'auto' : 'smooth' });
         history.replaceState(null, '', '#' + id);
@@ -261,8 +195,6 @@
     $$('.seg__btn').forEach(function (b) {
       b.addEventListener('click', function () { setView(b.dataset.view); });
     });
-    // "Svi kontakti" (#prilike) jumps to Pronađite nas like any anchor and opens its list, where every unit's contacts are
-    $('#allContacts').addEventListener('click', function () { setView('list'); });
     $$('.pin').forEach(function (p) {
       var id = p.dataset.id;
       var hoverOn = function () { state.hov = id; syncMap(); };
@@ -292,6 +224,38 @@
 
   // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
   // opening hours are published there only, once confirmed).
+  // hero: the petal light leans toward the pointer and eases back when it leaves (mouse only, motion allowed).
+  // One transform on one layer per frame, and only while it is still moving
+  function heroLight() {
+    var hero = $('.hero'), glow = $('.hero__glow');
+    if (!hero || !glow || !matchMedia('(hover: hover) and (pointer: fine)').matches ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    function step() {
+      x += (tx - x) * 0.06; y += (ty - y) * 0.06;
+      glow.style.transform = 'translate3d(' + (x * 7).toFixed(2) + '%, ' + (y * 7).toFixed(2) + '%, 0)';
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(step) : 0;
+    }
+    function aim(nx, ny) { tx = nx; ty = ny; if (!raf) raf = requestAnimationFrame(step); }
+    hero.addEventListener('pointermove', function (e) { aim(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5); });
+    hero.addEventListener('pointerleave', function () { aim(0, 0); });
+  }
+
+  // phones: the quick bar holds back while the hero's buttons are on screen (they are the same actions).
+  // The first state is set without the slide, so the bar doesn't flash in and out on load
+  function holdQuickbar() {
+    var bar = $('.quickbar'), actions = $('.hero__actions');
+    if (!bar || !actions || !('IntersectionObserver' in window)) return;
+    var r = actions.getBoundingClientRect();
+    bar.style.transition = 'none';
+    bar.classList.toggle('is-held', r.bottom > 0 && r.top < innerHeight);
+    void bar.offsetWidth;
+    bar.style.transition = '';
+    new IntersectionObserver(function (entries) {
+      bar.classList.toggle('is-held', entries[0].isIntersecting);
+    }).observe(actions);
+  }
+
   function addStructuredData() {
     var C = D.company;
     NV.addJSONLD({
@@ -317,9 +281,10 @@
   renderPins();
   syncMap();
   bind();
+  heroLight();
+  holdQuickbar();
   // O nama's "Svi kontakti" lands here as ?prikaz=popis#lokacije: open the list, where every unit's contacts are
   if (params.get('prikaz') === 'popis') setView('list');
-  initEntrance();
 
   // keep open/closed status live
   setInterval(render, 60000);

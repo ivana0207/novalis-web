@@ -238,104 +238,110 @@ button { font: inherit; }
 .h2 { margin: 0; font: 700 clamp(34px, 3.6vw, 52px)/1.05 var(--font-display); letter-spacing: -.025em; color: var(--ink); }
 
 /* ---------- Hero ---------- */
-/* fills the first screen; the headline and its footer row (lead + CTAs) sit at the bottom over the photo */
+/* fills the first screen: the Paški most photo under an even white veil, the copy centred on it (label, headline,
+   lead, two buttons), fading into the page at the bottom. The brand's petal light warms the veil */
 .hero {
-  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  --ring: var(--nv-gray-850); /* focus ring on the light veil */
+  position: relative; isolation: isolate; display: flex; flex-direction: column; overflow: hidden; overflow: clip;
   min-height: calc(100vh - 73px); min-height: min(calc(100svh - 73px), 1080px);
 }
-.hero__inner {
-  flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
-  padding-top: clamp(48px, 8vw, 120px); padding-bottom: clamp(40px, 4.4vw, 72px);
+.hero__bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; background: #8fb7cf; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+/* ::after is the veil. ::before is a white sheet that clears on load, so the island comes up out of the light */
+.hero__bg::before, .hero__bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.hero__bg::before { z-index: 1; background: #fff; opacity: 0; }
+.hero__bg::after { background: rgba(255,255,255,.82); }
+/* the photo fades into the page at the bottom */
+.hero::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: clamp(64px, 11%, 120px); z-index: -1; pointer-events: none;
+  background: linear-gradient(0deg, #fff, rgba(255,255,255,0));
 }
-.hero + .section { padding-top: clamp(32px, 3vw, 48px); }
-/* full-bleed toned photo (Hero Background 1a): washed out behind the copy, fades into the header and the next section */
-.hero__bg {
-  --hero-wash: linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55));
-  --hero-fade: 220px;
-  position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #fff;
-}
-.hero__bg img {
-  width: 100%; height: 100%; object-fit: cover; object-position: 30% 45%; /* mobile: keep the bridge in view */
-  opacity: .5; filter: saturate(.8) sepia(.15) contrast(1.05);
-}
-.hero__bg::after {
-  content: ""; position: absolute; inset: 0;
+/* the petal light: a yellow glow up left of the headline and an orange one down right of the buttons (BRAND.md §4).
+   It leans toward the pointer (js/app.js) */
+.hero__glow {
+  position: absolute; inset: -8%; z-index: -1; pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 100%) top / 100% 120px no-repeat,
-    linear-gradient(0deg, #fff 0%, rgba(255,255,255,0) 100%) bottom / 100% var(--hero-fade) no-repeat,
-    var(--hero-wash);
+    radial-gradient(circle 30vmax at 40% 40%, rgba(255,203,4,.16), rgba(255,203,4,.06) 50%, rgba(255,203,4,0) 100%),
+    radial-gradient(circle 26vmax at 62% 62%, rgba(247,148,30,.12), rgba(247,148,30,.04) 50%, rgba(247,148,30,0) 100%);
 }
-.hero__eyebrow { margin-bottom: clamp(16px, 1.6vw, 24px); }
-/* one full-width box per line, so each line can rise out of its own mask; the padding keeps the caron and the
-   descenders inside it. Inline-blocks, not blocks: their negative margins don't collapse, and the space between
-   the lines stays real text for screen readers */
+.hero__inner {
+  flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding-top: clamp(40px, 5vw, 80px); padding-bottom: clamp(64px, 8vw, 128px);
+}
+
+/* label: the site's section eyebrow (red caps), as on Lokacije. In the brand's dark red here: the bright red is
+   5:1 on white but only about 4.2:1 on the veiled photo */
+.hero__eyebrow { display: block; color: var(--nv-red-dark); }
+
+/* headline: two lines at every size; each word is its own box so it can come into focus on its own */
 .hero__title {
-  margin: 0; font: 700 clamp(44px, 12vw, 84px)/.92 var(--font-display);
-  letter-spacing: -.04em; color: var(--ink);
+  margin: clamp(22px, 2.4vw, 32px) 0 0; font: 700 clamp(46px, 8vw, 120px)/.95 var(--font-display);
+  letter-spacing: -.045em; color: var(--ink);
 }
-.hero__line { display: inline-block; width: 100%; vertical-align: top; overflow: hidden; padding: .1em 0 .16em; margin: -.1em 0 -.16em; }
-.hero__line > span { display: block; text-wrap: balance; }
-/* footer row: lead left, CTAs right (wraps under the lead when there is no room), under a hairline */
-.hero__foot {
-  position: relative; width: 100%; margin-top: clamp(28px, 3.4vw, 48px); padding-top: clamp(20px, 2vw, 28px);
-  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px 48px;
-}
-.hero__foot::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: rgba(38,38,38,.16); transform-origin: left;
-}
+.hero__line { display: block; }
+.hero__w { display: inline-block; }
 .hero__lead {
-  margin: 0; max-width: 44ch; font: 400 clamp(18px, 1.4vw, 20px)/1.55 var(--font-primary);
-  color: var(--muted); text-wrap: pretty;
+  margin: clamp(20px, 2vw, 28px) 0 0; max-width: 34rem; font: 400 clamp(17px, 1.4vw, 20px)/1.55 var(--font-primary);
+  color: var(--ink); text-wrap: balance;
 }
-.hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-/* the arrow sits in a small window so on hover it can drop out and come back in from the top */
-.hero__cta-icon { display: inline-flex; height: 22px; overflow: hidden; }
-/* call: a contact chip the same height and shape as the main button - red phone tile, label over the number */
+
+/* two buttons of one build: label and a small tab with the icon, flush right. The red one leads; the call button is
+   glass with a hairline, so the only red block in the copy is the main button */
+.hero__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: clamp(28px, 3vw, 40px); }
+.hero__actions .btn { gap: 16px; padding: 0 10px 0 26px; font-size: 19px; }
+/* the main button's label in the logo's yellow. Yellow on red is 3.4:1, which passes only as large text (bold from
+   18.7px), hence 19px on both buttons */
+.hero__cta, .hero__cta:hover { color: var(--nv-yellow); }
+.hero__btn-icon {
+  display: grid; place-items: center; width: 36px; height: 36px; flex: none; overflow: hidden;
+  border-radius: 10px 10px 10px 0; transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.hero__cta .hero__btn-icon { background: rgba(255,255,255,.18); }
+.hero__cta:hover .hero__btn-icon { background: rgba(255,203,4,.16); }
 .hero__call {
-  display: inline-flex; align-items: center; gap: 12px; height: 56px; padding: 0 22px 0 6px;
-  border-radius: 18px 18px 18px 0; background: rgba(255,255,255,.72); box-shadow: inset 0 0 0 1px rgba(38,38,38,.16);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); color: var(--ink);
-  transition: background var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+  background: rgba(255,255,255,.62); box-shadow: inset 0 0 0 1px rgba(38,38,38,.2); color: var(--ink);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4);
 }
 .hero__call:hover { background: #fff; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
-.hero__call-icon {
-  display: grid; place-items: center; width: 44px; height: 44px; flex: none;
-  border-radius: 12px 12px 12px 0; background: var(--nv-red); color: #fff;
-  transition: background var(--dur-base) var(--ease-out);
+.hero__call .hero__btn-icon { background: rgba(38,38,38,.08); }
+.hero__call:hover .hero__btn-icon { background: var(--ink); color: #fff; }
+@media (prefers-reduced-transparency: reduce) {
+  .hero__call { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
-.hero__call:hover .hero__call-icon { background: var(--nv-red-dark); }
-.hero__call-text { display: flex; flex-direction: column; gap: 5px; white-space: nowrap; }
-.hero__call-label { font: 600 12px/1 var(--font-primary); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.hero__call-num { font: 700 17px/1 var(--font-display); }
-/* phones: the photo runs down behind the quick bar (shorter fade), the copy stays clear of it, the main button
-   takes the full width, and calling is left to the quick bar's red "Nazovi" right below */
-@media (max-width: 699px) {
-  .hero__inner { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
-  .hero__bg { --hero-fade: 140px; }
-  .hero__actions, .hero__cta { width: 100%; }
-  .hero__call { display: none; }
-}
-@media (max-width: 359.98px) { .hero__cta { padding: 0 18px; font-size: 16px; } }
 
-/* entrance: the photo settles, then eyebrow, headline lines, hairline, lead and CTAs follow in reading order.
-   CSS only (nothing waits for JS), transform and opacity only (no layout shift), under 1.5 s.
-   "backwards" fill, so once it has run the buttons' own hover and press transforms work again */
+/* phones: a narrower photo (the bridge kept in frame), the buttons stacked full width, and room at the bottom for
+   the quick bar */
+@media (max-width: 699px) {
+  .hero__bg img { object-position: 40% 50%; }
+  .hero__inner { padding-top: 32px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .hero__actions { flex-direction: column; align-self: stretch; align-items: stretch; }
+  .hero__title { font-size: clamp(46px, 13vw, 84px); }
+}
+/* smallest phones: no room for the arrow beside the 19px label (and it must not shrink, see above) */
+@media (max-width: 359.98px) {
+  .hero__actions .btn { padding-left: 18px; }
+  .hero__cta .hero__btn-icon { display: none; }
+  .hero__actions .hero__cta { padding-right: 18px; }
+}
+
+/* entrance: the photo comes up out of white light and settles, then the label, the headline word by word, the lead
+   and the buttons come into focus in reading order. CSS only (nothing waits for JS), transform, opacity and a
+   short blur only. "backwards" fill, so once it has run the buttons' own hover and press transforms work again */
 @media (prefers-reduced-motion: no-preference) {
   .hero__bg img { animation: hero-zoom 2600ms var(--occ-ease) backwards; }
-  .hero__eyebrow { animation: hero-rise 800ms var(--occ-ease) 100ms backwards; }
-  .hero__line > span { animation: hero-line 1000ms var(--occ-ease) 160ms backwards; }
-  .hero__line + .hero__line > span { animation-delay: 260ms; }
-  .hero__foot::before { animation: hero-draw 1200ms var(--occ-ease) 380ms backwards; }
-  .hero__lead { animation: hero-rise 900ms var(--occ-ease) 460ms backwards; }
-  .hero__actions > * { animation: hero-rise 900ms var(--occ-ease) 560ms backwards; }
-  .hero__actions > * + * { animation-delay: 640ms; }
+  .hero__bg::before { animation: hero-clear 1800ms var(--ease-out) 120ms backwards; }
+  .hero__eyebrow { animation: hero-in 900ms var(--occ-ease) 180ms backwards; }
+  .hero__w { animation: hero-word 1000ms var(--occ-ease) calc(300ms + var(--i, 0) * 70ms) backwards; }
+  .hero__lead { animation: hero-in 900ms var(--occ-ease) 660ms backwards; }
+  .hero__actions > * { animation: hero-in 900ms var(--occ-ease) 780ms backwards; }
+  .hero__actions > * + * { animation-delay: 860ms; }
   @media (hover: hover) {
-    .hero__cta:hover .hero__cta-icon .ms { animation: hero-arrow 560ms var(--occ-ease); }
-    .hero__call:hover .hero__call-icon .ms { animation: hero-ring 640ms ease-in-out; }
+    .hero__cta:hover .hero__btn-icon .ms { animation: hero-arrow 560ms var(--occ-ease); }
+    .hero__call:hover .hero__btn-icon .ms { animation: hero-ring 640ms ease-in-out; }
   }
 }
-/* the photo drifts down slower than the page as the hero scrolls away (browsers with scroll-driven animations only).
+/* scrolling away (browsers with scroll-driven animations only): the photo drifts down slower than the page; from
+   900 px the copy lifts off. The veil keeps its strength until the hero has left the screen.
    The timeline is the hero's own: view() on the photo would track .hero__bg, whose overflow makes it a scroll container */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
@@ -345,12 +351,16 @@ button { font: inherit; }
       animation-timeline: auto, --hero; animation-range: normal, exit;
     }
   }
+  @media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
+    .hero__inner { animation: hero-lift linear both; animation-timeline: --hero; animation-range: exit 5% exit 60%; }
+  }
 }
-@keyframes hero-zoom { from { scale: 1.08; } }
+@keyframes hero-zoom { from { scale: 1.1; } }
+@keyframes hero-clear { from { opacity: 1; } }
+@keyframes hero-in { from { opacity: 0; transform: translateY(18px); filter: blur(10px); } }
+@keyframes hero-word { from { opacity: 0; transform: translateY(.3em); filter: blur(14px); } }
 @keyframes hero-drift { to { translate: 0 16%; } }
-@keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } }
-@keyframes hero-line { from { transform: translateY(125%); } }
-@keyframes hero-draw { from { transform: scaleX(0); } }
+@keyframes hero-lift { to { opacity: 0; translate: 0 -10%; } }
 @keyframes hero-arrow { 45% { transform: translateY(110%); } 46% { transform: translateY(-110%); } }
 @keyframes hero-ring { 20% { rotate: -14deg; } 40% { rotate: 12deg; } 60% { rotate: -8deg; } 80% { rotate: 4deg; } }
 
@@ -471,12 +481,12 @@ button { font: inherit; }
     .card:focus-within .card__link { color: var(--nv-red); }
   }
 }
-/* entrance: the cards rise in one after another the first time the grid is in view (js/app.js initEntrance, which
+/* entrance: the cards rise in one after another the first time the grid is in view (NV.cardGrid in js/site.js, which
    removes the classes once it has run); a filter change fades the new cards in */
 @media (prefers-reduced-motion: no-preference) {
-  .units--anim:not(.is-in) .card { opacity: 0; }
-  .units--anim.is-in .card { animation: card-in 700ms var(--occ-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
-  .units--anim.is-in .card .slot img { animation: card-photo-in 760ms var(--occ-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .cards--anim:not(.is-in) .card { opacity: 0; }
+  .cards--anim.is-in .card { animation: card-in 700ms var(--occ-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .cards--anim.is-in .card .slot img { animation: card-photo-in 760ms var(--occ-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
   .cards--swap .card { animation: card-swap 220ms var(--ease-out) both; }
 }
 @keyframes card-in { from { opacity: 0; transform: translateY(24px); } }
@@ -485,7 +495,7 @@ button { font: inherit; }
 /* reduced motion: no lift, zoom, slide or entrance; the panel, the yellow edge and the red name still appear */
 @media (prefers-reduced-motion: reduce) {
   .card, .card .slot img, .card__info { transform: none !important; }
-  .units *, .units *::before, .units *::after { animation: none !important; }
+  .cards *, .cards *::before, .cards *::after { animation: none !important; }
 }
 /* Windows high contrast drops the box-shadow edge: outline the photo instead (the panel keeps its forced border) */
 @media (forced-colors: active) {
@@ -495,7 +505,7 @@ button { font: inherit; }
   .card:is(:hover, :has(:focus-visible)) .card__media { outline: 3px solid Highlight; }
 }
 @media print {
-  .units--anim .card { opacity: 1 !important; }
+  .cards--anim .card { opacity: 1 !important; }
 }
 
 .no-results {
@@ -705,7 +715,7 @@ button { font: inherit; }
   .occ-fact__ico .picto { width: 28px; height: 28px; }
 }
 
-/* closing line + button under the carousel */
+/* closing line + button under the carousel (O nama only) */
 .occasions__close {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-6);
   margin-top: clamp(32px, 4vw, 56px); padding-top: clamp(24px, 3vw, 40px);
@@ -1171,6 +1181,10 @@ button.footer__link { cursor: pointer; }
 .quickbar__call:hover { color: #fff; }
 .quickbar__item { border: 1px solid #E4E4E4; color: var(--ink); font: 700 15px/1 var(--font-display); }
 .quickbar__item:hover { color: var(--ink); }
+/* landing: the bar holds back while the hero's own buttons are on screen (js/app.js), so the same actions aren't
+   offered twice; it slides up once they have scrolled away */
+.quickbar { transition: transform 420ms var(--ease-out), visibility 0s; }
+.quickbar.is-held { transform: translateY(105%); visibility: hidden; transition: transform 420ms var(--ease-out), visibility 0s 420ms; }
 
 /* =================== Responsive =================== */
 
@@ -1194,14 +1208,6 @@ button.footer__link { cursor: pointer; }
 /* two columns (≥ 900) */
 @media (min-width: 900px) {
   .about__grid, .inquiry__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  /* the copy moves into a right-hand column (still left-aligned inside it), so the bridge in the left half of the
-     photo stays clear; the wash runs the other way, white behind the copy and none over the bridge */
-  .hero__inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-content: end; justify-items: start; }
-  .hero__inner > * { grid-column: 2; }
-  .hero__foot { justify-self: stretch; width: auto; }
-  .hero__title { font-size: clamp(64px, 7vw, 104px); }
-  .hero__bg { --hero-wash: linear-gradient(270deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.45) 40%, rgba(255,255,255,.05) 72%, rgba(255,255,255,0) 100%); }
-  .hero__bg img { object-position: 50% 45%; }
 }
 
 /* desktop (≥ 1000) */
@@ -1407,16 +1413,8 @@ button.footer__link { cursor: pointer; }
 .btn-sm--accent { border-color: var(--accent); background: var(--accent); color: #fff; }
 .btn-sm--accent:hover { border-color: var(--ink); background: var(--ink); color: #fff; }
 
-/* Povezane poslovnice */
-.related { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 40px 24px; }
-.rel { display: flex; flex-direction: column; gap: 12px; color: var(--ink); }
-.rel:hover { color: var(--ink); }
-.rel:hover .rel__name { text-decoration: underline; text-underline-offset: 4px; }
-.rel__media { position: relative; aspect-ratio: 4 / 3; margin-bottom: 4px; border-radius: var(--shape-tab); overflow: hidden; }
-.rel__kicker { font: 500 12px/16px var(--font-primary); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-.rel__name { font: 700 24px/1.25 var(--font-primary); }
-.rel__desc { font: 400 16px/1.5 var(--font-primary); color: var(--muted); }
-.rel__more { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font: 700 16px/1 var(--font-display); color: var(--accent); }
+/* Povezane poslovnice: the landing page's unit cards (.cards / .card), right under the section title */
+.store-sec .cards { margin-top: 0; }
 
 @media (min-width: 700px) {
   .store-hero__media { min-height: 420px; }

@@ -169,18 +169,16 @@
     '</section>';
   }
 
+  // The landing page's unit cards (NV.cardHTML), with today's hours (renderLive); each shows the photo its own page leads with.
   function relatedHTML() {
     return '<section class="store-sec store-sec--last" aria-labelledby="h-povezane">' + headHTML('povezane', 'Povezane poslovnice') +
-      '<ul class="related">' + p.related.map(function (id) {
-        var r = NV.byId[id], photo = r.page ? r.page.photo : r.photo;
-        return '<li><a class="rel" href="' + esc(NV.unitHref(r)) + '"' + (r.external ? ' target="_blank" rel="noopener"' : '') + '>' +
-          '<span class="rel__media">' + NV.slotHTML(asset(photo), r.photoHint, '') + '</span>' +
-          '<span class="rel__kicker">' + esc(NV.catLabel[r.category] + ' · ' + r.address.split(',')[0]) + '</span>' +
-          '<span class="rel__name" translate="no">' + esc(r.name) + '</span>' +
-          '<span class="rel__desc">' + esc(r.desc) + '</span>' +
-          '<span class="rel__more">' + (r.external ? esc(new URL(r.url).hostname.replace(/^www\./, '')) + ico('arrow_forward', 'xs') + NEW_TAB : 'Otvori poslovnicu' + ico('arrow_forward', 'xs')) + '</span>' +
-        '</a></li>';
-      }).join('') + '</ul></section>';
+      '<div class="cards" id="related"></div></section>';
+  }
+  function relatedCardsHTML(z, season) {
+    return p.related.map(function (id, i) {
+      var r = NV.byId[id];
+      return NV.cardHTML(NV.cardData(r, NV.unitStatus(r, season, z), r.page && r.page.photo), i);
+    }).join('');
   }
 
   /* ---------------- Search engines ---------------- */
@@ -232,10 +230,13 @@
     var z = NV.zagrebNow(), season = NV.currentSeason(z), st = NV.unitStatus(u, season, z);
     setHTML($('#heroStatus'), statusHTML('store-hero__status', st));
     setHTML($('#visitHours'), statusHTML('visit__status', st) + hoursHTML(z, season));
+    related.render(relatedCardsHTML(z, season));
   }
 
   $('.page').classList.add('store', 'store--' + p.theme);
   $('#store').innerHTML = heroHTML() + factsHTML() + offerHTML() + galleryHTML() + visitHTML() + relatedHTML();
+  // the related cards rise in like the landing page's the first time they come into view (NV.cardGrid)
+  var related = NV.cardGrid($('#related'));
   $('#qbCall').href = telHref;
   $('#qbMaps').href = mapsHref;
   renderLive();

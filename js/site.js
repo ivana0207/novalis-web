@@ -1,5 +1,5 @@
-/* Novalis site — shared by every page: brand vectors, image slots, opening hours, header (one menu per business
-   category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, occasions.js,
+/* Novalis site — shared by every page: brand vectors, image slots, opening hours, unit cards, header (one menu per
+   business category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, occasions.js,
    poslovnica.js) build on window.NV.
    Loaded at the end of <body>, so the markup it works on is already parsed. */
 window.NV = (function () {
@@ -15,11 +15,11 @@ window.NV = (function () {
   var CAT_IDS = D.categories.map(function (c) { return c.id; });
   // Units in category order; unit numbers (map pins, list) follow this order.
   var units = D.units.slice().sort(function (a, b) { return CAT_IDS.indexOf(a.category) - CAT_IDS.indexOf(b.category); });
-  var byId = {}, catLabel = {};
+  var byId = {};
   D.units.forEach(function (u) { byId[u.id] = u; });
-  D.categories.forEach(function (c) { catLabel[c.id] = c.label; });
-  // open: id of the category whose header panel is open (one at a time), or null
-  var ui = { open: null, menu: false };
+  // open: id of the category whose header panel is open (one at a time), or null;
+  // byHover: that panel was opened by the mouse resting on it (see hoverTo)
+  var ui = { open: null, byHover: false, menu: false };
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -273,12 +273,26 @@ window.NV = (function () {
 
   // Opens the header panel of category `id` and closes the others; null closes them all.
   function setOpen(id) {
-    ui.open = id || null;
+    clearTimeout(hover.timer); hover.id = undefined;
+    ui.open = id || null; ui.byHover = false;
     $$('#navCats .nav-drop').forEach(function (d) {
       var open = d.dataset.cat === ui.open;
       $('.nav-cat', d).setAttribute('aria-expanded', open);
       $('.dd-panel', d).hidden = !open;
     });
+  }
+
+  // A mouse also opens a category by resting on it: after a short pause, so sweeping across the bar doesn't flash
+  // panels, and it closes a moment after the pointer leaves, which also bridges the 1px gap above the panel.
+  // Touch and pen keep tap-to-open; the keyboard keeps Enter/Space.
+  var HOVER_OPEN = 80, HOVER_CLOSE = 200;
+  var hover = { id: undefined, timer: 0 };   // id: the change on its way (a category, or null = close)
+  function hoverTo(id, delay) {
+    if (hover.id === id) return;
+    clearTimeout(hover.timer); hover.id = undefined;
+    if (id === ui.open) return;   // already showing: just cancel the pending change
+    hover.id = id;
+    hover.timer = setTimeout(function () { setOpen(id); ui.byHover = !!id; }, delay);
   }
 
   function setGroup(btn, open) {
@@ -299,9 +313,25 @@ window.NV = (function () {
     var cats = $('#navCats');
     cats.addEventListener('click', function (e) {
       var btn = e.target.closest('.nav-cat'), a = e.target.closest('a');
-      if (btn) { var id = btn.parentNode.dataset.cat; setOpen(ui.open === id ? null : id); }
+      // clicking a panel the mouse just opened keeps it open (the click meant "open"); the next click closes it
+      if (btn) {
+        var id = btn.parentNode.dataset.cat;
+        if (ui.open === id && ui.byHover) ui.byHover = false; else setOpen(ui.open === id ? null : id);
+      }
       // a link opening a new tab keeps the user here: focus its trigger, or it drops to <body> with the panel
       else if (a) { if (a.target === '_blank') $('.nav-cat', a.closest('.nav-drop')).focus(); setOpen(null); }
+    });
+    // mouse entering / leaving a category (trigger + panel); moves between its own children don't count
+    cats.addEventListener('pointerover', function (e) {
+      var drop = e.target.closest('.nav-drop');
+      if (e.pointerType === 'mouse' && drop && !drop.contains(e.relatedTarget)) hoverTo(drop.dataset.cat, HOVER_OPEN);
+    });
+    cats.addEventListener('pointerout', function (e) {
+      var drop = e.target.closest('.nav-drop');
+      if (e.pointerType !== 'mouse' || !drop || drop.contains(e.relatedTarget)) return;
+      // a keyboard user inside the panel keeps it: hiding it would drop their focus to <body>
+      if ($('.dd-panel', drop).contains(document.activeElement)) return;
+      hoverTo(null, HOVER_CLOSE);
     });
     // tabbing out of the open category closes it
     cats.addEventListener('focusout', function (e) {
@@ -344,6 +374,83 @@ window.NV = (function () {
     });
   }
 
+  /* ---------------- Unit cards ---------------- */
+  // A unit's card on the landing page (#poslovnice) and in a store page's Povezane poslovnice. st: its status
+  // (unitStatus) · photo: the picture, if not the unit's card photo.
+  function cardData(u, st, photo) {
+    return {
+      id: u.id, name: u.name, address: u.address, photo: asset(photo || u.photo), photoHint: u.photoHint, promo: !!u.promo,
+      href: unitHref(u), external: !!u.external, open: st.open,
+      // today's hours with open/closed ("Otvoreno · Danas 07:00 - 19:00"), else the status ("Zatvoreno · otvara sutra u 07:00")
+      hours: st.open && st.hasToday ? 'Otvoreno · ' + st.today : st.text
+    };
+  }
+
+  // One link per card: the name, stretched over the whole card (.card__link::after), so a click anywhere opens the unit.
+  // The photo is decorative (the name follows it). The ghost copy of the name keeps its line free in the hover panel;
+  // Više is only a visual cue. --i staggers the entrance.
+  function cardHTML(c, i) {
+    return '<article class="card" id="' + esc(c.id) + '" style="--i:' + Math.min(i, 8) + '">' +
+      '<div class="card__media">' + slotHTML(c.photo, c.photoHint, '') +
+        (c.promo ? '<span class="card__promo">Akcija</span>' : '') + '</div>' +
+      '<div class="card__head"><h3 class="card__name"><a class="card__link" href="' + esc(c.href) + '"' +
+        (c.external ? ' target="_blank" rel="noopener"' : '') + '><span class="card__nm" translate="no">' + esc(c.name) + '</span>' +
+        (c.external ? NEW_TAB : '') + '</a></h3></div>' +
+      '<div class="card__info"><span class="card__ghost" aria-hidden="true" translate="no">' + esc(c.name) + '</span>' +
+        '<div class="card__meta"><p class="card__addr">' + esc(c.address) + '</p>' +
+          '<p class="card__hours status' + (c.open ? ' is-open' : '') + '"><span class="dot"></span><span>' + esc(c.hours) + '</span></p></div>' +
+        '<span class="card__more" aria-hidden="true">Više<span class="ms ms--xs">arrow_forward</span></span></div>' +
+    '</article>';
+  }
+
+  // A grid of unit cards (.cards). The cards rise in one after another the first time the grid comes into view (css
+  // .cards--anim). The classes come off again once it has run, or as soon as the cards change, so re-renders never
+  // replay it and no card stays hidden. Without IntersectionObserver, or with reduced motion, it never starts.
+  // render(html, swap) - swap: a filter changed the selection. That ends the entrance and fades the new cards in (none
+  // with reduced motion). The minute refresh replaces the cards only when a status text changed, without motion; if
+  // that happens while the entrance runs, the entrance ends there, so it never replays.
+  function cardGrid(grid) {
+    var io = null, t = 0, shown = null;
+
+    function end() {
+      clearTimeout(t);
+      if (io) { io.disconnect(); io = null; }
+      grid.classList.remove('cards--anim', 'is-in');
+    }
+
+    function render(html, swap) {
+      var changed = html !== shown;
+      if (swap || (changed && grid.classList.contains('is-in'))) end();
+      if (swap && changed && !reduceMotion) {
+        grid.classList.add('cards--swap');
+        clearTimeout(grid._swap);
+        grid._swap = setTimeout(function () { grid.classList.remove('cards--swap'); }, 260);
+      }
+      // new markup replaces the focused link: give focus back to the same card, so keyboard users keep their place
+      var focused = changed && grid.contains(document.activeElement) && document.activeElement.closest('.card');
+      setHTML(grid, html);
+      shown = html;
+      var again = focused && document.getElementById(focused.id);
+      if (again) again.querySelector('.card__link').focus({ preventScroll: true });
+    }
+
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      io = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect(); io = null;
+        grid.classList.add('is-in');
+        // the last card lands 760 ms after its start, 70 ms after the one before it (the stagger stops at the 9th)
+        t = setTimeout(end, Math.min(grid.children.length - 1, 8) * 70 + 800);
+      }, { rootMargin: '0px 0px -15% 0px' });
+      grid.classList.add('cards--anim');
+      io.observe(grid);
+      // Tab can bring a card link to the screen's very edge before the grid counts as in view: show the cards at once
+      grid.addEventListener('focusin', function () { if (io) end(); });
+    }
+
+    return { render: render, end: end };
+  }
+
   var year = new Date().getFullYear();
   $$('[data-years]').forEach(function (el) { el.textContent = year - D.company.founded; });
   $$('[data-year]').forEach(function (el) { el.textContent = year; });
@@ -353,10 +460,10 @@ window.NV = (function () {
   bind();
 
   return {
-    D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, catLabel: catLabel, reduceMotion: reduceMotion,
+    D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
     $: $, $$: $$, esc: esc, setHTML: setHTML, scrollToY: scrollToY, headerOffset: headerOffset,
     asset: asset, unitHref: unitHref, mapsHref: mapsHref, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
-    NEW_TAB: NEW_TAB, logoSVG: logoSVG, slotHTML: slotHTML,
+    NEW_TAB: NEW_TAB, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, unitStatus: unitStatus
   };
