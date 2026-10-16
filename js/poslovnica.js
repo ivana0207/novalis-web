@@ -150,7 +150,7 @@
     return '<section class="store-sec" aria-labelledby="h-posjet">' + headHTML('posjet', 'Radno vrijeme i lokacija') +
       '<div class="visit">' +
         '<div class="visit__hours" id="visitHours"></div>' +
-        '<div class="visit__place">' +
+        '<div class="visit__place" id="karta">' +
           '<div class="store-map">' +
             '<div class="store-map__canvas" id="storeMap"></div>' +
             '<p class="map__note map__note--fail" id="storeMapFail" hidden>Karta se trenutno ne može prikazati. ' +
@@ -172,23 +172,20 @@
   // A small map around the store (js/map.js), with its pin in the store's colour; the Upute button below it routes there.
   // With a Google Business listing (gmaps) the pin is a link to it; otherwise it only marks the spot.
   function initMap() {
+    if (!NV.map) { $('#storeMapFail').hidden = false; return; } // js/map.js didn't load
     NV.map.create($('#storeMap'), {
       label: 'Karta: ' + u.name + ', ' + u.address,
       map: { center: NV.map.lngLat(u), zoom: 16 }
     }, function (map, gl) {
-      var el = document.createElement('div');
-      el.className = 'pin-marker';
       var place = NV.placeHref(u);
-      el.innerHTML = place
-        ? '<a class="pin pin--store" href="' + esc(place) + '" target="_blank" rel="noopener" title="' + esc(u.name) + ' na Google kartama">' +
-            '<span class="pin__head"></span><span class="vh">' + esc(u.name) + ' na Google kartama' + NEW_TAB + '</span></a>'
-        : '<span class="pin pin--store"><span class="pin__head"></span></span>';
-      new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat(NV.map.lngLat(u)).addTo(map);
-      el.removeAttribute('role');
-      el.removeAttribute('aria-label');
-      if (!place) el.setAttribute('aria-hidden', 'true'); // a plain mark: the map's own label names the place
-    }, function () {
+      var mk = NV.map.pin(map, gl, u, place
+        ? '<a class="pin pin--store" href="' + esc(place) + '" target="_blank" rel="noopener" title="' + NV.PLACE_TITLE + '">' +
+            '<span class="pin__head"></span><span class="vh"><span translate="no">' + esc(u.name) + '</span> na Google kartama' + NEW_TAB + '</span></a>'
+        : '<span class="pin pin--store"><span class="pin__head"></span></span>');
+      if (!place) mk.getElement().setAttribute('aria-hidden', 'true'); // a plain mark: the map's own label names the place
+    }, function (hadFocus) {
       $('#storeMapFail').hidden = false;
+      if (hadFocus) $('#storeMapFail a').focus();
     });
   }
 
@@ -261,7 +258,7 @@
   // the related cards rise in like the landing page's the first time they come into view (NV.cardGrid)
   var related = NV.cardGrid($('#related'));
   $('#qbCall').href = telHref;
-  $('#qbMaps').href = mapsHref;
+  NV.holdQuickbar($('.store-hero__actions'));
   renderLive();
   initMap();
   addStructuredData();

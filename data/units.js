@@ -24,11 +24,12 @@
     },
     seasons: { summer: { start: '05-15', end: '09-30' } },
     // Order here is the order of filters, menu groups and unit numbering.
+    // direct: the header shows the category as a plain link to its only unit's page instead of a menu.
     categories: [
       { id: 'trgovine', label: 'Trgovine', picto: 'cart' },
       { id: 'smjestaj', label: 'Smještaj', picto: 'suitcase' },
       { id: 'gastro', label: 'Gastro', picto: 'cloche' },
-      { id: 'veleprodaja', label: 'Veleprodaja', picto: 'boxes' }
+      { id: 'veleprodaja', label: 'Veleprodaja', picto: 'boxes', direct: true }
     ],
     /*
      * slug: the store page's folder (/hiper-bau/ → hiper-bau/index.html), same addresses as on novalis.hr.

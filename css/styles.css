@@ -14,6 +14,8 @@ a:hover { color: var(--nv-red-dark); }
 button { font: inherit; }
 /* yellow ring on red surfaces, dark ring on light ones */
 :focus-visible { outline: 3px solid var(--ring, var(--nv-gray-850)); outline-offset: 2px; }
+/* a section a #link moved focus to (NV.goTo) is not a control: no ring around it */
+[tabindex="-1"]:focus { outline: none; }
 [hidden] { display: none !important; }
 /* "Preskoči na sadržaj": hidden until reached with Tab */
 .skip {
@@ -140,7 +142,7 @@ button { font: inherit; }
   .nav-link:hover { box-shadow: inset 0 -2px 0 var(--nv-yellow); }
 }
 .nav-link:focus-visible { outline-offset: -4px; }
-.nav-cat .picto { width: var(--cat-picto); height: var(--cat-picto); }
+.nav-cat .picto, .nav-direct .picto { width: var(--cat-picto); height: var(--cat-picto); }
 .nav-cat[aria-expanded="true"] .picto { color: var(--nv-yellow); }
 .mainnav__sep { width: 1px; height: 20px; margin: 0 8px; background: rgba(255,255,255,.35); }
 /* forced colours (Windows high contrast) drop the box-shadow underline and force text colours:
@@ -204,20 +206,23 @@ button { font: inherit; }
   padding: 8px var(--gut) 24px; max-height: 80vh; overflow: auto;
 }
 .mm-group { border-bottom: 1px solid var(--border-subtle); }
-.mm-toggle {
+.mm-toggle, .mm-direct {
   display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 48px; padding: 0;
   border: 0; background: transparent; color: var(--nv-gray-850); font: 700 16px/1.2 var(--font-display);
   text-align: left; cursor: pointer;
 }
-.mm-toggle > span:not(.ms) { min-width: 0; }
-.mm-toggle .picto { color: var(--nv-red); }
+.mm-toggle > span:not(.ms), .mm-direct > span { min-width: 0; }
+.mm-toggle .picto, .mm-direct .picto { color: var(--nv-red); }
+/* a category that is one link (Veleprodaja): the → sits where the other groups have their chevron */
+.mm-direct .nav-go { margin: 0 2px 0 auto; color: var(--nv-red); }
+.mm-direct[aria-current="page"] { color: var(--nv-red); }
 .mm-toggle .ms {
   margin-left: auto; width: 20px; overflow: hidden; color: var(--nv-red);
   transition: transform var(--dur-fast) var(--ease-out);
 }
 .mm-toggle[aria-expanded="true"] .ms { transform: rotate(180deg); }
 @media (hover: hover) {
-  .mm-toggle:hover { color: var(--nv-red); }
+  .mm-toggle:hover, .mm-direct:hover { color: var(--nv-red); }
 }
 .mm-list { margin: 0; padding: 0 0 var(--space-2); list-style: none; }
 /* names start under the group label: 22px pictogram + 12px gap */
@@ -310,19 +315,30 @@ button { font: inherit; }
   .hero__call { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
-/* phones: a narrower photo (the bridge kept in frame), the buttons stacked full width, and room at the bottom for
-   the quick bar */
+/* phones: a narrower photo (the bridge kept in frame) and room at the bottom. The buttons sit in one row, 52px
+   high: the main button sized to its label, the call button a square with the phone icon (its
+   label stays for screen readers). At 16px the label is white, as yellow on red needs 19px; the hover's yellow is on
+   the dark red, 5.5:1 */
 @media (max-width: 699px) {
   .hero__bg img { object-position: 40% 50%; }
   .hero__inner { padding-top: 32px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
-  .hero__actions { flex-direction: column; align-self: stretch; align-items: stretch; }
   .hero__title { font-size: clamp(46px, 13vw, 84px); }
+  .hero__actions { flex-wrap: nowrap; gap: 8px; margin-top: 28px; }
+  .hero__actions .btn { height: 52px; gap: 12px; padding: 0 8px 0 20px; font-size: 16px; white-space: nowrap; border-radius: 14px 14px 14px 0; }
+  .hero__cta { color: #fff; }
+  .hero__btn-icon { width: 34px; height: 34px; border-radius: 9px 9px 9px 0; }
+  .hero__actions .hero__call { position: relative; flex: none; width: 52px; padding: 0; background: rgba(255,255,255,.86); }
+  .hero__actions .hero__call:hover { background: #fff; }
+  .hero__call-label {
+    position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .hero__call .hero__btn-icon, .hero__call:hover .hero__btn-icon { background: none; color: inherit; }
+  .hero__call .ms { font-size: 22px; }
 }
-/* smallest phones: no room for the arrow beside the 19px label (and it must not shrink, see above) */
+/* smallest phones: the main button drops its arrow */
 @media (max-width: 359.98px) {
-  .hero__actions .btn { padding-left: 18px; }
   .hero__cta .hero__btn-icon { display: none; }
-  .hero__actions .hero__cta { padding-right: 18px; }
+  .hero__actions .hero__cta { padding: 0 16px; }
 }
 
 /* entrance: the photo comes up out of white light and settles, then the label, the headline word by word, the lead
@@ -917,6 +933,12 @@ a.pin--store:hover { transform: scale(1.1); }
 .maplibregl-ctrl-attrib { font: 400 12px/1.5 var(--font-primary); }
 .maplibregl-ctrl-attrib a { color: var(--ink); }
 .maplibregl-cooperative-gesture-screen { font: 600 18px/1.4 var(--font-primary); }
+/* phones: while a card is open the two-finger hint stays away (it would cover the card), and so does the credits
+   button the card sits over (it would peek out at the card's corner) */
+@media (max-width: 699.98px) {
+  .map.has-card .maplibregl-cooperative-gesture-screen { display: none; }
+  .map.has-card .maplibregl-ctrl-bottom-right { visibility: hidden; }
+}
 @media (forced-colors: active) {
   .maplibregl-ctrl-group:not(:empty) { border-color: CanvasText; }
 }
@@ -930,16 +952,12 @@ a.pin--store:hover { transform: scale(1.1); }
 .map-card__img { position: relative; height: 112px; flex: none; border-radius: 16px 16px 16px 0; overflow: hidden; }
 .map-card__img .slot__ph { flex-direction: row; font-size: 13px; }
 .map-card__img .slot__ph .ms { font-size: 20px; }
-.map-card__n {
-  position: absolute; top: 10px; left: 10px; height: 24px; padding: 0 9px; display: flex; align-items: center;
-  border-radius: 7px 7px 7px 0; background: rgba(255,255,255,.94); color: var(--nv-red);
-  font: 700 11px/1 var(--font-display); letter-spacing: .12em; pointer-events: none;
-}
+/* the X: its ring keeps it visible on light photos */
 .map-card__close {
   position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  border: 0; border-radius: 50%; background: rgba(255,255,255,.94); color: var(--ink); cursor: pointer;
+  border: 1px solid var(--nv-gray-150); border-radius: 50%; background: rgba(255,255,255,.94); color: var(--ink); cursor: pointer;
 }
-.map-card__close:hover { background: #fff; }
+.map-card__close:hover { border-color: var(--ink); background: #fff; }
 .map-card.is-preview .map-card__close { visibility: hidden; }
 .map-card__body { display: flex; flex-direction: column; gap: 12px; padding: 0 10px; }
 .map-card__title { display: flex; flex-direction: column; gap: 4px; }
@@ -963,22 +981,26 @@ a.pin--store:hover { transform: scale(1.1); }
 .round--call { border-color: var(--nv-red); background: var(--nv-red); color: #fff; }
 .round--call:hover { border-color: var(--nv-red-dark); background: var(--nv-red-dark); color: var(--nv-yellow); }
 
-.loc-list { list-style: none; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--line); }
+/* Popis: one compact row per unit; status and today's hours share a line */
+.loc-list { list-style: none; margin: 20px 0 0; padding: 0; border-top: 1px solid var(--line); }
 .loc {
-  display: grid; grid-template-columns: 32px minmax(0, 1fr); align-items: center; gap: 10px 20px;
-  padding: 18px 0; border-bottom: 1px solid var(--line);
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; gap: 8px 14px;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
 }
 .loc__n {
-  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  border-radius: 8px 8px 8px 0; background: var(--nv-yellow); color: var(--ink); font: 700 14px/1 var(--font-display);
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border-radius: 7px 7px 7px 0; background: var(--nv-yellow); color: var(--ink); font: 700 12px/1 var(--font-display);
 }
-.loc__main, .loc__state { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.loc__name { font: 700 17px/1.25 var(--font-display); color: var(--ink); }
-.loc__addr { font: 400 15px/1.35 var(--font-primary); color: var(--muted); }
-.loc__label { gap: 7px; font: 700 14px/1.35 var(--font-primary); }
-.loc__today { font: 400 14px/1.35 var(--font-primary); color: var(--muted); }
+.loc__main { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.loc__state { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; }
+.loc__name { font: 700 15px/1.25 var(--font-display); color: var(--ink); }
+.loc__addr { font: 400 13px/1.35 var(--font-primary); color: var(--muted); }
+.loc__label { gap: 6px; font: 700 13px/1.35 var(--font-primary); }
+.loc__today { font: 400 13px/1.35 var(--font-primary); color: var(--muted); }
 .loc__state, .loc__actions { grid-column: 2; }
-.loc__actions { display: flex; gap: 8px; }
+.loc__actions { display: flex; gap: 6px; }
+.loc .btn-sm { min-height: 36px; padding: 0 12px; gap: 5px; font-size: 13px; }
+.loc .btn-sm .ms { font-size: 18px; }
 .btn-sm {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px;
   border: 1.5px solid var(--field); border-radius: 12px 12px 12px 0; background: #fff;
@@ -1199,22 +1221,32 @@ button.footer__link { cursor: pointer; }
   padding: 16px 0 24px; border-top: 1px solid rgba(255,255,255,.35); font: 400 14px/1.4 var(--font-primary);
 }
 
-/* ---------- Mobile quick bar ---------- */
+/* ---------- Mobile quick buttons ---------- */
+/* phones: two round buttons in the bottom-right corner, call (red) over the map (yellow). The nav's padding is the
+   corner margin (js/map.js reads its height); only the buttons take taps. The white ring keeps them apart from red
+   or yellow behind them */
 .quickbar {
-  position: sticky; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line-soft);
+  position: fixed; right: 0; bottom: 0; z-index: 40; display: flex; flex-direction: column; gap: 12px;
+  padding: 0 calc(16px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) 0; pointer-events: none;
 }
-.quickbar__call, .quickbar__item {
-  display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 14px 14px 14px 0;
+.quickbar__btn {
+  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; box-shadow: 0 0 0 2px #fff;
+  pointer-events: auto; transition: transform 420ms var(--ease-out), opacity 420ms var(--ease-out), visibility 0s;
 }
-.quickbar__call { gap: 8px; background: var(--nv-red); color: #fff; font: 700 16px/1 var(--font-display); }
-.quickbar__call:hover { color: #fff; }
-.quickbar__item { border: 1px solid #E4E4E4; color: var(--ink); font: 700 15px/1 var(--font-display); }
-.quickbar__item:hover { color: var(--ink); }
-/* landing: the bar holds back while the hero's own buttons are on screen (js/app.js), so the same actions aren't
-   offered twice; it slides up once they have scrolled away */
-.quickbar { transition: transform 420ms var(--ease-out), visibility 0s; }
-.quickbar.is-held { transform: translateY(105%); visibility: hidden; transition: transform 420ms var(--ease-out), visibility 0s 420ms; }
+.quickbar__btn:focus-visible { outline-offset: 4px; }
+.quickbar__btn:active { transform: scale(.92); }
+.quickbar__call { background: var(--nv-red); color: #fff; }
+.quickbar__call:hover { background: var(--nv-red-dark); color: #fff; }
+.quickbar__map { background: var(--nv-yellow); color: var(--ink); }
+.quickbar__map:hover { background: #FEC20E; color: var(--ink); }
+/* landing and store pages: the buttons hold back while the hero's own buttons are on screen (NV.holdQuickbar), so
+   they don't cover them or offer the call twice; they grow in once those have scrolled away. is-still sets the first
+   state without the motion */
+.quickbar.is-held .quickbar__btn {
+  transform: scale(.5); opacity: 0; visibility: hidden;
+  transition: transform 420ms var(--ease-out), opacity 420ms var(--ease-out), visibility 0s 420ms;
+}
+.quickbar.is-still .quickbar__btn { transition: none; }
 
 /* =================== Responsive =================== */
 
@@ -1231,7 +1263,7 @@ button.footer__link { cursor: pointer; }
   .map-card--r { right: calc((100 - var(--x)) * 1% + 30px); }
   .map-card.is-away { visibility: hidden; }
   .map-card__img { height: 148px; }
-  .loc { grid-template-columns: 32px minmax(0, 1fr) minmax(0, 1fr); }
+  .loc { grid-template-columns: 26px minmax(0, 1fr) minmax(0, 1fr); }
   .loc__state { grid-column: auto; }
   .loc__actions { grid-column: 2 / -1; }
 }
@@ -1244,7 +1276,7 @@ button.footer__link { cursor: pointer; }
 /* desktop (≥ 1000) */
 @media (min-width: 1000px) {
   .map { height: 560px; }
-  .loc { grid-template-columns: 32px minmax(0, 2fr) minmax(0, 1.3fr) auto; }
+  .loc { grid-template-columns: 26px minmax(0, 2fr) minmax(0, 1.3fr) auto; }
   .loc__actions { grid-column: auto; }
   .footer__cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
 }
@@ -1424,11 +1456,13 @@ button.footer__link { cursor: pointer; }
 .visit__addr a { font-weight: 600; color: var(--accent); }
 .visit__addr a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .visit__name { font: 700 20px/1.4 var(--font-primary); color: var(--ink); }
-/* an address that opens the unit's Google Business listing (NV.addrHTML): reads as the address, underlined */
-.addr-link, .visit__addr .addr-link {
-  width: fit-content; color: inherit; font-weight: inherit;
+/* an address that opens the unit's Google Business listing (NV.addrHTML): keeps its address colour (.map-card__addr,
+   .loc__addr; the muted street on store pages), underlined */
+.addr-link {
+  width: fit-content;
   text-decoration: underline; text-decoration-color: var(--nv-gray-300); text-underline-offset: 3px;
 }
+.visit__addr .addr-link { color: inherit; font-weight: inherit; }
 .addr-link:hover, .visit__addr .addr-link:hover { color: var(--ink); text-decoration-color: currentColor; }
 .visit__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .btn-sm--accent { border-color: var(--accent); background: var(--accent); color: #fff; }
@@ -1443,9 +1477,9 @@ button.footer__link { cursor: pointer; }
 @media (min-width: 900px) {
   .visit { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
-/* phones: the sticky quick bar must not cover what has focus */
+/* phones: the quick buttons in the corner must not cover what has focus */
 @media (max-width: 699px) {
-  html { scroll-padding-bottom: 84px; }
+  html { scroll-padding-bottom: 136px; }
 }
 @media (max-width: 559px) {
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

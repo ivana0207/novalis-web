@@ -1,6 +1,8 @@
 {
   "trailingSlash": true,
   "redirects": [
-    { "source": "/o-nama.html", "destination": "/o-nama/", "permanent": true }
+    { "source": "/o-nama.html", "destination": "/o-nama/", "permanent": true },
+    { "source": "/index.html", "destination": "/", "permanent": true },
+    { "source": "/:page/index.html", "destination": "/:page/", "permanent": true }
   ]
 }

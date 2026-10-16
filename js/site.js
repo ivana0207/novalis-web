@@ -84,6 +84,30 @@ window.NV = (function () {
     document.addEventListener('auxclick', openFolderLink);
   }
 
+  /* ---------------- Plain addresses ---------------- */
+  // The address bar only shows the page itself (/, /o-nama/, /hiper-novalis/): a link to a part of the page (#upit,
+  // the skip link) scrolls there without adding #upit to the address, and a #section or ?… a page arrives with
+  // (/#lokacije from another page) is dropped once the page has scrolled there and read it.
+  // goTo: scroll to el like a #link does (smooth, clear of the sticky header) and move keyboard focus there.
+  function goTo(el) {
+    el.scrollIntoView();
+    if (el.tabIndex < 0 && !el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (el) goTo(el);
+  });
+  window.addEventListener('load', function () {
+    if (!location.hash && !location.search && !/\/index\.html$/.test(location.pathname)) return;
+    // from disk the file name stays: file:///…/novalis-web/ would open the folder listing on reload
+    var path = location.protocol === 'file:' ? location.pathname : location.pathname.replace(/index\.html$/, '');
+    try { history.replaceState(history.state, '', path); } catch (err) { /* address stays as it came */ }
+  });
+
   /* ---------------- Search engines (schema.org JSON-LD) ---------------- */
   // Absolute addresses come from the page's canonical link when it has one, else from where the page is served.
   var canonical = $('link[rel="canonical"]');
@@ -224,11 +248,15 @@ window.NV = (function () {
   // Every link to a unit goes to its store page, or to its own website in a new tab.
   var NEW_TAB = '<span class="vh"> (nova kartica)</span>';
 
+  // Tooltip of a link to a unit's Google Business listing. Without the unit's name: an attribute can't keep part of its
+  // text out of browser translation (translate="no").
+  var PLACE_TITLE = 'Otvori na Google kartama';
+
   // A unit's address, as a link to its Google Business listing when it has one (class cls either way)
   function addrHTML(u, cls) {
     var href = placeHref(u);
     return href
-      ? '<a class="' + cls + ' addr-link" href="' + esc(href) + '" target="_blank" rel="noopener" title="' + esc(u.name) + ' na Google kartama">' +
+      ? '<a class="' + cls + ' addr-link" href="' + esc(href) + '" target="_blank" rel="noopener" title="' + PLACE_TITLE + '">' +
           esc(u.address) + NEW_TAB + '</a>'
       : '<span class="' + cls + '">' + esc(u.address) + '</span>';
   }
@@ -252,8 +280,13 @@ window.NV = (function () {
       return { c: c, id: esc(c.id), items: units.filter(function (u) { return u.category === c.id; }) };
     }).filter(function (g) { return g.items.length; });
 
+    // A `direct` category (Veleprodaja) is one link to its only unit, in both menus.
+    function direct(g) { return g.c.direct && g.items.length === 1 ? g.items[0] : null; }
+
     // Desktop: a disclosure button per category (pictogram + label) with its own panel of unit links.
     $('#navCats').innerHTML = groups.map(function (g) {
+      var u = direct(g);
+      if (u) return '<a ' + unitLinkAttrs(u, 'nav-link nav-direct') + '>' + pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</a>';
       return '<div class="nav-drop" data-cat="' + g.id + '">' +
         '<button type="button" class="nav-link nav-cat" id="nav-' + g.id + '" aria-expanded="false" aria-controls="nav-panel-' + g.id + '">' +
         pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</button>' +
@@ -266,6 +299,9 @@ window.NV = (function () {
 
     // Mobile: the same categories as groups that expand one by one, independently of each other.
     $('#mobileGroups').innerHTML = groups.map(function (g) {
+      var u = direct(g);
+      if (u) return '<div class="mm-group"><a ' + unitLinkAttrs(u, 'mm-direct') + '>' +
+        pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span>' + navIcoHTML(u) + '</a></div>';
       return '<div class="mm-group">' +
         '<button type="button" class="mm-toggle" id="mm-' + g.id + '" aria-expanded="false" aria-controls="mm-panel-' + g.id + '">' +
         pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span><span class="ms ms--sm" aria-hidden="true">expand_more</span></button>' +
@@ -343,7 +379,7 @@ window.NV = (function () {
         else setOpen(ui.open === id ? null : id);
       }
       // a link opening a new tab keeps the user here: focus its trigger, or it drops to <body> with the panel
-      else if (a) { if (a.target === '_blank') $('.nav-cat', a.closest('.nav-drop')).focus(); setOpen(null); }
+      else if (a) { if (a.target === '_blank' && a.closest('.nav-drop')) $('.nav-cat', a.closest('.nav-drop')).focus(); setOpen(null); }
     });
     // mouse entering / leaving a category (trigger + panel); moves between its own children don't count
     cats.addEventListener('pointerover', function (e) {
@@ -474,6 +510,23 @@ window.NV = (function () {
     return { render: render, end: end };
   }
 
+  // phones: the quick buttons in the corner (.quickbar) hold back while the hero's own buttons (actions) are on screen,
+  // so they don't cover them or offer the same call twice; buttons that have slid under the sticky header count as
+  // gone. The first state is set without the motion, so the quick buttons don't flash in and out on load
+  function holdQuickbar(actions) {
+    var bar = $('.quickbar');
+    if (!bar || !actions || !('IntersectionObserver' in window)) return;
+    var top = headerOffset(), r = actions.getBoundingClientRect();
+    bar.classList.add('is-still');
+    bar.classList.toggle('is-held', r.bottom > top && r.top < innerHeight);
+    void bar.offsetWidth;
+    bar.classList.remove('is-still');
+    new IntersectionObserver(function (entries) {
+      // the latest entry: several can queue up before the callback runs
+      bar.classList.toggle('is-held', entries[entries.length - 1].isIntersecting);
+    }, { rootMargin: -top + 'px 0px 0px 0px' }).observe(actions);
+  }
+
   var year = new Date().getFullYear();
   $$('[data-years]').forEach(function (el) { el.textContent = year - D.company.founded; });
   $$('[data-year]').forEach(function (el) { el.textContent = year; });
@@ -485,8 +538,8 @@ window.NV = (function () {
   return {
     D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
     $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
-    asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
-    NEW_TAB: NEW_TAB, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid,
+    goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
+    NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, unitStatus: unitStatus
   };

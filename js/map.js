@@ -11,6 +11,14 @@ window.NV.map = (function () {
   // Pag and the coast around it: the map can't be dragged away from Novalja
   var BOUNDS = [[14.55, 44.25], [15.35, 44.85]];
 
+  // The map's credits in Croatian, saying which links open a new tab (the tile source's own credits are English)
+  function creditLink(href, text) {
+    return '<a href="' + href + '" target="_blank" rel="noopener">' + text + window.NV.NEW_TAB + '</a>';
+  }
+  var CREDITS = creditLink('https://openfreemap.org', 'OpenFreeMap') + ' ' +
+    creditLink('https://www.openmaptiles.org/', '&copy; OpenMapTiles') + ' Podaci: ' +
+    creditLink('https://www.openstreetmap.org/copyright', '&copy; OpenStreetMap suradnici');
+
   // Croatian labels for MapLibre's buttons, the map itself and the two-finger hint
   var LOCALE = {
     'Map.Title': 'Karta',
@@ -64,18 +72,21 @@ window.NV.map = (function () {
   }
 
   /* ---------------- Loading ---------------- */
-  // The library's stylesheet and script, once for every map on the page; done(maplibregl) or done(null) if it failed.
-  var waiting = null;
+  // The library's stylesheet and script, once for every map on the page; done(maplibregl) or done(null) if either
+  // failed (without its stylesheet the pins would land anywhere).
+  var lib, waiting = null; // lib: maplibregl once loaded, null if it failed
   function load(done) {
-    if (window.maplibregl) return done(window.maplibregl);
+    if (lib !== undefined) return done(lib);
     if (waiting) return waiting.push(done);
     waiting = [done];
-    var left = 2;
-    function settle() {
+    var left = 2, ok = true;
+    function settle(e) {
+      if (e.type === 'error') ok = false;
       if (--left) return;
+      lib = ok && window.maplibregl || null;
       var q = waiting;
       waiting = null;
-      q.forEach(function (f) { f(window.maplibregl || null); });
+      q.forEach(function (f) { f(lib); });
     }
     var css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = LIB + '.css';
@@ -101,37 +112,118 @@ window.NV.map = (function () {
 
   /* ---------------- Map ---------------- */
   // A map drawn into el (an empty box that fills its frame). opts go to maplibregl.Map (center + zoom, or bounds);
-  // label names the map for screen readers. ready(map, maplibregl) runs once it exists; fail() if it can't.
+  // label names the map for screen readers. ready(map, maplibregl) runs once it exists, before the style and tiles
+  // arrive. fail(hadFocus) if it can't run, also after ready() when the style or the tiles never come: the map and its
+  // pins are gone by then. hadFocus: focus was in the map's frame (a pin or the card), so the page can move it to its note.
   function create(el, opts, ready, fail) {
     near(el, function () {
       load(function (gl) {
-        if (!gl) return fail();
-        var map, styled = false, failed = false;
+        if (!gl) return fail(false);
+        var map, styled = false, failed = false, tiles = 0;
         try {
           map = new gl.Map(Object.assign({
-            container: el, style: STYLE, locale: LOCALE, maxBounds: BOUNDS, maxZoom: 19,
+            container: el, locale: LOCALE, maxBounds: BOUNDS, maxZoom: 19,
             attributionControl: { compact: true }, cooperativeGestures: true,
             dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0
           }, opts.map));
         } catch (e) {
-          return fail();
+          return fail(false);
         }
+        // set here, not as a Map option, so the tile source takes the site's credits
+        map.setStyle(STYLE, {
+          transformStyle: function (prev, style) {
+            if (style.sources.openmaptiles) style.sources.openmaptiles.attribution = CREDITS;
+            return style;
+          }
+        });
         map.touchZoomRotate.disableRotation();
         map.keyboard.disableRotation();
         map.getCanvas().setAttribute('aria-label', opts.label);
-        map.on('style.load', function () { styled = true; tint(map); });
-        // the style itself didn't arrive (offline, tile server down): drop the map, show the page's note
-        map.on('error', function () {
-          if (styled || failed) return;
+        foldCredits(map, el);
+
+        function giveUp() {
+          if (failed) return;
           failed = true;
+          var hadFocus = el.parentNode.contains(document.activeElement);
           map.remove();
-          fail();
+          fail(hadFocus);
+        }
+        map.on('style.load', function () { styled = true; tint(map); });
+        // the style itself didn't arrive (offline, tile server down): drop the map, show the page's note. A failed tile
+        // asks for no new frame, so the idle below might never come: ask for one.
+        map.on('error', function (e) {
+          if (!styled) giveUp();
+          else if (e.tile) map.triggerRepaint();
+        });
+        // the style came but no map tile did (tiles down, offline with the style cached): a blank box helps nobody.
+        // Idle comes once every tile has loaded or failed. A hidden map (the landing's list view) loads nothing; it is
+        // judged once it shows again.
+        map.on('sourcedata', function (e) { if (e.tile) tiles++; });
+        map.on('idle', function check() {
+          if (!el.offsetWidth) return;
+          map.off('idle', check);
+          if (!tiles) giveUp();
         });
         map.addControl(new gl.NavigationControl({ showCompass: false }), 'top-right');
         keepInFrame(el.parentNode);
         ready(map, gl);
       });
     });
+  }
+
+  // A pin on the map: html (the page's own pin markup) with its tip on unit u's spot. The pin inside is the control, so
+  // MapLibre's role and English label come off the marker, and a double click on it doesn't zoom the map.
+  function pin(map, gl, u, html) {
+    var el = document.createElement('div');
+    el.className = 'pin-marker';
+    el.innerHTML = html;
+    var mk = new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat(u)).addTo(map);
+    el.removeAttribute('role');
+    el.removeAttribute('aria-label');
+    el.addEventListener('dblclick', function (e) { e.stopPropagation(); });
+    return mk;
+  }
+
+  // The map's credits: OpenStreetMap's attribution guidelines let them fold behind their ⓘ button only once they have
+  // been seen, after 5 seconds or at the first interaction. MapLibre unfolds them when they arrive (and folds them on a
+  // drag only); from then they fold after 5 seconds in view (scrolled away sooner, the count starts again) or at the first
+  // move or click on the map. Once the visitor uses ⓘ, it is theirs: nothing folds it for them.
+  function foldCredits(map, el) {
+    var credits = el.querySelector('.maplibregl-ctrl-attrib');
+    if (!credits) return;
+    var timer = 0, io = null;
+    function stop() {
+      clearTimeout(timer);
+      if (io) io.disconnect();
+      map.off('movestart', fold);
+      map.off('click', fold);
+      credits.removeEventListener('click', stop);
+    }
+    function fold() {
+      stop();
+      credits.classList.remove('maplibregl-compact-show');
+    }
+    function arm() {
+      map.on('movestart', fold);
+      map.on('click', fold);
+      credits.addEventListener('click', stop);
+      if (!('IntersectionObserver' in window)) { timer = setTimeout(fold, 5000); return; }
+      // in view: (nearly) all of them, above the phones' quick buttons in the bottom-right corner (where the credits sit)
+      var bar = document.querySelector('.quickbar'), below = bar ? bar.offsetHeight : 0;
+      io = new IntersectionObserver(function (entries) {
+        clearTimeout(timer);
+        if (entries[entries.length - 1].intersectionRatio >= 0.9) timer = setTimeout(fold, 5000);
+      }, { threshold: 0.9, rootMargin: '0px 0px -' + below + 'px 0px' });
+      io.observe(credits);
+    }
+    // MapLibre unfolds the box as soon as the map exists, still empty; the count starts once the credits are in it
+    var inner = credits.querySelector('.maplibregl-ctrl-attrib-inner');
+    var arrived = new MutationObserver(function () {
+      if (!inner || !inner.textContent.trim()) return;
+      arrived.disconnect();
+      arm();
+    });
+    arrived.observe(credits, { childList: true, subtree: true });
   }
 
   // Tabbing to a pin outside the visible map makes the browser scroll the clipped map box; scroll it straight back
@@ -172,5 +264,5 @@ window.NV.map = (function () {
   // [lng, lat] for MapLibre from a unit's geo: [lat, lng]
   function lngLat(u) { return [u.geo[1], u.geo[0]]; }
 
-  return { create: create, spread: spread, lngLat: lngLat };
+  return { create: create, pin: pin, spread: spread, lngLat: lngLat };
 })();

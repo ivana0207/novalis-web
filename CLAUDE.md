@@ -20,6 +20,8 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   the library loads only when a map comes near the screen, and a note with a fallback link shows if it can't run.
   `js/o-nama.js` the O nama story reveals (`[data-reveal]` groups appear in reading order on desktop ≥ 1024 only, photos unveil top-down; nothing is hidden without JS, on phones or with reduced motion).
   Pages in a folder (`o-nama/` and the store pages) set `<body data-root="../" data-home="../">` so asset paths and section links point back to the site root.
+- **Plain addresses (user's choice, 2026-10-16):** the address bar shows only `/`, `/o-nama/`, `/hiper-novalis/` …, never `#section`, `?…` or `index.html`.
+  site.js scrolls `#…` links without touching the address (`NV.goTo`) and strips any hash/query a page arrives with once it has loaded; don't write state into the URL.
 - **Store pages:** one folder per unit with a page (`hiper-novalis/`, `market-novalis/`, `hiper-bau/`, `veleprodaja/`, `valis/`, `pod-zvon/`), each an identical `index.html` shell with
   `<body data-unit="…" data-root="../" data-home="../">`. Link to them with `NV.unitHref(u)` (clean `slug/` URLs; site.js adds `index.html` on click when opened from disk).
   Every store page has the same sections in the same order — hero, Ključne brojke, Ponuda, Galerija, Radno vrijeme i lokacija, Povezane poslovnice; only the hero takes the store's theme and mark.

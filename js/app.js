@@ -26,7 +26,7 @@
         var st = unitStatus(u, season, z);
         // the card's fields (NV.cardData) plus what the map and the list show
         return Object.assign(NV.cardData(u, st), {
-          n: i + 1, nPad: (i < 9 ? '0' : '') + (i + 1), category: u.category,
+          n: i + 1, category: u.category,
           label: st.label, today: st.today, hasToday: st.hasToday,
           callHref: NV.telHref(u), mapsHref: NV.mapsHref(u)
         });
@@ -80,24 +80,19 @@
   }
 
   function initMap() {
+    if (!NV.map) { $('#mapFail').hidden = false; return; } // js/map.js didn't load
     var lats = NV.units.map(function (u) { return u.geo[0]; }), lngs = NV.units.map(function (u) { return u.geo[1]; });
     NV.map.create($('#mapCanvas'), {
       label: 'Karta poslovnica Novalis u Novalji',
       map: {
         bounds: [[Math.min.apply(null, lngs), Math.min.apply(null, lats)], [Math.max.apply(null, lngs), Math.max.apply(null, lats)]],
-        // room above for the pins' heads, below for the map credits
-        fitBoundsOptions: { padding: wideMap.matches ? { top: 100, right: 80, bottom: 64, left: 72 } : { top: 88, right: 40, bottom: 80, left: 64 } }
+        // room above for the pins' heads, below for the map credits, at the sides for pins pushed apart (NV.map.spread)
+        fitBoundsOptions: { padding: wideMap.matches ? { top: 100, right: 80, bottom: 64, left: 72 } : { top: 88, right: 64, bottom: 80, left: 64 } }
       }
     }, function (m, gl) {
       map = m;
       markers = NV.units.map(function (u, i) {
-        var el = document.createElement('div');
-        el.className = 'pin-marker';
-        el.innerHTML = pinHTML(units[i]);
-        var mk = new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat(NV.map.lngLat(u)).addTo(m);
-        // the button inside is the control: MapLibre's own role and English label on the wrapper would double it
-        el.removeAttribute('role');
-        el.removeAttribute('aria-label');
+        var mk = NV.map.pin(m, gl, u, pinHTML(units[i]));
         mk.id = u.id;
         return mk;
       });
@@ -115,8 +110,13 @@
         if (state.sel && !e.originalEvent.target.closest('.pin')) { state.sel = null; syncMap(); }
       });
       syncMap();
-    }, function () {
+    }, function (hadFocus) {
+      // the map may have been built already: forget it, its pins and an open card
+      map = null; markers = [];
+      state.sel = null; state.hov = null;
+      syncMap();
       $('#mapFail').hidden = false;
+      if (hadFocus) $('#mapFail [data-view]').focus();
     });
   }
 
@@ -132,11 +132,12 @@
   function renderMapCard() {
     var previewId = state.hov && state.hov !== state.sel ? state.hov : null;
     var u = unitById(previewId || state.sel);
+    // phones: MapLibre's two-finger hint would cover the open card (css)
+    $('#map').classList.toggle('has-card', !!(u && map));
     if (!u || !map) { setHTML($('#mapCard'), ''); return; }
     setHTML($('#mapCard'),
       '<div class="map-card' + (previewId ? ' is-preview" aria-hidden="true" inert' : '" role="dialog"') + ' aria-label="' + esc(u.name) + '">' +
         '<div class="map-card__img">' + NV.slotHTML(u.photo, u.photoHint, u.name) +
-          '<span class="map-card__n">' + u.nPad + '</span>' +
           '<button type="button" class="map-card__close" aria-label="Zatvori"><span class="ms ms--xs" aria-hidden="true">close</span></button>' +
         '</div>' +
         '<div class="map-card__body">' +
@@ -238,10 +239,6 @@
   /* ---------------- Events ---------------- */
   function setCat(cat) {
     state.cat = cat;
-    var url = new URL(location.href);
-    if (cat === 'all') url.searchParams.delete('kategorija'); else url.searchParams.set('kategorija', cat);
-    url.hash = 'poslovnice';
-    history.replaceState(null, '', url);
   }
 
   function bind() {
@@ -249,7 +246,7 @@
       if (e.key === 'Escape' && (state.sel || state.hov)) { state.sel = null; state.hov = null; syncMap(); }
     });
 
-    // filters (the category stays in the URL, so a filtered list can be shared: ?kategorija=gastro)
+    // filters (the address stays plain: an old ?kategorija=gastro link still opens filtered, see site.js)
     $('#filters').addEventListener('click', function (e) {
       var tab = e.target.closest('[data-cat]');
       if (!tab) return;
@@ -274,8 +271,7 @@
         setCat('all'); state.openOnly = false;
         cards.end(); // the page scrolls straight to the card: show it at once
         renderFilters(); renderCards();
-        document.getElementById(id).scrollIntoView({ behavior: NV.reduceMotion ? 'auto' : 'smooth' });
-        history.replaceState(null, '', '#' + id);
+        NV.goTo(document.getElementById(id));
       }
     });
 
@@ -286,34 +282,48 @@
     // pins exist once the map is built, so their events are taken on the map box
     var mapBox = $('#map');
     function pinOf(e) { var p = e.target.closest('.pin'); return p && !p.contains(e.relatedTarget) ? p : null; }
-    mapBox.addEventListener('mouseover', function (e) {
+    // only the pin showing the preview takes it away: a pin sliding out from under a resting pointer while the map
+    // pans to a focused pin mustn't hide that pin's card
+    function leave(e) {
       var p = pinOf(e);
+      if (p && state.hov === p.dataset.id) { state.hov = null; syncMap(); }
+    }
+    // Hover previews are for a mouse. A touch has no hover, and iOS Safari takes the first tap on something that changes
+    // the page on mouseover as a hover only: the tap would leave an untappable preview instead of opening the card.
+    mapBox.addEventListener('pointerover', function (e) {
+      var p = e.pointerType === 'mouse' && pinOf(e);
       if (p) { state.hov = p.dataset.id; syncMap(); }
     });
-    mapBox.addEventListener('mouseout', function (e) {
-      if (pinOf(e)) { state.hov = null; syncMap(); }
+    mapBox.addEventListener('pointerout', function (e) {
+      if (e.pointerType === 'mouse') leave(e);
     });
     mapBox.addEventListener('focusin', function (e) {
       var p = pinOf(e);
       if (p) { state.hov = p.dataset.id; syncMap(); revealPin(p.dataset.id); }
     });
-    mapBox.addEventListener('focusout', function (e) {
-      if (pinOf(e)) { state.hov = null; syncMap(); }
-    });
+    mapBox.addEventListener('focusout', leave);
     mapBox.addEventListener('click', function (e) {
       var p = e.target.closest('.pin');
-      if (!p) return;
+      if (!p || e.detail > 1) return; // a double click selects once instead of toggling back off
       var id = p.dataset.id;
       state.sel = state.sel === id ? null : id;
       state.hov = null;
       syncMap();
       if (state.sel) revealPin(id);
     });
+    // the note's button hides the map it sits in: focus goes to the (now pressed) Popis toggle above the list
     $('#mapFail').addEventListener('click', function (e) {
-      if (e.target.closest('[data-view]')) setView('list');
+      if (!e.target.closest('[data-view]')) return;
+      setView('list');
+      $('.seg__btn[data-view="list"]').focus();
     });
     $('#mapCard').addEventListener('click', function (e) {
       if (e.target.closest('.map-card__close')) { state.sel = null; syncMap(); }
+    });
+    // The card closes with its X or a click outside it. Outside the map that's this; on the map it is MapLibre's click
+    // (initMap), which a drag doesn't count as. The map's buttons (zoom, location, credits) leave it open.
+    document.addEventListener('click', function (e) {
+      if (state.sel && !mapBox.contains(e.target)) { state.sel = null; syncMap(); }
     });
 
     // inquiry form (front-end only until a backend endpoint exists)
@@ -339,23 +349,6 @@
     function aim(nx, ny) { tx = nx; ty = ny; if (!raf) raf = requestAnimationFrame(step); }
     hero.addEventListener('pointermove', function (e) { aim(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5); });
     hero.addEventListener('pointerleave', function () { aim(0, 0); });
-  }
-
-  // phones: the quick bar holds back while the hero's buttons are on screen (they are the same actions); buttons that
-  // have slid under the sticky header count as gone. The first state is set without the slide, so the bar doesn't
-  // flash in and out on load
-  function holdQuickbar() {
-    var bar = $('.quickbar'), actions = $('.hero__actions');
-    if (!bar || !actions || !('IntersectionObserver' in window)) return;
-    var top = NV.headerOffset(), r = actions.getBoundingClientRect();
-    bar.style.transition = 'none';
-    bar.classList.toggle('is-held', r.bottom > top && r.top < innerHeight);
-    void bar.offsetWidth;
-    bar.style.transition = '';
-    new IntersectionObserver(function (entries) {
-      // the latest entry: several can queue up before the callback runs
-      bar.classList.toggle('is-held', entries[entries.length - 1].isIntersecting);
-    }, { rootMargin: -top + 'px 0px 0px 0px' }).observe(actions);
   }
 
   // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
@@ -385,7 +378,7 @@
   bind();
   initMap();
   heroLight();
-  holdQuickbar();
+  NV.holdQuickbar($('.hero__actions'));
   // O nama's "Svi kontakti" lands here as ?prikaz=popis#lokacije: open the list, where every unit's contacts are
   if (params.get('prikaz') === 'popis') setView('list');
 
