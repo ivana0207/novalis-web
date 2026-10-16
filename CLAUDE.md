@@ -10,9 +10,14 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
 - **Logo & icons:** `js/brand-paths.js` holds the vector paths (`NV_PATHS.logos/icons/tile/pictos`); stacked HIPER/MARKET lockups and the Valis mark are files in `assets/brand/`.
   The NOVALIS wordmark is artwork — render it from those paths/files, never set it in a font.
 - **Content/data:** all units, categories, hours, occasions and store-page content (`slug`, `page`) live in `data/units.js`. Hours are placeholders until Novalis confirms (Pod Zvon is confirmed).
+  Each unit's `geo: [lat, lng]` places its map pin and its Upute link (Google Maps directions to that spot); Veleprodaja (no address yet, placed at Hiper Novalis) is an estimate until Novalis confirms.
+  An optional `gmaps` (the share link of the unit's official Google Business listing; every unit has one; Veleprodaja uses Hiper Novalis's) makes its address, store-page pin and Upute open that listing.
 - **Jira workflow:** tickets are in Jira project `WEB` (dabushka.atlassian.net). "Work on WEB-25" runs the `jira-work` skill (orchestrator + agents in `.claude/agents/`,
   project profile `.claude/workflow/project.json`, state in `.jira-work/`). It is local-only and read-only toward Jira; usage in [.claude/WORKFLOW.md](.claude/WORKFLOW.md).
 - **Scripts:** `js/site.js` is shared (header, footer, logos, image slots, opening hours, unit cards, paths → `window.NV`); `js/app.js` is the landing page, `js/occasions.js` the "Zašto Novalis" band (#prilike) shared by the landing and O nama pages, `js/poslovnica.js` every store page,
+  `js/map.js` the maps (landing #lokacije and each store page's Radno vrijeme i lokacija): MapLibre GL JS 5.24.0, vendored in `js/vendor/maplibre-gl-5.24.0/`
+  (v6+ is ES-modules only and won't run from disk), drawing OpenStreetMap from OpenFreeMap's free Positron style (no key, no cookies) re-tinted in `PAINT`;
+  the library loads only when a map comes near the screen, and a note with a fallback link shows if it can't run.
   `js/o-nama.js` the O nama story reveals (`[data-reveal]` groups appear in reading order on desktop ≥ 1024 only, photos unveil top-down; nothing is hidden without JS, on phones or with reduced motion).
   Pages in a folder (`o-nama/` and the store pages) set `<body data-root="../" data-home="../">` so asset paths and section links point back to the site root.
 - **Store pages:** one folder per unit with a page (`hiper-novalis/`, `market-novalis/`, `hiper-bau/`, `veleprodaja/`, `valis/`, `pod-zvon/`), each an identical `index.html` shell with

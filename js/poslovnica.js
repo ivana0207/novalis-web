@@ -151,13 +151,13 @@
       '<div class="visit">' +
         '<div class="visit__hours" id="visitHours"></div>' +
         '<div class="visit__place">' +
-          '<a class="store-map" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">' +
-            '<span class="store-map__pin" style="--x:' + u.pin.x + ';--y:' + u.pin.y + '"></span>' +
-            '<span class="store-map__open">Otvori u Google Maps' + ico('open_in_new', 'xs') + '</span>' +
-            '<span class="vh"> - lokacija ' + esc(u.name) + ' (nova kartica)</span>' +
-          '</a>' +
+          '<div class="store-map">' +
+            '<div class="store-map__canvas" id="storeMap"></div>' +
+            '<p class="map__note map__note--fail" id="storeMapFail" hidden>Karta se trenutno ne može prikazati. ' +
+              '<a class="map__link" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">Otvori u Google Maps' + NEW_TAB + '</a></p>' +
+          '</div>' +
           '<div class="visit__info">' +
-            '<div class="visit__addr"><span class="visit__name" translate="no">' + esc(u.name) + '</span><span>' + esc(u.address) + '</span>' +
+            '<div class="visit__addr"><span class="visit__name" translate="no">' + esc(u.name) + '</span>' + NV.addrHTML(u, 'visit__street') +
               (u.email ? '<a href="mailto:' + esc(u.email) + '">' + esc(u.email) + '</a>' : '') + '</div>' +
             '<div class="visit__actions">' +
               '<a class="btn-sm btn-sm--accent" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">' + ico('directions', 'sm') + 'Upute' + NEW_TAB + '</a>' +
@@ -167,6 +167,29 @@
         '</div>' +
       '</div>' +
     '</section>';
+  }
+
+  // A small map around the store (js/map.js), with its pin in the store's colour; the Upute button below it routes there.
+  // With a Google Business listing (gmaps) the pin is a link to it; otherwise it only marks the spot.
+  function initMap() {
+    NV.map.create($('#storeMap'), {
+      label: 'Karta: ' + u.name + ', ' + u.address,
+      map: { center: NV.map.lngLat(u), zoom: 16 }
+    }, function (map, gl) {
+      var el = document.createElement('div');
+      el.className = 'pin-marker';
+      var place = NV.placeHref(u);
+      el.innerHTML = place
+        ? '<a class="pin pin--store" href="' + esc(place) + '" target="_blank" rel="noopener" title="' + esc(u.name) + ' na Google kartama">' +
+            '<span class="pin__head"></span><span class="vh">' + esc(u.name) + ' na Google kartama' + NEW_TAB + '</span></a>'
+        : '<span class="pin pin--store"><span class="pin__head"></span></span>';
+      new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat(NV.map.lngLat(u)).addTo(map);
+      el.removeAttribute('role');
+      el.removeAttribute('aria-label');
+      if (!place) el.setAttribute('aria-hidden', 'true'); // a plain mark: the map's own label names the place
+    }, function () {
+      $('#storeMapFail').hidden = false;
+    });
   }
 
   // The landing page's unit cards (NV.cardHTML), with today's hours (renderLive); each shows the photo its own page leads with.
@@ -240,6 +263,7 @@
   $('#qbCall').href = telHref;
   $('#qbMaps').href = mapsHref;
   renderLive();
+  initMap();
   addStructuredData();
 
   // keep open/closed status live

@@ -48,8 +48,14 @@ window.NV = (function () {
   }
 
   // Directions, phone link and phone label for a unit (company line when it has no own number).
+  // Directions: a unit with an official Google Business listing (gmaps) opens that listing, where Google offers the route;
+  // otherwise Google Maps routes to the unit's map spot (geo), even without an exact street address. Phones open the app.
   function mapsHref(u) {
-    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u.name + ', ' + u.address);
+    return u.gmaps || 'https://www.google.com/maps/dir/?api=1&destination=' + u.geo.join(',');
+  }
+  // The unit's official Google Business listing, or null when data/units.js has no gmaps link for it
+  function placeHref(u) {
+    return u.gmaps || null;
   }
   function telHref(u) { return 'tel:' + (u.tel || D.company.tel); }
   function telLabel(u) { return u.phone || D.company.phone; }
@@ -217,6 +223,15 @@ window.NV = (function () {
   /* ---------------- Header nav + footer ---------------- */
   // Every link to a unit goes to its store page, or to its own website in a new tab.
   var NEW_TAB = '<span class="vh"> (nova kartica)</span>';
+
+  // A unit's address, as a link to its Google Business listing when it has one (class cls either way)
+  function addrHTML(u, cls) {
+    var href = placeHref(u);
+    return href
+      ? '<a class="' + cls + ' addr-link" href="' + esc(href) + '" target="_blank" rel="noopener" title="' + esc(u.name) + ' na Google kartama">' +
+          esc(u.address) + NEW_TAB + '</a>'
+      : '<span class="' + cls + '">' + esc(u.address) + '</span>';
+  }
   // Unit names are brand names: translate="no" keeps browser translation from turning "Pod Zvon" into "Under the Bell".
   function nameHTML(u) { return '<span translate="no">' + esc(u.name) + '</span>'; }
   // Header menu links end in the → the "Za svaku priliku" links use, also for a unit's own website (B&B Novalis);
@@ -470,7 +485,7 @@ window.NV = (function () {
   return {
     D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
     $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
-    asset: asset, unitHref: unitHref, mapsHref: mapsHref, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
+    asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, unitStatus: unitStatus

@@ -34,6 +34,11 @@
      * slug: the store page's folder (/hiper-bau/ → hiper-bau/index.html), same addresses as on novalis.hr.
      * url: only for units with their own website (no store page here).
      * schema: the unit's schema.org business type for search engines (merged into its JSON-LD).
+     * geo: [lat, lng] for the maps and the Upute links, from OpenStreetMap (Market Novalis matches novalis.hr's map,
+     *   Pod Zvon is its Google Maps listing). Veleprodaja is an estimate until Novalis confirms (no address yet, placed
+     *   at Hiper Novalis). Units on the same spot sit side by side on the map.
+     * gmaps: the share link of the unit's official Google Business listing (Google Maps > Podijeli). With it, the address,
+     *   the store page's map pin and Upute open that listing (the pin still sits on geo); without it, Upute routes to geo.
      * page: content of the store page (js/poslovnica.js). Every store page has the same sections;
      *   only the hero differs: theme (red · yellow · white · slate · violet · earth) and mark
      *   (logo file · lockup [light word, bold word] · word · image with a script greeting).
@@ -45,7 +50,7 @@
         id: 'hiper-novalis', slug: 'hiper-novalis', category: 'trgovine', name: 'Hiper Novalis',
         desc: 'Veliki hipermarket s bogatim izborom proizvoda.',
         address: 'Čiponjac III/2, Novalja', phone: '053 663 300', tel: '+38553663300',
-        promo: false, pin: { x: 62, y: 30 }, schema: { '@type': 'Store' },
+        promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'Store' },
         hours: {
           summer: daily(wk('07:00', '22:00')),
           winter: week(wk('07:00', '19:00'), wk('07:00', '19:00'), wk('07:00', '12:30'))
@@ -79,7 +84,7 @@
         id: 'market-novalis', slug: 'market-novalis', category: 'trgovine', name: 'Market Novalis',
         desc: 'Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje.',
         address: 'Josipa Kunkere 8, Novalja', phone: '098 441 149', tel: '+38598441149', email: 'robnakucanovalis@gmail.com',
-        promo: false, pin: { x: 44, y: 56 }, schema: { '@type': 'GroceryStore' },
+        promo: false, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/PTz44JiJdKmXjiLt6', schema: { '@type': 'GroceryStore' },
         hours: {
           summer: week(wk('06:30', '23:00'), wk('06:30', '23:00'), wk('07:00', '22:00')),
           winter: week(wk('07:00', '20:00'), wk('07:00', '20:00'), wk('07:00', '13:00'))
@@ -111,7 +116,7 @@
         id: 'hiper-bau', slug: 'hiper-bau', category: 'trgovine', name: 'Hiper Bau',
         desc: 'Trgovina građevinskim materijalom i opremom za dom.',
         address: 'Čiponjac III/3, Novalja', phone: '099 5476 792', tel: '+385995476792',
-        promo: false, pin: { x: 72, y: 20 }, schema: { '@type': 'HomeAndConstructionBusiness' },
+        promo: false, geo: [44.54726, 14.89652], gmaps: 'https://maps.app.goo.gl/oXePTfeMhh4MnKbX8', schema: { '@type': 'HomeAndConstructionBusiness' },
         hours: {
           summer: week(wk('07:00', '20:00'), wk('07:00', '14:00'), null),
           winter: week(wk('07:00', '17:00'), wk('07:00', '13:00'), null)
@@ -144,7 +149,7 @@
         id: 'veleprodaja', slug: 'veleprodaja', category: 'veleprodaja', name: 'Veleprodaja',
         desc: 'Tvrtka Novalis nudi veleprodaju široke palete proizvoda uz uslugu dostave.',
         address: 'Novalja', phone: '053 663 300', tel: '+38553663300', email: 'veleprodaja@novalis.com.hr',
-        promo: false, pin: { x: 80, y: 38 }, schema: { '@type': 'WholesaleStore' },
+        promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'WholesaleStore' },
         hours: {
           summer: week(wk('06:00', '14:00'), wk('06:00', '12:00'), null),
           winter: week(wk('07:00', '15:00'), null, null)
@@ -176,7 +181,7 @@
         id: 'valis', slug: 'valis', category: 'gastro', name: 'Bistro i slastičarna Valis',
         desc: 'Usluge bistroa i slastičarne.',
         address: 'Trg Bazilike 3, Novalja', phone: '099 258 6317', tel: '+385992586317',
-        promo: false, pin: { x: 38, y: 62 }, schema: { '@type': ['Bakery', 'CafeOrCoffeeShop'] },
+        promo: false, geo: [44.55643, 14.88334], gmaps: 'https://maps.app.goo.gl/7rZgAQVpfzeDLfWm8', schema: { '@type': ['Bakery', 'CafeOrCoffeeShop'] },
         hours: {
           summer: daily(wk('08:00', '24:00')),
           winter: [wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '22:00'), wk('08:00', '22:00'), wk('09:00', '21:00')]
@@ -206,7 +211,7 @@
         id: 'pod-zvon', slug: 'pod-zvon', category: 'gastro', name: 'Bistro Pod Zvon',
         desc: 'Nalazi se tik pod zvonom župne crkve, u centru grada.',
         address: 'Ulica kralja Zvonimira 1a, Novalja', phone: '053 679 555', tel: '+38553679555', email: 'zvon@novalis.com.hr',
-        promo: false, pin: { x: 33, y: 52 }, schema: { '@type': 'Restaurant', servesCuisine: ['Mediterranean', 'Pizza'] },
+        promo: false, geo: [44.55646, 14.88455], gmaps: 'https://maps.app.goo.gl/2HvTUTQV7ncNfJYK8', schema: { '@type': 'Restaurant', servesCuisine: ['Mediterranean', 'Pizza'] },
         hoursConfirmed: true,
         hours: {
           summer: daily(wk('16:00', '24:00')),
@@ -239,7 +244,7 @@
         id: 'hotel-novalis', category: 'smjestaj', name: 'B&B Novalis',
         desc: 'Smještaj s doručkom u centru Novalje - sobe za obitelj, prijatelje i poslovne goste.',
         address: 'Josipa Kunkere 8, Novalja', phone: '053 662 222', tel: '+38553662222',
-        promo: false, url: 'https://hotelnovalis.hr', external: true, pin: { x: 52, y: 72 }, schema: { '@type': 'BedAndBreakfast' },
+        promo: false, url: 'https://hotelnovalis.hr', external: true, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/Xn3Hd2v3PpPCoA7d6', schema: { '@type': 'BedAndBreakfast' },
         hours: { summer: allDay, winter: allDay },
         photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis'
       }
