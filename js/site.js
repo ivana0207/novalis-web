@@ -133,51 +133,141 @@ window.NV = (function () {
   }
 
   /* ---------------- Opening hours (Europe/Zagreb) ---------------- */
+  // Every date is a calendar day in Novalja, kept as its UTC midnight and read with getUTC*, so the date arithmetic
+  // never depends on the visitor's time zone (or its daylight saving).
   var DAYS_ACC = ['ponedjeljak', 'utorak', 'srijedu', 'četvrtak', 'petak', 'subotu', 'nedjelju'];
+  var DAY_MS = 864e5;
   var toMin = function (s) { var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); };
+  var has = function (o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); };
+  // An exception as data/units.js documents it: key 'MM-DD' or 'YYYY-MM-DD' (two digits each), value null or
+  // ['HH:MM', 'HH:MM']
+  var EX_KEY = /^(\d{4}-)?\d{2}-\d{2}$/, HHMM = /^\d{2}:\d{2}$/;
+  function isHours(t) { return t === null || (Array.isArray(t) && t.length === 2 && HHMM.test(t[0]) && HHMM.test(t[1])); }
 
+  // ms: the day's UTC midnight · y: year · iso: 'YYYY-MM-DD' · md: 'MM-DD' · day: 0 = Monday … 6 = Sunday
+  function calDay(ms) {
+    var dt = new Date(ms), iso = dt.toISOString().slice(0, 10);
+    return { ms: ms, y: dt.getUTCFullYear(), iso: iso, md: iso.slice(5), day: (dt.getUTCDay() + 6) % 7 };
+  }
+  // 'YYYY-MM-DD' → calDay
+  function dayOf(iso) { return calDay(Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10))); }
+
+  // Today in Novalja, from the browser's clock: calDay + min (minutes since midnight).
   function zagrebNow() {
     var parts = new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Europe/Zagreb', weekday: 'short', hour: '2-digit', minute: '2-digit',
-      month: '2-digit', day: '2-digit', hourCycle: 'h23'
+      timeZone: 'Europe/Zagreb', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
     }).formatToParts(new Date());
-    var g = function (t) { return (parts.find(function (x) { return x.type === t; }) || {}).value; };
-    return {
-      day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].indexOf(g('weekday')),
-      min: (+g('hour')) * 60 + (+g('minute')),
-      md: g('month') + '-' + g('day')
-    };
+    var g = function (t) { return +(parts.find(function (x) { return x.type === t; }) || {}).value; };
+    var z = calDay(Date.UTC(g('year'), g('month') - 1, g('day')));
+    z.min = g('hour') * 60 + g('minute');
+    return z;
   }
 
-  function currentSeason(z) {
-    var s = D.seasons.summer;
-    return z.md >= s.start && z.md <= s.end ? 'summer' : 'winter';
+  // 'MM-DD' within { start, end }, both days included (a period may run over New Year: start after end)
+  function inPeriod(md, p) {
+    return p.start <= p.end ? md >= p.start && md <= p.end : md >= p.start || md <= p.end;
+  }
+  // The season of a day (calDay, or zagrebNow() for today).
+  function currentSeason(d) {
+    return inPeriod(d.md, D.seasons.summer) ? 'summer' : 'winter';
   }
 
-  function nextOpen(hrs, day) {
-    for (var i = 1; i <= 7; i++) {
-      var d = (day + i) % 7, n = hrs[d];
-      if (n) return 'otvara ' + (i === 1 ? 'sutra' : 'u ' + DAYS_ACC[d]) + ' u ' + n[0];
+  // Easter Sunday of year y as its UTC midnight (Gregorian computus, Meeus/Jones/Butcher).
+  function easter(y) {
+    var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    var f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    var i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    var n = h + l - 7 * m + 114;
+    return Date.UTC(y, Math.floor(n / 31) - 1, n % 31 + 1);
+  }
+  // The public holidays of year y ('YYYY-MM-DD', in date order), worked out once per year; callers get a copy, so the
+  // cache can't be changed from outside. In some years a date is there twice (Tijelovo on 30. 5. or 22. 6.): harmless
+  // for "is it a holiday", and specialDays lists each date once.
+  var holidayCache = {};
+  function holidays(y) {
+    if (!holidayCache[y]) {
+      var H = D.holidays, e = easter(y);
+      holidayCache[y] = H.fixed.map(function (md) { return y + '-' + md; })
+        .concat(H.easter.map(function (n) { return calDay(e + n * DAY_MS).iso; })).sort();
     }
-    return 'zatvoreno';
+    return holidayCache[y].slice();
   }
 
-  // text: long status for cards · label: short status for map card and list · today: today's hours
-  function unitStatus(u, season, z) {
-    var hrs = u.hours[season], t = hrs[z.day];
+  // A unit's hours on day d (calDay): t = [open, close], or null when it is closed all day. The first rule that
+  // applies wins: a dated exception ('YYYY-MM-DD' before 'MM-DD'), the open period, a public holiday (closedOnHolidays),
+  // the weekly table of d's season. special: a rule other than the weekly table decided. An exception not written as
+  // documented counts as absent (see the warning below).
+  function dayHours(u, d) {
+    var ex = u.exceptions;
+    if (has(ex, d.iso) && isHours(ex[d.iso])) return { t: ex[d.iso], special: true };
+    if (has(ex, d.md) && isHours(ex[d.md])) return { t: ex[d.md], special: true };
+    if (u.openPeriod && !inPeriod(d.md, u.openPeriod)) return { t: null, special: true };
+    if (u.closedOnHolidays && holidays(d.y).indexOf(d.iso) >= 0) return { t: null, special: true };
+    return { t: u.hours[currentSeason(d)][d.day], special: false };
+  }
+
+  // "otvara sutra u 07:00" / "otvara u utorak u 07:00": the first of the next 6 days the unit opens (after that the
+  // weekday would be ambiguous), or null.
+  function nextOpen(u, d) {
+    for (var i = 1; i <= 6; i++) {
+      var n = calDay(d.ms + i * DAY_MS), t = dayHours(u, n).t;
+      if (t) return 'otvara ' + (i === 1 ? 'sutra' : 'u ' + DAYS_ACC[n.day]) + ' u ' + t[0];
+    }
+    return null;
+  }
+
+  // "Danas 07:00 - 19:00" / "Sutra 0 - 24 h" / "Danas zatvoreno": a day's hours (t as in dayHours) after word.
+  function hoursLine(word, t) {
+    return word + ' ' + (!t ? 'zatvoreno' : t[0] === '00:00' && t[1] === '24:00' ? '0 - 24 h' : t[0] + ' - ' + t[1]);
+  }
+
+  // A unit's status now (z: zagrebNow()). text: long status for cards · label: short status for map card and list ·
+  // today: the second line of map card and list, shown when hasToday: today's hours, tomorrow's once today's are over ·
+  // regular: today's hours are the weekly table's (store pages mark that row). A day closed by an exception, the open
+  // period or a holiday says only "Zatvoreno": no hours, no "otvara …". Once today's hours are over: "otvara …".
+  function unitStatus(u, z) {
+    var h = dayHours(u, z), t = h.t, next;
     var is24 = !!t && t[0] === '00:00' && t[1] === '24:00';
     var reception = u.category === 'smjestaj' && is24;
+    var closedAllDay = !t && h.special;
     var open = !!t && (is24 || (z.min >= toMin(t[0]) && z.min < toMin(t[1])));
-    var today = !t ? 'Danas zatvoreno' : is24 ? 'Danas 0 - 24 h' : 'Danas ' + t[0] + ' - ' + t[1];
+    var over = !!t && z.min >= toMin(t[1]);
+    var today = over ? hoursLine('Sutra', dayHours(u, calDay(z.ms + DAY_MS)).t) : hoursLine('Danas', t);
     var text;
     if (reception) text = 'Recepcija 0 - 24 h';
     else if (open) text = is24 ? 'Otvoreno 0 - 24 h' : 'Otvoreno do ' + t[1];
-    else text = 'Zatvoreno · ' + (t ? today : nextOpen(hrs, z.day));
+    else if (t && !over) text = 'Zatvoreno · ' + today;
+    else if (!closedAllDay && (next = nextOpen(u, z))) text = 'Zatvoreno · ' + next;
+    else text = 'Zatvoreno';
     return {
-      open: open, text: text, today: today, hasToday: !reception,
+      open: open, text: text, today: today, hasToday: !reception && !closedAllDay, regular: !h.special,
       label: reception ? 'Recepcija 0 - 24 h' : open ? 'Otvoreno sada' : 'Zatvoreno'
     };
   }
+
+  // The days of year y with hours of their own (a public holiday the unit closes on, a dated exception), in date
+  // order: [{ iso, t }] with t as in dayHours. For search engines (store pages' JSON-LD).
+  function specialDays(u, y) {
+    var ex = u.exceptions || {};
+    var isos = Object.keys(ex).filter(function (k) { return EX_KEY.test(k) && isHours(ex[k]); })
+      .map(function (k) { return k.length === 5 ? y + '-' + k : k; })
+      .concat(u.closedOnHolidays ? holidays(y) : []).sort();
+    return isos.filter(function (iso, i) {
+      // one entry per date; and no 29. 2. outside leap years (nor 30. 2. or month 13)
+      return iso.slice(0, 4) === String(y) && iso !== isos[i - 1] && dayOf(iso).iso === iso;
+    }).map(function (iso) { return { iso: iso, t: dayHours(u, dayOf(iso)).t }; });
+  }
+
+  // A mistyped exception in data/units.js must never break a page: dayHours and specialDays leave it out, so that day
+  // keeps its normal rules, and the console names each one once, here.
+  D.units.forEach(function (u) {
+    Object.keys(u.exceptions || {}).forEach(function (k) {
+      if (EX_KEY.test(k) && isHours(u.exceptions[k])) return;
+      console.warn('data/units.js: ' + u.id + ".exceptions['" + k + "'] is ignored. Write 'MM-DD' or 'YYYY-MM-DD' " +
+        "(two digits each) with null or ['HH:MM', 'HH:MM'].");
+    });
+  });
 
   /* ---------------- Brand vectors ---------------- */
   var LOGO_COLORS = { red: 'var(--nv-red)', yellow: 'var(--nv-yellow)', white: '#fff', black: '#000' };
@@ -541,6 +631,6 @@ window.NV = (function () {
     goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
-    zagrebNow: zagrebNow, currentSeason: currentSeason, unitStatus: unitStatus
+    zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays
   };
 })();

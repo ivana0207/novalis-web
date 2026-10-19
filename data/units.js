@@ -23,6 +23,13 @@
       founded: 1990
     },
     seasons: { summer: { start: '05-15', end: '09-30' } },
+    // Croatian public holidays (national only, no local days), on which units with closedOnHolidays are closed all day:
+    // fixed 'MM-DD' dates, and days counted from Easter Sunday (0 Uskrs, 1 Uskrsni ponedjeljak, 60 Tijelovo), which
+    // js/site.js works out for each year.
+    holidays: {
+      fixed: ['01-01', '01-06', '05-01', '05-30', '06-22', '08-05', '08-15', '11-01', '11-18', '12-25', '12-26'],
+      easter: [0, 1, 60]
+    },
     // Order here is the order of filters, menu groups and unit numbering.
     // direct: the header shows the category as a plain link to its only unit's page instead of a menu.
     categories: [
@@ -40,6 +47,14 @@
      *   at Hiper Novalis). Units on the same spot sit side by side on the map.
      * gmaps: the share link of the unit's official Google Business listing (Google Maps > Podijeli). With it, the address,
      *   the store page's map pin and Upute open that listing (the pin still sits on geo); without it, Upute routes to geo.
+     * hours: { summer, winter } weekly tables (see the top of this file), seasons from `seasons`. A day's hours come from
+     *   the first of these that applies: exceptions > openPeriod > holidays (closedOnHolidays) > that season's weekly table.
+     * closedOnHolidays: true = closed all day on the public holidays (`holidays`); without it the unit keeps its hours.
+     * openPeriod: { start: 'MM-DD', end: 'MM-DD' } - open only from start to end (both days included), closed all day
+     *   the rest of the year.
+     * exceptions: { 'YYYY-MM-DD' or 'MM-DD' (every year), two digits each, e.g. '01-06': [open, close], or null = closed
+     *   all day } - one day's own hours, e.g. { '12-24': ['07:00', '14:00'], '2026-12-31': null }; a full date wins over
+     *   'MM-DD'. An entry written any other way is ignored (the browser console says so). None yet.
      * page: content of the store page (js/poslovnica.js). Every store page has the same sections;
      *   only the hero differs: theme (red · yellow · white · slate · violet · earth) and mark
      *   (logo file · lockup [light word, bold word] · word · image with a script greeting).
@@ -52,9 +67,10 @@
         desc: 'Veliki hipermarket s bogatim izborom proizvoda.',
         address: 'Čiponjac III/2, Novalja', phone: '053 663 300', tel: '+38553663300',
         promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'Store' },
+        closedOnHolidays: true,
         hours: {
           summer: daily(wk('07:00', '22:00')),
-          winter: week(wk('07:00', '19:00'), wk('07:00', '19:00'), wk('07:00', '12:30'))
+          winter: week(wk('07:00', '19:00'), wk('07:00', '19:00'), null)
         },
         photo: 'assets/img/hiper-novalis-storefront.jpg', photoHint: 'Foto: Hiper Novalis, ulaz i parking',
         page: {
@@ -86,9 +102,10 @@
         desc: 'Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje.',
         address: 'Josipa Kunkere 8, Novalja', phone: '098 441 149', tel: '+38598441149', email: 'robnakucanovalis@gmail.com',
         promo: false, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/PTz44JiJdKmXjiLt6', schema: { '@type': 'GroceryStore' },
+        closedOnHolidays: true,
         hours: {
           summer: week(wk('06:30', '23:00'), wk('06:30', '23:00'), wk('07:00', '22:00')),
-          winter: week(wk('07:00', '20:00'), wk('07:00', '20:00'), wk('07:00', '13:00'))
+          winter: week(wk('07:00', '20:00'), wk('07:00', '20:00'), null)
         },
         photo: IMG + 'market-novalis-ulaz.jpg', photoHint: 'Foto: Market u centru, izlog i police',
         page: {
@@ -118,6 +135,7 @@
         desc: 'Trgovina građevinskim materijalom i opremom za dom.',
         address: 'Čiponjac III/3, Novalja', phone: '099 5476 792', tel: '+385995476792',
         promo: false, geo: [44.54726, 14.89652], gmaps: 'https://maps.app.goo.gl/oXePTfeMhh4MnKbX8', schema: { '@type': 'HomeAndConstructionBusiness' },
+        closedOnHolidays: true,
         hours: {
           summer: week(wk('07:00', '20:00'), wk('07:00', '14:00'), null),
           winter: week(wk('07:00', '17:00'), wk('07:00', '13:00'), null)
@@ -151,6 +169,7 @@
         desc: 'Tvrtka Novalis nudi veleprodaju široke palete proizvoda uz uslugu dostave.',
         address: 'Novalja', phone: '053 663 300', tel: '+38553663300', email: 'veleprodaja@novalis.com.hr',
         promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'WholesaleStore' },
+        closedOnHolidays: true,
         hours: {
           summer: week(wk('06:00', '14:00'), wk('06:00', '12:00'), null),
           winter: week(wk('07:00', '15:00'), null, null)
@@ -246,7 +265,7 @@
         desc: 'Smještaj s doručkom u centru Novalje - sobe za obitelj, prijatelje i poslovne goste.',
         address: 'Josipa Kunkere 8, Novalja', phone: '053 662 222', tel: '+38553662222',
         promo: false, url: 'https://hotelnovalis.hr', external: true, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/Xn3Hd2v3PpPCoA7d6', schema: { '@type': 'BedAndBreakfast' },
-        hours: { summer: allDay, winter: allDay },
+        hours: { summer: allDay, winter: allDay }, openPeriod: { start: '04-01', end: '11-01' },
         photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis'
       }
     ],

@@ -46,13 +46,14 @@
     winter: { title: 'Zimsko radno vrijeme', period: NV.dayMonth(S.end, 1) + ' - ' + NV.dayMonth(S.start, -1) }
   };
 
-  function hourBlocks(z, season) {
+  // today: the weekday (0 = Monday) whose row is marked in the current table, or -1 for none
+  function hourBlocks(today, season) {
     if (allYear) {
-      return [{ title: 'Radno vrijeme', period: 'cijele godine', now: true, rows: hourRows(u.hours.summer, z.day) }];
+      return [{ title: 'Radno vrijeme', period: 'cijele godine', now: true, rows: hourRows(u.hours.summer, today) }];
     }
     return (season === 'summer' ? ['summer', 'winter'] : ['winter', 'summer']).map(function (s) {
       var now = s === season;
-      return { title: SEASONS[s].title, period: SEASONS[s].period, now: now, rows: hourRows(u.hours[s], now ? z.day : -1) };
+      return { title: SEASONS[s].title, period: SEASONS[s].period, now: now, rows: hourRows(u.hours[s], now ? today : -1) };
     });
   }
 
@@ -60,8 +61,8 @@
     return '<p class="' + cls + (st.open ? ' is-open' : '') + '"><span class="dot"></span>' + esc(st.text) + '</p>';
   }
 
-  function hoursHTML(z, season) {
-    return hourBlocks(z, season).map(function (b) {
+  function hoursHTML(today, season) {
+    return hourBlocks(today, season).map(function (b) {
       return '<div class="hours' + (b.now ? ' is-now' : '') + '">' +
         '<div class="hours__head"><h3 class="hours__title">' + esc(b.title) + '</h3>' +
           (b.now && b.period !== 'cijele godine' ? '<span class="hours__badge">Sada</span>' : '') +
@@ -194,18 +195,20 @@
     return '<section class="store-sec store-sec--last" aria-labelledby="h-povezane">' + headHTML('povezane', 'Povezane poslovnice') +
       '<div class="cards" id="related"></div></section>';
   }
-  function relatedCardsHTML(z, season) {
+  function relatedCardsHTML(z) {
     return p.related.map(function (id, i) {
       var r = NV.byId[id];
-      return NV.cardHTML(NV.cardData(r, NV.unitStatus(r, season, z), r.page && r.page.photo), i);
+      return NV.cardHTML(NV.cardData(r, NV.unitStatus(r, z), r.page && r.page.photo), i);
     }).join('');
   }
 
   /* ---------------- Search engines ---------------- */
   // Only confirmed opening hours are published to search engines; placeholders would show wrong hours on Google.
   var DOW = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  // The dated hours below are for this year in Novalja (not in the visitor's time zone, which may already be in the next)
+  var YEAR = NV.zagrebNow().y;
   function isoDay(md, shift) {
-    var dt = new Date(Date.UTC(new Date().getFullYear(), +md.slice(0, 2) - 1, +md.slice(3) + (shift || 0)));
+    var dt = new Date(Date.UTC(YEAR, +md.slice(0, 2) - 1, +md.slice(3) + (shift || 0)));
     return dt.toISOString().slice(0, 10);
   }
   function hoursSpec(hrs, from, through) {
@@ -226,13 +229,23 @@
       .concat(hoursSpec(u.hours.summer, isoDay(S.start), isoDay(S.end)))
       .concat(hoursSpec(u.hours.winter, isoDay(S.end, 1), isoDay('12-31')));
   }
+  // This year's days with hours of their own (public holidays the unit closes on, dated exceptions); closed all day is
+  // 00:00 - 00:00.
+  function specialHours() {
+    if (!u.hoursConfirmed) return undefined;
+    var specs = NV.specialDays(u, YEAR).map(function (s) {
+      var t = s.t || ['00:00', '00:00'];
+      return { '@type': 'OpeningHoursSpecification', opens: t[0], closes: t[1] === '24:00' ? '23:59' : t[1], validFrom: s.iso, validThrough: s.iso };
+    });
+    return specs.length ? specs : undefined;
+  }
 
   function addStructuredData() {
     var business = Object.assign({ '@context': 'https://schema.org' }, u.schema, {
       '@id': NV.unitId(u), name: u.name, description: p.lead, url: NV.PAGE_URL,
       image: [p.photo].concat(p.gallery.map(function (g) { return g[0]; })).filter(Boolean).map(function (src) { return NV.absUrl(asset(src)); }),
       telephone: u.tel || D.company.tel, email: u.email, address: NV.postalAddress(u.address), hasMap: mapsHref,
-      openingHoursSpecification: openingHours(), parentOrganization: NV.ORG
+      openingHoursSpecification: openingHours(), specialOpeningHoursSpecification: specialHours(), parentOrganization: NV.ORG
     });
     var crumbs = {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
@@ -247,10 +260,11 @@
 
   /* ---------------- Render ---------------- */
   function renderLive() {
-    var z = NV.zagrebNow(), season = NV.currentSeason(z), st = NV.unitStatus(u, season, z);
+    var z = NV.zagrebNow(), season = NV.currentSeason(z), st = NV.unitStatus(u, z);
     setHTML($('#heroStatus'), statusHTML('store-hero__status', st));
-    setHTML($('#visitHours'), statusHTML('visit__status', st) + hoursHTML(z, season));
-    related.render(relatedCardsHTML(z, season));
+    // a day with hours of its own (holiday, exception) marks no weekday row: the status above says it all
+    setHTML($('#visitHours'), statusHTML('visit__status', st) + hoursHTML(st.regular ? z.day : -1, season));
+    related.render(relatedCardsHTML(z));
   }
 
   $('.page').classList.add('store', 'store--' + p.theme);

@@ -11,6 +11,11 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
 - **Logo & icons:** `js/brand-paths.js` holds the vector paths (`NV_PATHS.logos/icons/tile/pictos`); stacked HIPER/MARKET lockups and the Valis mark are files in `assets/brand/`.
   The NOVALIS wordmark is artwork — render it from those paths/files, never set it in a font.
 - **Content/data:** all units, categories, hours, occasions and store-page content (`slug`, `page`) live in `data/units.js`. Hours are placeholders until Novalis confirms (Pod Zvon is confirmed).
+  Opening status is Novalja time (Europe/Zagreb) from the browser's clock. A day's hours come from one rule in `js/site.js` (`dayHours`):
+  a unit's dated `exceptions` > its `openPeriod` (B&B: 1. 4. - 1. 11.) > the 14 national `holidays` (Easter-based ones computed; only units
+  with `closedOnHolidays`: the shops and Veleprodaja) > that date's season table (summer 15. 5. - 30. 9.; shops open on summer Sundays only).
+  A day closed by one of those rules shows just "Zatvoreno" (decisions 2026-10-19, WEB-28), and its store page's hours table marks no weekday row.
+  Once a day's hours are over, a unit says when it opens next ("Zatvoreno · otvara sutra u 07:00"; list and map card: "Sutra 07:00 - 19:00").
   Each unit's `geo: [lat, lng]` places its map pin and its Upute link (Google Maps directions to that spot); Veleprodaja (no address yet, placed at Hiper Novalis) is an estimate until Novalis confirms.
   An optional `gmaps` (the share link of the unit's official Google Business listing; every unit has one; Veleprodaja uses Hiper Novalis's) makes its address, store-page pin and Upute open that listing.
 - **Jira workflow:** tickets are in Jira project `WEB` (dabushka.atlassian.net). "Work on WEB-25" runs the `jira-work` skill (orchestrator + agents in `.claude/agents/`,

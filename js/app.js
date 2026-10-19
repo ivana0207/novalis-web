@@ -23,7 +23,7 @@
     return {
       season: season,
       units: NV.units.map(function (u, i) {
-        var st = unitStatus(u, season, z);
+        var st = unitStatus(u, z);
         // the card's fields (NV.cardData) plus what the map and the list show
         return Object.assign(NV.cardData(u, st), {
           n: i + 1, category: u.category,
@@ -229,6 +229,8 @@
     $('#seasonIcon').textContent = vm.season === 'summer' ? 'sunny' : 'ac_unit';
     $('#seasonLabel').textContent = vm.season === 'summer' ? 'Ljetno radno vrijeme' : 'Zimsko radno vrijeme';
     $('#openStatus').textContent = 'Trenutno otvoreno ' + openCount + ' od ' + units.length + ' poslovnica';
+    // the dot beside it is green only while something is open (grey like a closed unit's otherwise, e.g. all day on a holiday)
+    $('.find__status .dot').classList.toggle('dot--open', openCount > 0);
 
     renderFilters();
     renderCards();
