@@ -6,6 +6,7 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
 - **Design source:** claude.ai/design project `d4d27162-ec6f-45fa-b6e0-5225716be768`, files `Novalis-Landing-v4.dc.html` → `index.html` and `O-nama.dc.html` → `o-nama/index.html` (data: `units-v3.json`).
   Store pages: Design canvas https://claude.ai/artifact/Rd3o8cEGiSNr8J4zq5i9rR (approved 2026-10-09).
 - **Design system:** "Novalis Design System" https://claude.ai/artifact/DUZ3944vHmYWT1NPhY72YY — it wins over older styling. Brand rules summarized in [BRAND.md](BRAND.md).
+  Both come from the Novalis brand manual (PDF "CGP priročnik", Prijedlog vizualnog identiteta); where they disagree with it, the manual wins.
 - **Tokens:** `css/ds.css` (from the design system's tokens.json). Use its variables; don't invent new brand colors.
 - **Logo & icons:** `js/brand-paths.js` holds the vector paths (`NV_PATHS.logos/icons/tile/pictos`); stacked HIPER/MARKET lockups and the Valis mark are files in `assets/brand/`.
   The NOVALIS wordmark is artwork — render it from those paths/files, never set it in a font.
@@ -28,20 +29,30 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   Povezane poslovnice uses the landing's unit cards (`NV.cardHTML` + `NV.cardGrid`: hover panel, rise-in entrance, live hours).
   B&B Novalis has no page — it links to hotelnovalis.hr.
 - **Cache busting:** every page loads CSS/JS with `?v=YYYYMMDD` (`-2`, `-3` … for later changes the same day). When you change any CSS or JS file, bump that version in all HTML pages
-  (`index.html`, `o-nama/index.html`, the six store `index.html` files), or browsers mix cached old scripts with new pages.
+  (`index.html`, `o-nama/index.html`, `pravila-o-privatnosti/index.html`, the six store `index.html` files), or browsers mix cached old scripts with new pages.
 - Accessibility (WCAG 2.2 AA): every page starts with a skip link to its `<main>`; unit names are wrapped in `translate="no"`; links that open a new tab say so with a hidden " (nova kartica)" (`NV.NEW_TAB`); text on brand colours is checked for 4.5:1.
+- **Privacy (`pravila-o-privatnosti/`, same address as on novalis.hr):** the Pravila o privatnosti, linked from every footer and the inquiry form.
+  It says the site uses no cookies or browser storage and names every outside service (Vercel; OpenFreeMap, which delivers the
+  map through Cloudflare). Adding analytics, an embed, a form service or anything else loaded from another server changes that:
+  update its sections 5-9 and the date (a cookie banner is needed only once something stores data in the browser). The wording
+  is a draft until Novalis approves it.
 - **SEO:** public address for now is https://novalis-web.vercel.app/ (user's choice, 2026-10-10). It is written in each page's `<head>`
   (canonical + Open Graph), `robots.txt` and `sitemap.xml`; JSON-LD URLs follow the canonical link. Page `<head>` tags (title, description,
   og:image) are per page — keep them in sync with `data/units.js`. Business info for Google (schema.org JSON-LD) is built from the data
   (`schema`, address, phone); only hours with `hoursConfirmed: true` are published. `vercel.json` adds trailing slashes and redirects.
-- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 8 pages, `robots.txt` and
+- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 9 pages, `robots.txt` and
   `sitemap.xml`; add 301s in `vercel.json` for old WordPress URLs (`/bistro-i-slasticarna-valis/` → `/valis/`, `/about/` → `/o-nama/`,
   `/kontakt/` → `/#upit`, `/hotel-novalis/` → https://hotelnovalis.hr, old news posts → `/`). Blockers: the daily price-list CSVs
-  (`/info-o-cijenama/`, legally required for supermarkets) need a home, plus privacy, cookie and jobs pages.
+  (`/info-o-cijenama/`, legally required for supermarkets) need a home, plus a jobs page.
 - Shapes: the Novalis "tab" — three rounded corners, bottom-left square: `border-radius: R R R 0`; panels, cards and photos use `var(--shape-tab)` (20px). No soft shadows.
-- Fonts: Figtree stands in for Karbon (body), Outfit for Sharp Sans (headlines) until licensed files exist.
-  Material Symbols loads only the icons the site uses (`icon_names=` in the font link of all 8 pages, alphabetical; ~4 KB instead of 460 KB).
-  A new icon name must be added there on every page, or it shows as text.
+- Fonts: Figtree stands in for Karbon, Outfit for Sharp Sans until licensed files exist. Roles follow the design system (`css/ds.css`
+  comment): Outfit (`--font-display`) only for headlines (h1, section headings, big statements and key figures, Bold 700) and promo
+  words (Extrabold 800); everything else in Figtree (`--font-primary`): nav, buttons, links, uppercase labels, card and block titles
+  (Bold 700), body (Regular 400), descriptors (Light 300). Weights are the brand manual's: Karbon/Figtree 300/400/700, Sharp Sans/Outfit
+  700/800; no Medium or Semibold. All fonts are served from
+  `assets/fonts/` through `css/fonts.css` (no Google Fonts requests: visitors' IPs would go to Google; keep it that way).
+  The Material Symbols file holds only the icons the site uses (~4 KB instead of 460 KB): a new icon name shows as text until that file
+  is made again, as the comment at the top of `css/fonts.css` explains.
 - Landing hero entrance: an inline script in `index.html` `<head>` holds it (`.hero-wait`, max 1.2 s) until fonts, icons, photo and scripts are ready.
 - Content language: Croatian first (HR/EN toggle is visual only for now). Copy style: hyphens, no em/en dashes; ranges with a spaced
   hyphen (`07:00 - 19:00`, `Ponedjeljak - subota`); dates Croatian style (`15. 5.`); store copy only from novalis.hr or Novalis itself.

@@ -96,11 +96,17 @@ File: `assets/brand/valis-novalja-logo.jpg`. Keep it separate from the red/yello
 
 ## 6. Typography
 
-| Role | Font (print) | Web substitute (Google Fonts) until webfont licensed |
+Roles follow the design system's type styles (it wins over older notes here):
+
+| Role | Font (print) | Web stand-in until webfont licensed (served from `assets/fonts/`) |
 |---|---|---|
-| Primary — body, UI, headings | **Karbon** (Light, Regular, Bold + italics) | **Figtree** (300/400/700) |
-| Secondary — promos, "AKCIJA", impact headings | **Sharp Sans** (Light, Bold, Extrabold + italics) | **Outfit** (300/700/800) |
-| Decorative script (sparingly) | Pristina | Dancing Script (avoid on web) |
+| Primary — running text, UI (navigation, buttons, links, labels), card and block titles | **Karbon** (Light, Regular, Bold + italics) | **Figtree** (300/400/700) |
+| Secondary — headlines (page titles, section headings, key figures) and promos ("AKCIJA") | **Sharp Sans** (Light, Bold, Extrabold + italics) | **Outfit** (700/800) |
+| Decorative script (one greeting line, e.g. "Dobro došli") | Pristina | Dancing Script |
+
+- Only the weights in the manual (CGP priročnik, pp. 18-19): Karbon Light, Regular, Bold; Sharp Sans Light, Bold, Extrabold.
+  Karbon by role: Regular for text and captions, Bold for small uppercase labels (as on the letterhead), card/block titles,
+  navigation, buttons and status lines, Light for descriptors. Sharp Sans: Bold for headlines, Extrabold for promo words.
 
 - Descriptor words in lockups/signage ("HIPER", "MARKET", aisle names "VINO · WINE · WEIN") → **light weight, uppercase, wide tracking**.
 - Promo words ("AKCIJA", "TOP HIT") → **Sharp Sans Extrabold/Bold, uppercase**, white or yellow on red.

@@ -2,9 +2,14 @@
    (https://claude.ai/artifact/DUZ3944vHmYWT1NPhY72YY, tokens.json). */
 
 /* Brand fonts are commercial (Karbon – Klim; Sharp Sans No.1 – Lucas Sharp; Pristina – Microsoft).
-   Web stand-ins until licensed files exist: Karbon → Figtree · Sharp Sans → Outfit · Pristina → Dancing Script.
-   (Figtree 600 is added on top of the DS weights — the landing uses it for labels and status lines.)
-   The Google Fonts stylesheet is linked from each page's <head> (not @import here) so it loads in parallel. */
+   Web stand-ins until licensed files exist: Karbon → Figtree · Sharp Sans → Outfit · Pristina → Dancing Script,
+   served from assets/fonts/ (css/fonts.css, linked from each page's <head>).
+   Weights are the ones the brand manual (CGP priročnik) specifies: Karbon Light 300, Regular 400, Bold 700; Sharp Sans
+   Bold 700, Extrabold 800 (it also has Light). No Medium or Semibold.
+   Roles: --font-display only for headlines (page titles, section headings, the big statements and key figures) in Bold,
+   and promo words (AKCIJA) in Extrabold. Everything else is --font-primary: running text and captions Regular; small
+   uppercase labels Bold (as on the manual's letterhead); card and block titles, navigation, buttons and status lines
+   Bold; descriptors (HIPER, BAU) Light. --font-script: one greeting. */
 
 :root {
   /* Primary */

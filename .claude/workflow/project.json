@@ -52,7 +52,7 @@
       "JavaScript (ES2017, no modules, no framework)"
     ],
     "build": null,
-    "dependencies": "none at runtime (Google Fonts only)",
+    "dependencies": "none at runtime (fonts self-hosted in assets/fonts; MapLibre vendored in js/vendor; map tiles from OpenFreeMap)",
     "structure": {
       "pages": [
         "index.html",
@@ -62,13 +62,15 @@
         "hiper-bau/index.html",
         "veleprodaja/index.html",
         "valis/index.html",
-        "pod-zvon/index.html"
+        "pod-zvon/index.html",
+        "pravila-o-privatnosti/index.html"
       ],
       "redirectStubs": [
         "o-nama.html"
       ],
       "shared": [
         "js/site.js",
+        "css/fonts.css",
         "css/ds.css",
         "css/styles.css",
         "data/units.js",
