@@ -4,7 +4,8 @@ Website for Novalis d.o.o. (supermarkets, HIPER NOVALIS shopping centre, Hiper b
 Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no build step; opens straight from disk.
 
 - **Design source:** claude.ai/design project `d4d27162-ec6f-45fa-b6e0-5225716be768`, files `Novalis-Landing-v4.dc.html` → `index.html` and `O-nama.dc.html` → `o-nama/index.html` (data: `units-v3.json`).
-  Store pages: Design canvas https://claude.ai/artifact/Rd3o8cEGiSNr8J4zq5i9rR (approved 2026-10-09); the v2 store layout (Market Novalis): https://claude.ai/artifact/Uyuo4qZQMmQouBzt7rU9Sz (approved 2026-10-20).
+  Store pages: Design canvas https://claude.ai/artifact/Rd3o8cEGiSNr8J4zq5i9rR (approved 2026-10-09); the v2 store layout (Market Novalis): https://claude.ai/artifact/Uyuo4qZQMmQouBzt7rU9Sz (approved 2026-10-20);
+  Hiper Novalis on v2 with departments (WEB-8): https://claude.ai/artifact/VwWc2QSKvQCy2RNVoqaLsy (approved 2026-10-21).
 - **Design system:** "Novalis Design System" https://claude.ai/artifact/DUZ3944vHmYWT1NPhY72YY — it wins over older styling. Brand rules summarized in [BRAND.md](BRAND.md).
   Both come from the Novalis brand manual (PDF "CGP priročnik", Prijedlog vizualnog identiteta); where they disagree with it, the manual wins.
 - **Tokens:** `css/ds.css` (from the design system's tokens.json). Use its variables; don't invent new brand colors.
@@ -31,10 +32,11 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
 - **Store pages:** one folder per unit with a page (`hiper-novalis/`, `market-novalis/`, `hiper-bau/`, `veleprodaja/`, `valis/`, `pod-zvon/`), each an identical `index.html` shell with
   `<body data-unit="…" data-root="../" data-home="../">`. Link to them with `NV.unitHref(u)` (clean `slug/` URLs; site.js adds `index.html` on click when opened from disk).
   `js/poslovnica.js` has two layouts. By default a store page shows hero, Ključne brojke, Ponuda, Galerija, Radno vrijeme i lokacija, Povezane poslovnice.
-  A unit with `page.layout: 'v2'` (Market Novalis only, WEB-9, approved 2026-10-20; the other stores opt in through their own tickets WEB-8, WEB-10 - WEB-13)
+  A unit with `page.layout: 'v2'` (Market Novalis, WEB-9, approved 2026-10-20; Hiper Novalis, WEB-8, approved 2026-10-21; the other stores opt in through their own tickets WEB-10 - WEB-13)
   shows hero (cart badge beside a stacked lockup via `NV.tileSVG`, address linked to the Google listing, Upute plus icon-only call/e-mail buttons whose
   number or address shows on hover/focus, Esc hides it), Radno vrijeme i lokacija (nothing under the map, pin in `--nv-red`), Ponuda (an isometric
-  building of `page.floors` when every offer line names a floor; floors may carry a `note`; a one-sentence lead under the heading; sized to fit the screen height with them), Galerija (whole rows: 10 tiles, 5 across from 900), Ostale poslovnice (every other unit, `related` first, as many cards as fill whole rows). Its CSS is scoped to `.store--v2`;
+  building of `page.floors` when every offer line names a floor; floors may carry a `note`; a short lead (body size) under the heading; sized to fit the screen height with them;
+  an offer line `['text', floor, 'details']` is a department that opens (+, native `<details>`) to what it sells, and then the legends stay in the page flow, from 1200 the top floor's level with the building's top and the ground floor's with its foot), Galerija (whole rows: 10 tiles, 5 across from 900), Ostale poslovnice (every other unit, `related` first, as many cards as fill whole rows). Its CSS is scoped to `.store--v2`;
   units without the flag must render exactly as before. Either way only the hero takes the store's theme and mark.
   A gallery entry `[null, 'Foto: …']` shows a placeholder describing the photo still needed (a professional photographer will take them).
   Povezane poslovnice uses the landing's unit cards (`NV.cardHTML` + `NV.cardGrid`: hover panel, rise-in entrance, live hours).

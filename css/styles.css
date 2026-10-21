@@ -1602,9 +1602,10 @@ button.footer__link { cursor: pointer; }
 .store--v2 .store-hero__badge { flex: none; width: 25.66%; height: auto; }
 .store--v2 .store-hero__mark .store-hero__logo { flex: none; width: 67.25%; height: auto; }
 
-/* today's status, then the street address. The dot has a 2px ring in the hero text colour (the plain dot is too faint
-   on yellow, red and slate: WEB-36); open fills it with --hero-dot */
-.store--v2 .store-hero__place { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+/* today's status, then the street address, on one line where they fit (desktop, tablet); otherwise the address wraps
+   under the status. The dot has a 2px ring in the hero text colour (the plain dot is too faint on yellow, red and
+   slate: WEB-36); open fills it with --hero-dot */
+.store--v2 .store-hero__place { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-5); }
 .store--v2 .store-hero__status .dot { width: 12px; height: 12px; border: 2px solid currentColor; background: transparent; }
 .store--v2 .store-hero__status.is-open .dot { background: var(--hero-dot); }
 /* the street address (NV.addrHTML), a link to the unit's Google listing: hero text colour, underlined in the same colour */
@@ -1686,9 +1687,9 @@ button.footer__link { cursor: pointer; }
    on top, then the key (stacked-layers mark, h3, an optional note, ol). Category names stay on one line from 360 px.
    Drawing aria-hidden. Phones: building, legend 0, legend -1. 700-1199: building, then the legends side by side (0
    left). From 1200 (two floors): legend 0 | building | legend -1, each legend level with its plate (--at). */
-/* a section lead (Ponuda): a subhead right under the heading, a size up from body copy, its lines balanced so the
-   last one never runs on alone */
-.store--v2 .store-sec__lead { max-width: 36em; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.5; text-wrap: balance; }
+/* a section lead (Ponuda): body size under the heading (a bigger, in-between size read as a second headline beside
+   the Outfit heading), its lines balanced so the last one never runs on alone */
+.store--v2 .store-sec__lead { max-width: 68ch; line-height: 1.6; text-wrap: balance; }
 .store--v2 .floor--warm  { --zone-t: var(--nv-yellow); --zone-a: var(--nv-orange);     --zone-b: var(--nv-red);      --badge: var(--nv-red); }
 .store--v2 .floor--slate { --zone-t: var(--nv-slate);  --zone-a: var(--nv-slate-dark); --zone-b: var(--nv-gray-850); --badge: var(--nv-slate-dark); }
 .store--v2 .floors { display: flex; flex-direction: column; gap: var(--space-7); }
@@ -1760,6 +1761,56 @@ button.footer__link { cursor: pointer; }
   .store--v2 .iso-badge text { fill: CanvasText; }
   .store--v2 .iso-guide { stroke: CanvasText; }
   .store--v2 .floor__badge { border: 1px solid CanvasText; }
+}
+
+/* Departments (offer lines with details, floors--dept; Hiper Novalis, WEB-8): the row keeps the category's look (badge,
+   Figtree Bold name) plus a plus / minus as big as the badge on the far side; what the department sells opens under
+   the name in Figtree Regular, lined up with it. --dept-ind: the badge and the gap after it. */
+.store--v2 .floors--dept { --dept-tog: 24px; --dept-ind: calc(24px + var(--space-3)); }
+.store--v2 .floor__item--dept { display: block; }
+.store--v2 .dept__sum { display: block; list-style: none; cursor: pointer; border-radius: 7px 7px 7px 0; }
+.store--v2 .dept__sum::-webkit-details-marker { display: none; }
+.store--v2 .dept__sum:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+.store--v2 .dept__row { display: flex; align-items: center; gap: var(--space-3); min-height: 32px; }
+.store--v2 .dept__tog { position: relative; flex: none; width: var(--dept-tog); height: var(--dept-tog); margin-left: auto; border-radius: 7px 7px 7px 0; background: var(--nv-gray-50); }
+.store--v2 .dept__tog::before, .store--v2 .dept__tog::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; margin: -1px 0 0 -6px;
+  background: var(--ink); transition: transform var(--dur-fast) var(--ease-out);
+}
+.store--v2 .dept__tog::after { transform: rotate(90deg); }
+.store--v2 .dept[open] .dept__tog::after { transform: rotate(0deg); }
+.store--v2 .dept__sum:hover .dept__tog { background: var(--nv-gray-150); }
+.store--v2 .dept[open] .dept__tog { background: var(--badge); }
+.store--v2 .dept[open] .dept__tog::before, .store--v2 .dept[open] .dept__tog::after { background: #fff; }
+.store--v2 .dept__body { margin: var(--space-2) 0 var(--space-3) var(--dept-ind); max-width: 32em; font: 400 16px/1.5 var(--font-primary); color: var(--nv-gray-700); text-wrap: pretty; }
+.store--v2 .floors--dept .floor__key, .store--v2 .floors--dept .floor__list { align-self: stretch; }
+@media (min-width: 700px) {
+  /* side by side: an opened department doesn't stretch the other legend; the compact legend's 20px badge */
+  .store--v2 .floors--dept { align-items: start; --dept-tog: 20px; --dept-ind: 30px; }
+  .store--v2 .dept__row { gap: 10px; }
+  .store--v2 .dept__tog { border-radius: 6px 6px 6px 0; }
+  .store--v2 .dept__tog::before, .store--v2 .dept__tog::after { width: 10px; margin-left: -5px; }
+  .store--v2 .dept__body { font-size: 15px; }
+}
+/* Wide: the legends stay beside the building but in the page flow: 1. kat level with the top of the building,
+   Prizemlje (closed) with its foot, so an opened department grows into free space and never covers the next section.
+   Both hang from their top: Prizemlje sits --dept-top down (js: the building's height less its closed height), so each
+   side grows downwards on its own and the other one stays still. */
+@media (min-width: 1200px) {
+  .store--v2 .floors--dept.floors--2 { align-items: start; }
+  .store--v2 .floors--dept .floor__legend { position: static; transform: none; }
+  .store--v2 .floors--dept .floor:not(.floor--start) { margin-top: var(--dept-top, 0px); }
+  .store--v2 .floors--dept .floor--start .dept__row { flex-direction: row-reverse; }
+  .store--v2 .floors--dept .dept__tog { margin: 0; }  /* beside the name, not out at the column's edge */
+  /* the row (click area, focus ring) is just the badge, name and toggle, not the column's whole width */
+  .store--v2 .floors--dept .dept__sum { width: fit-content; max-width: 100%; }
+  .store--v2 .floors--dept .floor--start .dept__sum { margin-left: auto; }
+  .store--v2 .floors--dept .floor--start .dept__body { margin: var(--space-2) var(--dept-ind) var(--space-3) auto; text-align: right; }
+}
+@media (prefers-reduced-motion: reduce) { .store--v2 .dept__tog::before, .store--v2 .dept__tog::after { transition: none; } }
+@media (forced-colors: active) {
+  .store--v2 .dept__tog { border: 1px solid CanvasText; }
+  .store--v2 .dept__tog::before, .store--v2 .dept__tog::after { background: CanvasText; }
 }
 
 /* Galerija: a long gallery (5 or more photos and photo slots) fills whole rows: 2 across on phones (the rule above),

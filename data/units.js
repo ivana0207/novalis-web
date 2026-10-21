@@ -60,19 +60,21 @@
      *   (logo file · lockup [light word, bold word] · word · image with a script greeting).
      *   Logo and image marks give their drawn size in px (w, h) so the page doesn't shift while they load.
      *   offer items are 'text' or ['text', 'where'] · gallery items are [photo, alt]; no photo = placeholder slot.
-     *   layout: 'v2' opts the unit into the reworked store page (WEB-9; Market Novalis so far, the others opt in in their
-     *   own tickets): hero, Radno vrijeme i lokacija, Ponuda, Galerija, Povezane poslovnice, no Ključne brojke (facts),
-     *   the street address and icon-only call / e-mail buttons in the hero, nothing under the map. With it:
+     *   layout: 'v2' opts the unit into the reworked store page (WEB-9; Market Novalis and Hiper Novalis (WEB-8) so
+     *   far, the others opt in in their own tickets): hero, Radno vrijeme i lokacija, Ponuda, Galerija, Povezane
+     *   poslovnice, no Ključne brojke (facts), the street address and icon-only call / e-mail buttons in the hero,
+     *   nothing under the map. With it:
      *     label is the category only (the street shows under the status) · mark.badge ('red' | 'yellow', as in the
      *     header) puts the cart badge beside a stacked logo file · floors: [{ name, sign, tone (warm · slate), brand,
      *     note }], top floor first (brand: a store name, kept out of translation; note: a short line under the floor's
-     *     name); when every offer item is ['text', floor name] Ponuda draws the floors with one legend each.
+     *     name); when every offer item is ['text', floor name] Ponuda draws the floors with one legend each. An item
+     *     ['text', floor name, 'details'] is a department that opens (+) to show what it sells (Hiper Novalis, WEB-8).
      */
     units: [
       {
         id: 'hiper-novalis', slug: 'hiper-novalis', category: 'trgovine', name: 'Hiper Novalis',
         desc: 'Veliki hipermarket s bogatim izborom proizvoda.',
-        address: 'Čiponjac III/2, Novalja', phone: '053 663 300', tel: '+38553663300',
+        address: 'Čiponjac III/2, Novalja', phone: '053 663 300', tel: '+38553663300', email: 'hiper.novalis@novalis.com.hr',
         promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'Store' },
         closedOnHolidays: true,
         hours: {
@@ -81,25 +83,43 @@
         },
         photo: 'assets/img/hiper-novalis-storefront.jpg', photoHint: 'Foto: Hiper Novalis, ulaz i parking',
         page: {
-          theme: 'red', pattern: 'mosaic',
-          mark: { logo: 'assets/brand/hiper-novalis-stacked-yellow.svg', w: 224, h: 88 },
-          label: 'Shopping centar · Čiponjac, Novalja',
-          title: 'Dobio ime po svojoj veličini i ponudi.',
-          lead: 'Na 14.000 m² nalaze se supermarket, veleprodaja pića i salon keramike. U zatvorenom prostoru od 7.000 m², na dvije etaže, uživajte u kupovini.',
+          theme: 'red', layout: 'v2',
+          mark: { logo: 'assets/brand/hiper-novalis-stacked-yellow.svg', w: 224, h: 88, badge: 'yellow' },
+          label: 'Trgovine',
+          title: 'Od namirnica do nautike.',
+          lead: 'Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.',
           photo: IMG + 'hiper-novalis.jpg', photoAlt: 'Hiper Novalis: totem s piktogramima odjela i ulaz u centar', photoPos: '0% 50%',
-          facts: [['14.000 m²', 'ukupna površina'], ['7.000 m²', 'zatvorenog prostora'], ['2', 'etaže za kupovinu'], ['2.000+ m²', 'namještaja i uređenja doma']],
-          offerLead: 'Proizvodi koje rijetko gdje drugdje u Hrvatskoj možete pronaći, na jednom mjestu - od namirnica do nautike.',
+          // WEB-8 (design approved 2026-10-21): departments from novalis.hr (Hiper Novalis, Kontakt), floors from Novalis.
+          // Drafts for Novalis to confirm: the Delikatese line, the 1. kat examples, the "svježe" claim (the import
+          // sentence in offerLead is novalis.hr's own).
+          offerLead: 'Dvije etaže i deset odjela: u prizemlju namirnice, delikatese, restoran, pića i sve za plažu i vrt, a na katu namještaj, tehnika, informatika, školski pribor i sve ostalo za dom. Dio artikala u našoj ponudi je jedinstven u Hrvatskoj, jer mi sami vršimo nabavu i uvoz svih onih artikala koji se pokažu traženima, a nije ih moguće nabaviti na ovim prostorima.',
+          floors: [
+            { name: '1. kat', sign: '1', tone: 'slate' },
+            { name: 'Prizemlje', sign: '0', tone: 'warm' }
+          ],
           offer: [
-            'Samoposlužni restoran i caffe bar', 'Prehrana i proizvodi za domaćinstvo', 'HoReCa program i veleprodaja pića',
-            'Vrtni namještaj', 'Ljetni asortiman', 'Namještaj i izrada po mjeri', 'Tekstil, zavjese i karniše',
-            'Rasvjeta i elektrooprema', 'Nautika, auto program, bicikli', 'Grijanje i hlađenje', 'Kupaonica i sanitarije',
-            'Kućanski uređaji', 'Informatička oprema', 'Uredski materijal', 'Kampiranje i ribolov'
+            ['Namještaj i dom', '1. kat', 'Više od 2.000 m² namještaja i svega za uređenje doma, od dnevnog boravka i spavaće sobe do kuhinje i blagovaonice. Namještaj po mjeri dizajniramo, izrađujemo i sklapamo. Kućni tekstil i posteljina, zavjese i karniše, kupaonski namještaj i sanitarije.'],
+            ['Tehnika', '1. kat', 'Bijela tehnika: hladnjaci, zamrzivači, perilice rublja i posuđa, štednjaci. Mali kućanski aparati, televizori i audio oprema. Klima uređaji, ventilatori, peći i grijalice. Unutarnja i vanjska rasvjeta i elektrooprema.'],
+            ['Informatika i školski pribor', '1. kat', 'Računala, laptopi, monitori i printeri. Mobilni i fiksni telefoni te oprema za mobitele: maske, punjači i slušalice. Uredski i školski pribor: bilježnice, pisaći pribor i školske torbe.'],
+            ['Nautika i vozila', '1. kat', 'Nautička oprema za brod i more. Auto program: oprema i sredstva za njegu automobila. Bicikli, električni bicikli i druga električna vozila.'],
+            ['Odjeća, alati i igračke', '1. kat', 'Odjeća, ručni i električni alati, igračke i suveniri. Za svakoga po nešto.'],
+            ['Supermarket', 'Prizemlje', 'Prehrana i proizvodi za domaćinstvo, domaćih i stranih proizvođača.'],
+            ['Delikatese', 'Prizemlje', 'Suhomesnati proizvodi, sirevi i druge delikatese za vaš stol.'],
+            ['Restoran i caffe bar', 'Prizemlje', 'Samoposlužni restoran s uvijek svježe pripremljenim jelima i caffe bar.'],
+            ['Veleprodaja pića', 'Prizemlje', 'HoReCa program za ugostitelje: konkurentne cijene, brza dostava i stručno osoblje.'],
+            ['Sve za plažu, vrt i kuću', 'Prizemlje', 'Ljetni asortiman za plažu i plivanje na 100 m². Vrtni namještaj: garniture, stolovi, stolice, ležaljke, ljuljačke, klupe, suncobrani i tende. Kampiranje i ribolov.']
           ],
           gallery: [
             [IMG + 'hiper-novalis-pica.jpg', 'Odjel vina i pića'],
             [IMG + 'hiper-novalis-restoran.jpg', 'Terasa samoposlužnog restorana'],
             [IMG + 'hiper-novalis-peciva.jpg', 'Svježa peciva'],
-            [null, 'Foto: unutrašnjost centra, dvije etaže']
+            [null, 'Foto: ulaz i natkriveno parkiralište'],
+            [null, 'Foto: supermarket u prizemlju, pogled na cijelu razinu'],
+            [null, 'Foto: salon namještaja na katu'],
+            [null, 'Foto: bijela tehnika i kućanski aparati'],
+            [null, 'Foto: informatika i uredski pribor'],
+            [null, 'Foto: ljetni asortiman za plažu i vrt'],
+            [null, 'Foto: caffe bar']
           ],
           related: ['hiper-bau', 'veleprodaja', 'market-novalis']
         }

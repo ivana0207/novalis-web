@@ -1,7 +1,7 @@
 /* Novalis store page (hiper-novalis/, market-novalis/, hiper-bau/, veleprodaja/, valis/, pod-zvon/) — renders one
    unit's page from data/units.js on top of js/site.js. Every store page has the same sections; only the hero takes
    the store's theme and mark. The unit comes from <body data-unit="…">.
-   Two layouts: units with page.layout 'v2' (WEB-9; Market Novalis so far) get the reworked page (V2 below: hero with
+   Two layouts: units with page.layout 'v2' (WEB-9; Market Novalis, Hiper Novalis) get the reworked page (V2 below: hero with
    the address and icon-only call / e-mail, Radno vrijeme i lokacija right under it, Ponuda with floors, Galerija,
    Ostale poslovnice); the others keep the layout they had (hero with the call link, Ključne brojke, Ponuda, Galerija,
    Radno vrijeme i lokacija with the address block under the map, Povezane poslovnice) until their own tickets. */
@@ -166,13 +166,14 @@
   /* Ponuda. V2: split by floor when the unit has `floors` ([{ name, sign, tone, brand, note }], top floor first) and every
      offer line names one of them and no floor has more than 6 (the zone layouts go from 1 to 6); otherwise the numbered
      list. Each floor: an isometric plate with one zone per category (abstract blocks, not the shop's real layout) and a
-     legend: sign, name (h3), its note if any, the categories (ol) with the zone letters. */
+     legend: sign, name (h3), its note if any, the categories (ol) with the zone letters. A line with details
+     (['text', floor, 'details'], Hiper Novalis) is a department that opens to show them. */
   function floorGroups() {
     var f = p.floors;
     if (!f || !p.offer.every(function (it) { return typeof it !== 'string' && f.some(function (x) { return x.name === it[1]; }); })) return null;
     var groups = f.map(function (fl) {
       return { name: fl.name, sign: fl.sign, tone: fl.tone, brand: !!fl.brand, note: fl.note,
-        items: p.offer.filter(function (it) { return it[1] === fl.name; }).map(function (it) { return it[0]; }) };
+        items: p.offer.filter(function (it) { return it[1] === fl.name; }).map(function (it) { return { t: it[0], d: it[2] || '' }; }) };
     }).filter(function (g) { return g.items.length; });
     return groups.some(function (g) { return g.items.length > 6; }) ? null : groups;
   }
@@ -251,12 +252,22 @@
     }
     return '<svg class="floor__stack" viewBox="0 0 40 ' + h + '" width="40" height="' + h + '" aria-hidden="true" focusable="false">' + s + '</svg>';
   }
+  // A category row; with details, a department: a native <details> whose summary keeps the row (badge, name) plus a
+  // plus / minus, and opens to what it sells. The row sits in an inner span (flex on <summary> itself fails in older Safari).
+  function itemHTML(it, i) {
+    var row = '<span class="floor__badge" aria-hidden="true">' + LETTERS[i] + '</span><span class="floor__cat">' + esc(it.t) + '</span>';
+    if (!it.d) return '<li class="floor__item">' + row + '</li>';
+    return '<li class="floor__item floor__item--dept"><details class="dept">' +
+      '<summary class="dept__sum"><span class="dept__row">' + row + '<span class="dept__tog" aria-hidden="true"></span></span></summary>' +
+      '<p class="dept__body">' + esc(it.d) + '</p></details></li>';
+  }
   // The building first (decorative), then one legend per floor, top floor first. From 1200 the legends flank the
   // building, each level with its plate (--at): the first floor's on the left (its plate faces left), the second's on
-  // the right.
+  // the right. With departments (floors--dept) the legends stay in the page flow instead (css), so an opened one
+  // pushes the page down rather than covering it.
   function floorsHTML(groups) {
-    var b = buildingSVG(groups);
-    return '<div class="floors floors--' + groups.length + '">' +
+    var b = buildingSVG(groups), dept = groups.some(function (g) { return g.items.some(function (it) { return it.d; }); });
+    return '<div class="floors floors--' + groups.length + (dept ? ' floors--dept' : '') + '">' +
       '<div class="floors__building">' + b.svg + '</div>' +
       groups.map(function (g, gi) {
         var name = g.brand ? '<span translate="no">' + esc(g.name) + '</span>' : esc(g.name);
@@ -266,9 +277,7 @@
             '<div class="floor__key">' + stackSVG(groups.length, gi) +
               '<h3 class="floor__name" id="h-ponuda-' + gi + '"><span class="vh">Razina ' + esc(g.sign) + ': </span>' + name + '</h3>' +
               (g.note ? '<p class="floor__note">' + esc(g.note) + '</p>' : '') +
-              '<ol class="floor__list" aria-labelledby="h-ponuda-' + gi + '">' + g.items.map(function (t, i) {
-                return '<li class="floor__item"><span class="floor__badge" aria-hidden="true">' + LETTERS[i] + '</span><span class="floor__cat">' + esc(t) + '</span></li>';
-              }).join('') + '</ol>' +
+              '<ol class="floor__list" aria-labelledby="h-ponuda-' + gi + '">' + g.items.map(itemHTML).join('') + '</ol>' +
             '</div>' +
           '</div>' +
         '</div>';
@@ -495,6 +504,28 @@
     });
   }
 
+  // V2 departments from 1200 (css: .floors--dept): the second floor's legend sits level with the building's foot while
+  // its departments are closed and keeps that place when one opens, so each legend grows downwards on its own and the
+  // other side stays still. --dept-top: the drawing's height less the legend's closed height (open departments'
+  // contents left out), set again when the layout changes (resize, rotation, zoom, fonts), never when one opens.
+  function deptPlace(floors) {
+    var svg = floors.querySelector('.iso'), fl = floors.querySelector('.floor:not(.floor--start)'), raf = 0;
+    if (!fl) return;
+    var leg = fl.querySelector('.floor__legend');
+    function h(el) { return el.getBoundingClientRect().height; }
+    function place() {
+      raf = 0;
+      var closed = h(leg);
+      [].forEach.call(leg.querySelectorAll('.dept[open]'), function (d) { closed -= h(d.parentNode) - h(d.querySelector('summary')); });
+      fl.style.setProperty('--dept-top', Math.max(0, Math.round(h(svg) - closed)) + 'px');
+    }
+    function later() { if (!raf) raf = requestAnimationFrame(place); }
+    place();
+    addEventListener('resize', later);
+    addEventListener('orientationchange', later);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
+  }
+
   $('.page').classList.add('store', 'store--' + p.theme);
   if (V2) $('.page').classList.add('store--v2');
   $('#store').innerHTML = V2
@@ -505,6 +536,7 @@
   $('#qbCall').href = telHref;
   NV.holdQuickbar($('.store-hero__actions'));
   if (V2) quiet($('.store-hero__actions'));
+  if (V2 && $('.floors--dept')) deptPlace($('.floors--dept'));
   renderLive();
   initMap();
   addStructuredData();
