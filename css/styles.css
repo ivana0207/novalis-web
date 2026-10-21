@@ -1525,6 +1525,95 @@ button.footer__link { cursor: pointer; }
 /* Galerija */
 .gallery { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 16px; }
 .gallery__item { position: relative; aspect-ratio: 4 / 3; border-radius: var(--shape-tab); overflow: hidden; }
+/* a photo opens enlarged (js/lightbox.js): its button covers the tile (the focus ring goes round the tile, so the tile
+   doesn't clip; its slot keeps the shape); on hover the tile gets the cards' yellow edge, and the photo zooms in a little */
+.gallery__item--photo { overflow: visible; }
+.gallery__item--photo .slot { border-radius: inherit; transition: box-shadow var(--dur-base) var(--ease-out); }
+.gallery__item--photo .slot img { transition: transform 320ms var(--occ-ease); }
+.gallery__open {
+  position: absolute; inset: 0; z-index: 1; width: 100%; padding: 0; border: 0; border-radius: inherit;
+  background: none; cursor: zoom-in; -webkit-tap-highlight-color: transparent;
+}
+@media (hover: hover) {
+  .gallery__item--photo:hover .slot { box-shadow: 0 0 0 3px var(--nv-yellow); }
+  .gallery__item--photo:hover .slot img { transform: scale(1.04); }
+}
+.gallery__item--photo:has(:focus-visible) .slot img { transform: scale(1.04); }
+@media (prefers-reduced-motion: reduce) { .gallery__item--photo .slot img { transform: none !important; } }
+
+/* Galerija lightbox (js/lightbox.js): a modal <dialog> over the whole screen. It sits outside .page, so only ds.css
+   tokens here. The page blurs under a veil of ink at 70% (white text on it 5.7:1, even over a white page); the photo
+   fills what the controls leave free, enlarged where it is smaller. Phones: the arrows at the bottom either side of the
+   caption; from 700 at the sides, level with the middle of the screen, and the caption under the photo. */
+html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
+.lightbox {
+  --lb-close: 44px; --lb-nav: 48px; --lb-edge: 16px; --lb-top: 68px; --lb-side: 16px; --lb-bottom: 104px;
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; background: transparent; color: var(--nv-white); overflow: hidden; overscroll-behavior: contain;
+  font-family: var(--font-primary); cursor: zoom-out;
+  opacity: 0; transition: opacity 240ms var(--ease-out), overlay 240ms allow-discrete, display 240ms allow-discrete;
+}
+.lightbox::backdrop {
+  background: rgba(38, 38, 38, .7);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2);
+  opacity: 0; transition: opacity 240ms var(--ease-out), overlay 240ms allow-discrete, display 240ms allow-discrete;
+}
+.lightbox[open], .lightbox[open]::backdrop { opacity: 1; }
+@starting-style {
+  .lightbox[open], .lightbox[open]::backdrop { opacity: 0; }
+  .lightbox[open] .lightbox__img { transform: scale(.94); }
+}
+.lightbox__stage, .lightbox__track, .lightbox__slide { position: absolute; inset: 0; }
+/* sideways is the swipe (js); up and down and pinch zoom stay the browser's */
+.lightbox__stage { touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; }
+.lightbox__frame {
+  position: absolute; inset: var(--lb-top) var(--lb-side) var(--lb-bottom);
+  display: flex; align-items: center; justify-content: center; container-type: size;
+}
+/* --r (js): the photo's width / height */
+.lightbox__img {
+  width: min(100cqw, 100cqh * var(--r)); height: auto; aspect-ratio: var(--r);
+  border-radius: var(--shape-tab); cursor: auto; -webkit-user-drag: none;
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1);
+}
+.lightbox:not(.lightbox--one) .lightbox__img { cursor: grab; }
+.lightbox.is-dragging, .lightbox.is-dragging .lightbox__img { cursor: grabbing; }
+.lightbox__cap {
+  position: absolute; left: calc(var(--lb-edge) + var(--lb-nav) + 12px); right: calc(var(--lb-edge) + var(--lb-nav) + 12px);
+  bottom: var(--lb-edge); min-height: var(--lb-nav); margin: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  text-align: center; font: 400 14px/1.35 var(--font-primary); text-wrap: balance;
+}
+.lightbox--one .lightbox__cap { left: var(--lb-edge); right: var(--lb-edge); }
+.lightbox__count { font: 700 12px/16px var(--font-primary); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.lightbox__count:empty { display: none; }
+.lightbox__text { max-width: 72ch; }
+.lightbox__btn {
+  --ring: var(--nv-yellow);
+  position: absolute; z-index: 2; display: grid; place-items: center; padding: 0; border: 0;
+  border-radius: 14px 14px 14px 0; background: var(--nv-white); color: var(--nv-gray-850); cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.lightbox__btn:hover { background: var(--nv-yellow); }
+.lightbox__btn:active { transform: translateY(1px); }
+.lightbox__btn:focus-visible { outline-offset: 3px; }
+.lightbox__btn svg { fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round; }
+.lightbox__close { top: 12px; right: 12px; width: var(--lb-close); height: var(--lb-close); }
+.lightbox__nav { bottom: var(--lb-edge); width: var(--lb-nav); height: var(--lb-nav); }
+.lightbox__nav--prev { left: var(--lb-edge); }
+.lightbox__nav--next { right: var(--lb-edge); }
+@media (min-width: 700px) {
+  .lightbox { --lb-close: 48px; --lb-nav: 56px; --lb-edge: 24px; --lb-top: 88px; --lb-side: 104px; --lb-bottom: 96px; }
+  .lightbox__close { top: 24px; right: 24px; }
+  .lightbox__nav { bottom: auto; top: calc(50% - var(--lb-nav) / 2); }
+  .lightbox__cap { left: var(--lb-side); right: var(--lb-side); bottom: 24px; min-height: 0; font-size: 15px; line-height: 1.4; }
+  .lightbox__count { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .lightbox::backdrop { transition: none; } }
+@media (forced-colors: active) {
+  .lightbox__btn { border: 2px solid ButtonText; }
+  .lightbox__btn svg { stroke: ButtonText; }
+}
 
 /* Radno vrijeme i lokacija */
 .visit { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; align-items: start; }

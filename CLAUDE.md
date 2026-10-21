@@ -21,7 +21,7 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   An optional `gmaps` (the share link of the unit's official Google Business listing; every unit has one; Veleprodaja uses Hiper Novalis's) makes its address, store-page pin and Upute open that listing.
 - **Jira workflow:** tickets are in Jira project `WEB` (dabushka.atlassian.net). "Work on WEB-25" runs the `jira-work` skill (orchestrator + agents in `.claude/agents/`,
   project profile `.claude/workflow/project.json`, state in `.jira-work/`). It is local-only and read-only toward Jira; usage in [.claude/WORKFLOW.md](.claude/WORKFLOW.md).
-- **Scripts:** `js/site.js` is shared (header, footer, logos, image slots, opening hours, unit cards, paths → `window.NV`); `js/app.js` is the landing page, `js/occasions.js` the "Zašto Novalis" band (#prilike) shared by the landing and O nama pages, `js/poslovnica.js` every store page,
+- **Scripts:** `js/site.js` is shared (header, footer, logos, image slots, opening hours, unit cards, paths → `window.NV`); `js/app.js` is the landing page, `js/occasions.js` the "Zašto Novalis" band (#prilike) shared by the landing and O nama pages, `js/poslovnica.js` every store page, `js/lightbox.js` its Galerija lightbox (`NV.lightbox`, loaded before poslovnica.js),
   `js/map.js` the maps (landing #lokacije and each store page's Radno vrijeme i lokacija): MapLibre GL JS 5.24.0, vendored in `js/vendor/maplibre-gl-5.24.0/`
   (v6+ is ES-modules only and won't run from disk), drawing OpenStreetMap from OpenFreeMap's free Positron style (no key, no cookies) re-tinted in `PAINT`;
   the library loads only when a map comes near the screen, and a note with a fallback link shows if it can't run.
@@ -41,6 +41,8 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   Brendovi only where `page.brands` exists (Hiper Bau: 35 logos in `assets/img/brendovi/`, 320 x 160 WebP already trimmed and size-balanced; each links in a new tab to the brand's Croatian site, else its European/international one; `null` = no confirmed site, logo without a link; phones/tablets show 4 rows and "Prikaži sve brendove"), Galerija (whole rows: 10 tiles, 5 across from 900), Ostale poslovnice (every other unit, `related` first, as many cards as fill whole rows). Its CSS is scoped to `.store--v2`;
   units without the flag must render exactly as before. Either way only the hero takes the store's theme and mark.
   A gallery entry `[null, 'Foto: …']` shows a placeholder describing the photo still needed (a professional photographer will take them).
+  Each real photo in Galerija (both layouts) opens the lightbox (user's request, 2026-10-21): a native modal `<dialog>`, photo enlarged to fit the screen over the blurred page,
+  arrows / ← → / swipe (or mouse drag) slide between the unit's photos and loop; the X, Esc or a click anywhere outside the photo closes it, focus returns to that tile. Placeholders don't open it.
   Povezane poslovnice uses the landing's unit cards (`NV.cardHTML` + `NV.cardGrid`: hover panel, rise-in entrance, live hours).
   B&B Novalis (`hotel-novalis/`, user's request 2026-10-21; it used to link out to hotelnovalis.hr) is v2 in the hotel's own look: theme `ink`
   (dark with sand), its logo `assets/brand/bb-novalis-white.svg` and lace rosette (`pattern: 'lace'`, from 1100 px), "Rezervirajte" to its website

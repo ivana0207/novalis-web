@@ -358,10 +358,20 @@
       '</ul></section>';
   }
 
+  // Galerija: a photo is a button over its tile that opens it enlarged (NV.lightbox, js/lightbox.js); the button says
+  // what the photo shows, so the photo itself has no alt. A slot still waiting for its photo stays as it is.
+  var photos = p.gallery.filter(function (g) { return g[0]; }).map(function (g) {
+    return { src: asset(g[0]), alt: g[1], caption: brandHTML(g[1]) };
+  });
   function galleryHTML() {
+    var k = 0;
     return '<section class="store-sec" aria-labelledby="h-galerija">' + headHTML('galerija', 'Galerija') +
       '<ul class="gallery">' + p.gallery.map(function (g) {
-        return '<li class="gallery__item">' + (V2 ? NV.slotHTML(asset(g[0]), g[1], g[1], brandHTML(g[1])) : NV.slotHTML(asset(g[0]), g[1], g[1])) + '</li>';
+        if (g[0]) {
+          return '<li class="gallery__item gallery__item--photo">' + NV.slotHTML(asset(g[0]), g[1], '') +
+            '<button type="button" class="gallery__open" data-photo="' + (k++) + '" aria-haspopup="dialog"><span class="vh">Povećaj fotografiju: ' + brandHTML(g[1]) + '</span></button></li>';
+        }
+        return '<li class="gallery__item">' + (V2 ? NV.slotHTML(null, g[1], g[1], brandHTML(g[1])) : NV.slotHTML(null, g[1], g[1])) + '</li>';
       }).join('') + '</ul></section>';
   }
 
@@ -611,6 +621,7 @@
   if (V2) quiet($('.store-hero__actions'));
   if (V2 && $('.floors--dept')) deptPlace($('.floors--dept'));
   if (V2 && p.brands) brandsMore($('#brandList'), $('.brands__more'));
+  NV.lightbox($('.gallery'), photos);
   renderLive();
   initMap();
   addStructuredData();
