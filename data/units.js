@@ -40,7 +40,8 @@
     ],
     /*
      * slug: the store page's folder (/hiper-bau/ → hiper-bau/index.html), same addresses as on novalis.hr.
-     * url: only for units with their own website (no store page here).
+     * url: only for a unit with its own website and no store page here (none at the moment; links then open it in a
+     *   new tab with external: true).
      * schema: the unit's schema.org business type for search engines (merged into its JSON-LD).
      * geo: [lat, lng] for the maps and the Upute links, from OpenStreetMap (Market Novalis matches novalis.hr's map,
      *   Pod Zvon is its Google Maps listing). Veleprodaja is an estimate until Novalis confirms (no address yet, placed
@@ -56,19 +57,24 @@
      *   all day } - one day's own hours, e.g. { '12-24': ['07:00', '14:00'], '2026-12-31': null }; a full date wins over
      *   'MM-DD'. An entry written any other way is ignored (the browser console says so). None yet.
      * page: content of the store page (js/poslovnica.js). Every store page has the same sections;
-     *   only the hero differs: theme (red · yellow · white · slate · violet · earth) and mark
-     *   (logo file · lockup [light word, bold word] · word · image with a script greeting).
+     *   only the hero differs: theme (red · yellow · white · slate · violet · earth · ink) and mark
+     *   (logo file · lockup [light word, bold word] · word · image, optionally with a script greeting).
      *   Logo and image marks give their drawn size in px (w, h) so the page doesn't shift while they load.
      *   offer items are 'text' or ['text', 'where'] · gallery items are [photo, alt]; no photo = placeholder slot.
-     *   layout: 'v2' opts the unit into the reworked store page (WEB-9; Market Novalis and Hiper Novalis (WEB-8) so
-     *   far, the others opt in in their own tickets): hero, Radno vrijeme i lokacija, Ponuda, Galerija, Povezane
-     *   poslovnice, no Ključne brojke (facts), the street address and icon-only call / e-mail buttons in the hero,
-     *   nothing under the map. With it:
+     *   layout: 'v2' opts the unit into the reworked store page (WEB-9; Market Novalis, Hiper Novalis (WEB-8), Hiper Bau
+     *   (WEB-11), Valis (WEB-12), Pod Zvon (WEB-10) and Veleprodaja (WEB-13)): hero, Radno vrijeme i lokacija, Ponuda,
+     *   Galerija, Povezane poslovnice, no Ključne brojke (facts), the street address and icon-only call / e-mail buttons
+     *   in the hero, nothing under the map. With it:
      *     label is the category only (the street shows under the status) · mark.badge ('red' | 'yellow', as in the
-     *     header) puts the cart badge beside a stacked logo file · floors: [{ name, sign, tone (warm · slate), brand,
+     *     header) puts the cart badge beside a stacked logo file · floors: [{ name, sign, tone (warm · slate · violet for Valis · earth for Pod Zvon), brand,
      *     note }], top floor first (brand: a store name, kept out of translation; note: a short line under the floor's
      *     name); when every offer item is ['text', floor name] Ponuda draws the floors with one legend each. An item
      *     ['text', floor name, 'details'] is a department that opens (+) to show what it sells (Hiper Novalis, WEB-8).
+     *     A single floor (Hiper Bau, Veleprodaja) draws one plate with its legend beside it · brands: [[name, logo, site or null]]
+     *     adds Brendovi after Ponuda, with brandsLead under its heading (Hiper Bau, WEB-11).
+     *     B&B Novalis (2026-10-21): pattern 'lace' lays its lace rosette into the hero · stay: [[label, value]] adds Boravak beside the hours ·
+     *     rooms: [[name, size, guests, photo, page]] adds Sobe after Ponuda (roomsLead under its heading, roomsAll: a
+     *     last tile to the full list); the pages are on the unit's website, so each tile opens there in a new tab.
      */
     units: [
       {
@@ -171,7 +177,7 @@
       {
         id: 'hiper-bau', slug: 'hiper-bau', category: 'trgovine', name: 'Hiper Bau',
         desc: 'Trgovina građevinskim materijalom i opremom za dom.',
-        address: 'Čiponjac III/3, Novalja', phone: '099 5476 792', tel: '+385995476792',
+        address: 'Čiponjac III/3, Novalja', phone: '099 5476 792', tel: '+385995476792', email: 'hiperbau@novalis.hr',
         promo: false, geo: [44.54726, 14.89652], gmaps: 'https://maps.app.goo.gl/oXePTfeMhh4MnKbX8', schema: { '@type': 'HomeAndConstructionBusiness' },
         closedOnHolidays: true,
         hours: {
@@ -180,24 +186,81 @@
         },
         photo: IMG + 'hiper-bau.jpg', photoHint: 'Foto: skladište pločica i materijala',
         page: {
-          theme: 'white', endorse: true,
+          theme: 'slate', layout: 'v2', // slate hero: user's choice for WEB-11 (2026-10-21), was white
           mark: { lockup: ['HIPER', 'BAU'] },
-          label: 'Trgovine · Čiponjac III/3',
-          title: 'Ime sigurno opravdava svojom veličinom.',
-          lead: 'Novi objekt u gospodarskoj zoni na 15.000 m², s natkrivenim parkingom: građevinski materijal, krovni sustavi, suha gradnja, salon keramike i alati.',
+          label: 'Trgovine',
+          title: 'Od temelja do krova.',
+          // novalis.hr Hiper Bau + O nama ("2019. godine otvaramo Hiper Bau na prostoru 15.000 m2, te 8.000 m2 zatvorenog prostora")
+          lead: 'Otvoren 2019. u gospodarskoj zoni: 15.000 m², s 8.000 m² zatvorenog prostora i natkrivenim parkingom. Građevinski materijal, krovni sustavi, suha gradnja, salon keramike, alati i nautika.',
           photo: IMG + 'hiper-bau.jpg', photoAlt: 'Kampanja Hiper Bau: obitelj boji zid', photoPos: '0% 50%',
-          facts: [['15.000 m²', 'površina objekta'], ['8.000 m²', 'zatvorenog prostora'], ['Parking', 'natkriveni, za kupce'], ['Dostava', 'na području Paga']],
-          offerLead: 'Sve za gradnju te uređenje doma i vrta, na jednom mjestu.',
-          offer: [
-            'Pločice, zidne obloge i pribor za postavljanje', 'Podne obloge: laminat, vinil, tapisoni', 'Boje i lakovi',
-            'Građevinski materijal i željezarija', 'Krovni sustavi i suha gradnja', 'Alati i strojevi',
-            'Stolarija i građevinska oprema', 'Vrtlarstvo i maslinarstvo', 'Roštilji i pribor za roštilj',
-            'Ogrjev: drva i peleti', 'Oprema za bazene', 'Nautika'
+          // WEB-11: one floor (user's choice, 2026-10-21); the six departments hold every line of novalis.hr's Hiper Bau
+          // Asortiman. Drafts for Novalis to confirm: the grouping, "izolacija" (Plastform, Draco), the paints' "zidove i
+          // fasade, drvo i metal" and the tools' "ručni i električni" (from the brands in stock).
+          offerLead: 'Sve za gradnju te uređenje doma i vrta, na jednom mjestu: od salona keramike i građevinskog materijala do alata, roštilja i opreme za bazene.',
+          floors: [
+            { name: 'Hiper Bau', sign: '0', tone: 'warm', brand: true }
           ],
-          offerNote: 'Brendovi u ponudi: 3M, Atlas Concorde, Baumit, Bosch, Ceresit, Chromos, Geberit, Henkel, Jub, Kärcher, Knauf, Makita, Semmelrock, Weber, Ytong i drugi.',
+          offer: [
+            ['Keramika i podne obloge', 'Hiper Bau', 'Salon keramike: pločice i zidne obloge, uz alat i materijal za postavljanje pločica. Podne obloge: laminat, vinil, tapisoni i otirači, uz pribor za oblaganje.'],
+            ['Građevinski materijal', 'Hiper Bau', 'Materijal za gradnju i izolaciju, krovni sustavi i suha gradnja. Stolarija i građevinska oprema.'],
+            ['Boje i lakovi', 'Hiper Bau', 'Boje i lakovi za zidove i fasade, drvo i metal.'],
+            ['Alati i željezarija', 'Hiper Bau', 'Ručni i električni alati i strojevi. Željezarija.'],
+            ['Vrt i roštilj', 'Hiper Bau', 'Vrtlarstvo i maslinarstvo. Sve vrste roštilja i pribor za roštilj.'],
+            ['Bazeni, ogrjev i nautika', 'Hiper Bau', 'Oprema za bazene. Ogrjev: drva i peleti. Nautička oprema.']
+          ],
+          // Brendovi (WEB-11): the 35 brands on novalis.hr's Hiper Bau page, alphabetical. [name, logo file in
+          // assets/img/brendovi/ (.webp), official site]: the brand's site for Croatia, else its European or international one
+          // (checked 2026-10-21). null = no confirmed site yet (Draco: no website found; Mariner: logo doesn't match
+          // mariner.it), shown without a link until Novalis confirms.
+          brandsLead: 'U ponudi su proizvodi više od 30 proizvođača, od građevinskog materijala i keramike do alata i vrtnog programa.',
+          brands: [
+            ['3M', '3m', 'https://www.3m.com.hr/3M/hr_HR/company-hr/'],
+            ['Atlas Concorde', 'atlas-concorde', 'https://www.atlasconcorde.com/en'],
+            ['Baumit', 'baumit', 'https://baumit.hr/'],
+            ['Bekament', 'bekament', 'https://bekament.hr/'],
+            ['Belinka', 'belinka', 'https://www.belinka.com/hr/'],
+            ['Bison', 'bison', 'https://www.bison.net/hr-hr'],
+            ['Bosch', 'bosch', 'https://www.bosch.hr/'],
+            ['Cemix', 'cemix', 'https://www.cemix.hr/hr'],
+            ['Ceresit', 'ceresit', 'https://www.ceresit.hr/'],
+            ['Chromos', 'chromos', 'https://chromos.hr/'],
+            ['Claber', 'claber', 'https://www.claber.com/hr/'],
+            ['Del Conca', 'del-conca', 'https://www.delconca.com/en/'],
+            ['Draco', 'draco', null],
+            ['Ecoceramic', 'ecoceramic', 'https://www.ecoceramic.es/en/'],
+            ['Einhell', 'einhell', 'https://www.einhell.hr/'],
+            ['Felco', 'felco', 'https://www.felco.com/'],
+            ['Fischer', 'fischer', 'https://www.fischer.hr/hr-hr'],
+            ['Geberit', 'geberit', 'https://www.geberit.hr/naslovnica/'],
+            ['Gimi', 'gimi', 'https://www.gimi.eu/'],
+            ['Henkel', 'henkel', 'https://www.henkel.hr/'],
+            ['JUB', 'jub', 'https://www.jub.hr/'],
+            ['Kärcher', 'karcher', 'https://www.karcher.com/hr/'],
+            ['Knauf', 'knauf', 'https://knauf.com/hr-HR/knauf-hrvatska'],
+            ['Makita', 'makita', 'https://www.makita.hr/'],
+            ['Mariner', 'mariner', null],
+            ['Maurer', 'maurer', 'https://www.maurer.ferritalia.it/'],
+            ['Onduline', 'onduline', 'https://www.onduline.hr/'],
+            ['Papillon', 'papillon', 'https://www.papillon.ferritalia.it/'],
+            ['Plantella', 'plantella', 'https://plantella.hr/'],
+            ['Plastform', 'plast-form', 'https://www.plastform.hr/'],
+            ['Semmelrock', 'semmelrock', 'https://www.wienerberger.hr/semmelrock.html'],
+            ['TKK', 'tkk', 'https://tkk-group.com/hr'],
+            ['Vargon', 'vargon', 'https://www.wienerberger.hr/proizvodi/vargon.html'],
+            ['Weber', 'weber', 'https://www.saint-gobain.hr/weber'],
+            ['Ytong', 'ytong', 'https://www.xella.hr/hr_HR/']
+          ],
           gallery: [
-            [null, 'Foto: salon keramike'], [null, 'Foto: građevinski materijal'],
-            [null, 'Foto: alati i strojevi'], [null, 'Foto: natkriveni parking']
+            [null, 'Foto: ulaz u Hiper Bau i natkriveni parking'],
+            [null, 'Foto: salon keramike, pločice na izložbenim panelima'],
+            [null, 'Foto: podne obloge, laminat i vinil'],
+            [null, 'Foto: građevinski materijal na paletama'],
+            [null, 'Foto: boje i lakovi na policama'],
+            [null, 'Foto: alati i strojevi'],
+            [null, 'Foto: vrtni program i oprema za maslinarstvo'],
+            [null, 'Foto: roštilji i pribor za roštilj'],
+            [null, 'Foto: oprema za bazene'],
+            [null, 'Foto: osoblje Hiper Baua s kupcem']
           ],
           related: ['hiper-novalis', 'veleprodaja', 'market-novalis']
         }
@@ -214,23 +277,43 @@
         },
         photo: IMG + 'veleprodaja-pice.jpg', photoHint: 'Foto: kamion za dostavu, palete pića',
         page: {
-          theme: 'slate',
+          theme: 'white', layout: 'v2', // white hero, as Hiper Bau's was (user, 2026-10-21)
           mark: { word: 'VELEPRODAJA' },
-          label: 'Novalis d.o.o. · Novalja',
+          // the company, not the category: the mark already says Veleprodaja; the town shows under the status
+          label: 'Novalis d.o.o.',
           title: 'Široka paleta proizvoda, uz besplatnu dostavu.',
-          lead: 'Za ugostitelje i iznajmljivače: voće i povrće, namirnice za ugostiteljstvo, galanterija te velik izbor pića i kave.',
+          // novalis.hr Veleprodaja ("Na jednom mjestu možete nabaviti sve što Vam je potrebno za poslovanje: od voća i povrća ...")
+          lead: 'Na jednom mjestu nabavite sve što vam je potrebno za poslovanje, od voća, povrća i namirnica za ugostiteljstvo do opreme, pića i kave.',
           photo: IMG + 'hiper-novalis-pica.jpg', photoAlt: 'Police s vinima i pićem',
           cta: { label: 'Zatražite ponudu', href: 'mailto:veleprodaja@novalis.com.hr', icon: 'mail' },
-          facts: [['Besplatna', 'dostava za sve kupljene artikle'], ['Brza', 'isporuka'], ['Uvijek', 'dostupni, uz individualni pristup']],
-          offerLead: 'Uz brzu, kvalitetnu, pouzdanu i besplatnu dostavu.',
+          // WEB-13: one floor like Hiper Bau (user's choice, 2026-10-21); its zones are abstract (novalis.hr names no
+          // premises, the address is still open). The lines are novalis.hr's; the equipment list opens from its line, the
+          // drinks line from novalis.hr's Veleprodaja ("Bavimo se i distribucijom i prodajom ...") and Hiper Novalis pages
+          // ("HoReCa program i veleprodaja pića"; "Konkurentne cijene, brzina dostave i stručnost osoblja").
+          // The former facts (besplatna dostava, brza isporuka, uvijek dostupni, individualni pristup) are in Ponuda's lead,
+          // in novalis.hr's words, with the home page's "Veleprodaja: dodatne pogodnosti za partnere".
+          offerLead: 'Za sve kupljene artikle dostupna vam je brza, kvalitetna, pouzdana i besplatna dostava. Uvijek smo dostupni, uz individualni pristup i dodatne pogodnosti za partnere.',
+          floors: [
+            { name: 'Veleprodaja', sign: '0', tone: 'warm', brand: true }
+          ],
           offer: [
-            'Voće i povrće', 'Namirnice za ugostiteljstvo', 'Papirnata i plastična galanterija',
-            'Oprema za ugostiteljstvo: čaše, stolnjaci, pribor za jelo, stolovi i stolice, hladnjaci, klima uređaji, suncobrani',
-            'Alkoholna i bezalkoholna pića', 'Kava i drugi napici'
+            ['Voće i povrće', 'Veleprodaja'], ['Namirnice za ugostiteljstvo', 'Veleprodaja'],
+            ['Papirnata i plastična galanterija', 'Veleprodaja'],
+            ['Oprema za ugostiteljstvo', 'Veleprodaja', 'Čaše, stolnjaci, pribor za jelo, stolovi i stolice, hladnjaci, klima uređaji i suncobrani.'],
+            ['Alkoholna i bezalkoholna pića', 'Veleprodaja', 'Distribucija i prodaja velikog izbora alkoholnih i bezalkoholnih pića. HoReCa program za ugostitelje, uz konkurentne cijene, brzu dostavu i stručno osoblje.'],
+            ['Kava i drugi napici', 'Veleprodaja']
           ],
           gallery: [
-            [IMG + 'veleprodaja-pice.jpg', 'Hladnjak s pivom'], [null, 'Foto: dostavno vozilo Novalis'],
-            [null, 'Foto: voće i povrće'], [null, 'Foto: skladište veleprodaje']
+            [IMG + 'veleprodaja-pice.jpg', 'Hladnjak s pivom'],
+            [null, 'Foto: dostavno vozilo Novalis'],
+            [null, 'Foto: skladište veleprodaje'],
+            [null, 'Foto: voće i povrće'],
+            [null, 'Foto: namirnice za ugostiteljstvo'],
+            [null, 'Foto: papirnata i plastična galanterija'],
+            [null, 'Foto: čaše, stolnjaci i pribor za jelo'],
+            [null, 'Foto: stolovi, stolice i suncobrani za terase'],
+            [null, 'Foto: kava i drugi napici'],
+            [null, 'Foto: osoblje veleprodaje pri utovaru robe']
           ],
           related: ['hiper-novalis', 'hiper-bau', 'market-novalis']
         }
@@ -238,7 +321,9 @@
       {
         id: 'valis', slug: 'valis', category: 'gastro', name: 'Bistro i slastičarna Valis',
         desc: 'Usluge bistroa i slastičarne.',
-        address: 'Trg Bazilike 3, Novalja', phone: '099 258 6317', tel: '+385992586317',
+        // phone and e-mail from novalis.hr Kontakt ("Tel. Bistro / proizvodnja kolača"); the 099 258 6317 from the design
+        // appears nowhere on novalis.hr
+        address: 'Trg Bazilike 3, Novalja', phone: '053 663 546', tel: '+38553663546', email: 'valis@novalis.hr',
         promo: false, geo: [44.55643, 14.88334], gmaps: 'https://maps.app.goo.gl/7rZgAQVpfzeDLfWm8', schema: { '@type': ['Bakery', 'CafeOrCoffeeShop'] },
         hours: {
           summer: daily(wk('08:00', '24:00')),
@@ -246,28 +331,43 @@
         },
         photo: IMG + 'valis.jpg', photoHint: 'Foto: torte i kolači u vitrini',
         page: {
-          theme: 'violet',
-          mark: { image: 'assets/brand/valis-novalja-violet.png', w: 160, h: 120, script: 'Dobro došli' },
-          label: 'Gastro · Trg Bazilike 3, Novalja',
+          theme: 'violet', layout: 'v2',
+          mark: { image: 'assets/brand/valis-novalja-violet.png', w: 160, h: 120 }, // no "Dobro došli" script (user, 2026-10-21)
+          label: 'Gastro',
           title: 'Bistro, slastičarna i kavana na Trgu Bazilike.',
-          lead: 'Naš sladoled iz vlastite proizvodnje je nadaleko poznat. Uz to: caffe s velikom terasom, kavana na prvom katu i beauty centar na drugom.',
+          lead: 'Naš sladoled iz vlastite proizvodnje nadaleko je poznat. Uživajte u njemu na velikoj terasi caffea, a za vrhunsku kavu i vino svratite u kavanu na prvom katu.',
           photo: IMG + 'valis.jpg', photoAlt: 'Interijer bistroa Valis sa stolicama boje lavande',
-          facts: [['2011.', 'otvoren u centru Novalje'], ['3', 'kata na jednoj adresi'], ['Sladoled', 'iz vlastite proizvodnje'], ['Terasa', 'velika, u prizemlju']],
-          offerLead: 'Tri kata, tri priče - od sladoleda na terasi do kave i vina na prvom katu.',
+          // WEB-12: the floors as novalis.hr lists them (prizemlje bistro, slastičarna and caffe; 1. kat kavana); the
+          // 2. kat beauty centar is left out of Ponuda (user, 2026-10-21). The 1. kat note is novalis.hr's words.
+          // "Proizvodnja i prodaja kolača" joined the slastičarna line (novalis.hr doesn't say where the cakes are made;
+          // Kontakt: "Bistro / proizvodnja kolača"). The year and "kutak" in offerLead: novalis.hr O nama ("2011. godine, u
+          // samome centru Novalje otvoren je Valis ... tako da i najzahtjevniji gost nađe neki kutak za sebe"); the kavana's
+          // delicije: its Valis page ("uživajte u najboljim delicijama iz naše ponude").
+          offerLead: 'Otvoren 2011. u samom centru Novalje, s kutkom za svakog gosta, od sladoleda na terasi do kave i vina na prvom katu.',
+          floors: [
+            { name: '1. kat', sign: '1', tone: 'slate', note: 'Idilično uređen interijer' },
+            { name: 'Prizemlje', sign: '0', tone: 'violet' } // Valis's violet, not the Novalis red and yellow (user, 2026-10-21)
+          ],
           offer: [
-            ['Bistro', 'Prizemlje'], ['Slastičarna i sladoled iz vlastite proizvodnje', 'Prizemlje'], 'Proizvodnja i prodaja kolača',
-            ['Caffe s velikom terasom', 'Prizemlje'], ['Kavana: vrhunska kava i vina', '1. kat'], ['Beauty centar', '2. kat']
+            ['Kavana: vrhunska kava, vina i delicije', '1. kat'],
+            ['Bistro', 'Prizemlje'], ['Slastičarna: kolači i sladoled iz vlastite proizvodnje', 'Prizemlje'], ['Caffe s velikom terasom', 'Prizemlje']
           ],
           gallery: [
             [IMG + 'valis-voce.jpg', 'Šumsko voće za slastice'], [IMG + 'valis-tijesto.jpg', 'Tijesto iz vlastite proizvodnje'],
-            [IMG + 'valis-caffe.jpg', 'Bistro i caffe u prizemlju'], [IMG + 'valis-kavana.jpg', 'Detalj interijera kavane']
+            [IMG + 'valis-caffe.jpg', 'Bistro i caffe u prizemlju'], [IMG + 'valis-kavana.jpg', 'Detalj interijera kavane'],
+            [null, 'Foto: terasa caffea na Trgu Bazilike'],
+            [null, 'Foto: vitrina sa sladoledom iz vlastite proizvodnje'],
+            [null, 'Foto: torte i kolači u vitrini slastičarne'],
+            [null, 'Foto: kavana na prvom katu, pogled na cijeli prostor'],
+            [null, 'Foto: kava i kolač na stolu u kavani'],
+            [null, 'Foto: osoblje slastičarne za šankom ili uz vitrinu']
           ],
           related: ['pod-zvon', 'market-novalis', 'hotel-novalis']
         }
       },
       {
         id: 'pod-zvon', slug: 'pod-zvon', category: 'gastro', name: 'Bistro Pod Zvon',
-        desc: 'Nalazi se tik pod zvonom župne crkve, u centru grada.',
+        desc: 'Nalazi se tik pod zvonikom župne crkve, u centru grada.',
         address: 'Ulica kralja Zvonimira 1a, Novalja', phone: '053 679 555', tel: '+38553679555', email: 'zvon@novalis.com.hr',
         promo: false, geo: [44.55646, 14.88455], gmaps: 'https://maps.app.goo.gl/2HvTUTQV7ncNfJYK8', schema: { '@type': 'Restaurant', servesCuisine: ['Mediterranean', 'Pizza'] },
         hoursConfirmed: true,
@@ -277,34 +377,102 @@
         },
         photo: IMG + 'pod-zvon-interijer.jpg', photoHint: 'Foto: terasa bistroa uz zvonik',
         page: {
-          theme: 'earth',
+          theme: 'earth', layout: 'v2',
           mark: { lockup: ['BISTRO', 'POD ZVON'] },
-          label: 'Gastro · Ulica kralja Zvonimira 1a, Novalja',
-          title: 'Tik pod zvonom župne crkve.',
-          lead: 'Novouređeni objekt za najizbirljivije, na četiri razine, u centru grada.',
+          label: 'Gastro',
+          title: 'Tik pod zvonikom župne crkve.',
+          // novalis.hr's konoba, krušna peć and "za najizbirljivije"; no levels (novalis.hr says 4, Ponuda draws 3; user,
+          // 2026-10-21) and no "novouređeni" (open since 2019)
+          lead: 'Konoba i pizzerija u samom centru Novalje, za najizbirljivije goste. Svratite na dalmatinska jela s kaminskog ložišta, pizzu iz krušne peći ili čašu vina.',
           photo: IMG + 'pod-zvon.jpg', photoAlt: 'Kameni reljef zvona s natpisom Pod Zvon',
-          facts: [['4', 'razine u jednom objektu'], ['2019.', 'otvoren u centru grada'], ['od 16 h', 'otvoreno svaki dan'], ['Krušna peć', 'i kaminsko ložište']],
-          offerLead: 'Konoba, vinski podrum, pizzerija i mirni kat - na četiri razine u centru Novalje.',
+          // WEB-10: three floors as the user placed them (2026-10-21): konoba and the quiet space upstairs, the pizzerija
+          // on the ground floor, the wine cellar below. Lines in novalis.hr's words; the konoba's "pripremljena na
+          // tradicionalan dalmatinski način" moved to the lead so its legend line stays short.
+          offerLead: 'Od degustacije vina u podrumu do jela s kaminskog ložišta, pripremljenih na tradicionalan dalmatinski način.',
+          floors: [
+            { name: '1. kat', sign: '1', tone: 'slate' },
+            { name: 'Prizemlje', sign: '0', tone: 'earth' }, // Pod Zvon's own sand and brown, as Valis has its violet
+            { name: 'Podrum', sign: '-1', tone: 'slate' }
+          ],
           offer: [
-            'Konoba: jela s kaminskog ložišta, pripremljena na tradicionalan dalmatinski način', 'Vinski podrum i degustacije vina',
-            'Pizzerija s krušnom peći', ['Mirni prostor za poslovne sastanke i rad na odmoru', 'Kat']
+            ['Konoba s kaminskim ložištem', '1. kat'], ['Mirni prostor za poslovne sastanke i rad na odmoru', '1. kat'],
+            ['Pizzerija s krušnom peći', 'Prizemlje'],
+            ['Vinski podrum i degustacije vina', 'Podrum']
           ],
           gallery: [
             [IMG + 'pod-zvon-interijer.jpg', 'Interijer: drvene grede, terakota i bijele stolice'],
             [IMG + 'pod-zvon-blagovaonica.jpg', 'Blagovaonica s drvenim stropom'],
             [IMG + 'pod-zvon-stolovi.jpg', 'Stolovi postavljeni za večeru'],
-            [IMG + 'pod-zvon-blagajna.jpg', 'Stara blagajna kao detalj interijera']
+            [IMG + 'pod-zvon-blagajna.jpg', 'Stara blagajna kao detalj interijera'],
+            [null, 'Foto: ulaz u Bistro Pod Zvon ispod zvonika župne crkve'],
+            [null, 'Foto: kaminsko ložište u konobi'],
+            [null, 'Foto: vinski podrum'],
+            [null, 'Foto: pizzerija s krušnom peći'],
+            [null, 'Foto: mirni prostor na katu'],
+            [null, 'Foto: osoblje bistroa uz stol s gostima']
           ],
           related: ['valis', 'market-novalis', 'hotel-novalis']
         }
       },
       {
-        id: 'hotel-novalis', category: 'smjestaj', name: 'B&B Novalis',
+        id: 'hotel-novalis', slug: 'hotel-novalis', category: 'smjestaj', name: 'B&B Novalis',
         desc: 'Smještaj s doručkom u centru Novalje - sobe za obitelj, prijatelje i poslovne goste.',
-        address: 'Josipa Kunkere 8, Novalja', phone: '053 662 222', tel: '+38553662222',
-        promo: false, url: 'https://hotelnovalis.hr', external: true, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/Xn3Hd2v3PpPCoA7d6', schema: { '@type': 'BedAndBreakfast' },
+        address: 'Josipa Kunkere 8, Novalja', phone: '053 662 222', tel: '+38553662222', email: 'hotel@novalis.hr',
+        promo: false, geo: [44.55675, 14.88293], gmaps: 'https://maps.app.goo.gl/Xn3Hd2v3PpPCoA7d6',
+        // its own website for search engines (sameAs); arrival, departure and the 23 units as hotelnovalis.hr gives them
+        schema: { '@type': 'BedAndBreakfast', sameAs: 'https://hotelnovalis.hr/', checkinTime: '15:00', checkoutTime: '12:00', numberOfRooms: 23 },
         hours: { summer: allDay, winter: allDay }, openPeriod: { start: '04-01', end: '11-01' },
-        photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis'
+        photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis',
+        page: {
+          // The hotel's own look on the v2 store page (user, 2026-10-21): its logo and lace rosette (assets/brand/bb-novalis-*,
+          // from hotelnovalis.hr), dark ground with sand like its site, its website (hotelnovalis.hr) as the primary button (user, 2026-10-21). Copy, rooms and photos from hotelnovalis.hr (Novalis's own site) and novalis.hr.
+          theme: 'ink', layout: 'v2', pattern: 'lace',
+          mark: { logo: 'assets/brand/bb-novalis-white.svg', w: 300, h: 60 },
+          label: 'Smještaj',
+          title: 'Vaša oaza u centru grada.',
+          lead: 'Uređen pomno i s ljubavlju, u samom centru Novalje. Odmorite se u udobnim sobama s king size krevetima ili u hidromasažnoj kadi na krovnoj terasi, uz pogled na more ili novaljske krovove i zvonike.',
+          photo: IMG + 'hotel-novalis.jpg', photoAlt: 'Krovna terasa s hidromasažnom kadom i pogledom na more u sumrak', photoPos: '25% 50%',
+          cta: { label: 'Rezervirajte', href: 'https://hotelnovalis.hr/' },
+          // Boravak, beside the reception hours (hotelnovalis.hr, "dodatne informacije")
+          stay: [['Dolazak', 'nakon 15:00'], ['Odlazak', 'do 12:00']],
+          // Ponuda as the building (user, 2026-10-21): two levels named by what is on them, no floor numbers (the hotel's
+          // floors aren't known; a floor without a sign shows none). Every line from hotelnovalis.hr (Rooftop, the rooms'
+          // equipment; breakfast is on the first terrace).
+          offerLead: 'Na krovu su dvije terase s hidromasažnim kadama, buffet doručkom i barom, a ispod njih sobe za odmor u samom centru grada. Gostima nudimo i besplatni parking te preporuke za izlete po otoku, do mjesta dobro znanih i još neotkrivenih.',
+          floors: [
+            { name: 'Krovne terase', tone: 'earth', note: 'Isključivo za goste' },
+            { name: 'Sobe', tone: 'slate', note: 'Udobne, svijetle i prostrane' }
+          ],
+          offer: [
+            ['Terasa s pogledom na more', 'Krovne terase'], ['Terasa s pogledom na Velebit', 'Krovne terase'],
+            ['Hidromasažne kade i sunčališta', 'Krovne terase'], ['Buffet doručak', 'Krovne terase'], ['Bar s bogatim izborom pića', 'Krovne terase'],
+            ['Klima i brzi Wi-Fi', 'Sobe'], ['LCD TV, mini bar i sef', 'Sobe'], ['Kupaonica s walk-in tušem', 'Sobe'],
+            ['Mini kuhinja u dijelu soba', 'Sobe'], ['Pogled na more ili Velebit', 'Sobe']
+          ],
+          // Sobe (page.rooms): one row, three of the 11 rooms on hotelnovalis.hr (user, 2026-10-21: the most beautiful),
+          // [name, size, guests, photo, its page there]; Studio Deluxe stands for both studios. The fourth tile opens the
+          // full list there.
+          roomsLead: 'Nudimo 23 smještajne jedinice, od toga 11 suite soba, s pogledom na more ili na Velebit i gradske krovove.',
+          rooms: [
+            ['Suite Deluxe s pogledom na more', '25 m²', '2 osobe', IMG + 'hotel-novalis-suite-deluxe.jpg', 'https://hotelnovalis.hr/sobe/suite-deluxe-s-pogledom-na-more/'],
+            ['Studio Deluxe', '30 - 36 m²', '2 - 3 osobe', IMG + 'hotel-novalis-studio-deluxe.jpg', 'https://hotelnovalis.hr/sobe/studio-deluxe/'],
+            ['Standardni suite', '22 m²', '2 osobe', IMG + 'hotel-novalis-suite.jpg', 'https://hotelnovalis.hr/sobe/standardni-suite/']
+          ],
+          roomsAll: 'https://hotelnovalis.hr/novalis-sobe/',
+          gallery: [
+            [IMG + 'hotel-novalis-zgrada.jpg', 'Zgrada s krovnom terasom iznad krovova Novalje'],
+            [IMG + 'hotel-novalis-terasa-vecer.jpg', 'Krovna terasa u sumrak, s pogledom na luku'],
+            [IMG + 'hotel-novalis-jacuzzi.jpg', 'Hidromasažna kada na krovnoj terasi'],
+            [IMG + 'hotel-novalis-zalazak.jpg', 'Zalazak sunca s krovne terase'],
+            [IMG + 'hotel-novalis-koktel.jpg', 'Koktel uz pogled na more'],
+            [IMG + 'hotel-novalis-recepcija.jpg', 'Recepcija'],
+            [IMG + 'hotel-novalis-predvorje.jpg', 'Predvorje s motivom čipke na zidu'],
+            [IMG + 'hotel-novalis-cipka.jpg', 'Zlatni motiv čipke u hodniku'],
+            [IMG + 'hotel-novalis-rucnici.jpg', 'Ručnici s logom Novalis na krevetu'],
+            [IMG + 'hotel-novalis-luka.jpg', 'Novalja i luka u sumrak, iz zraka']
+          ],
+          related: ['valis', 'pod-zvon', 'market-novalis']
+        }
       }
     ],
     // "Novalis za svaku priliku" (landing and O nama pages, #prilike): one card per need, with the units that cover it in order.

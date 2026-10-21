@@ -1,10 +1,11 @@
-/* Novalis store page (hiper-novalis/, market-novalis/, hiper-bau/, veleprodaja/, valis/, pod-zvon/) — renders one
+/* Novalis store page (hiper-novalis/, market-novalis/, hiper-bau/, veleprodaja/, valis/, pod-zvon/, hotel-novalis/) — renders one
    unit's page from data/units.js on top of js/site.js. Every store page has the same sections; only the hero takes
    the store's theme and mark. The unit comes from <body data-unit="…">.
-   Two layouts: units with page.layout 'v2' (WEB-9; Market Novalis, Hiper Novalis) get the reworked page (V2 below: hero with
-   the address and icon-only call / e-mail, Radno vrijeme i lokacija right under it, Ponuda with floors, Galerija,
-   Ostale poslovnice); the others keep the layout they had (hero with the call link, Ključne brojke, Ponuda, Galerija,
-   Radno vrijeme i lokacija with the address block under the map, Povezane poslovnice) until their own tickets. */
+   Two layouts: units with page.layout 'v2' (WEB-9; Market Novalis, Hiper Novalis, Hiper Bau, Valis, Pod Zvon,
+   Veleprodaja: all six now) get the reworked page (V2 below: hero with the address and icon-only call / e-mail, Radno
+   vrijeme i lokacija right under it, Ponuda with floors, Brendovi where the unit lists brands, Galerija, Ostale
+   poslovnice); a unit without the flag gets the earlier layout (hero with the call link, Ključne brojke, Ponuda,
+   Galerija, Radno vrijeme i lokacija with the address block under the map, Povezane poslovnice). */
 (function () {
   'use strict';
 
@@ -19,6 +20,10 @@
 
   function ico(name, size) {
     return '<span class="ms' + (size ? ' ms--' + size : '') + '" aria-hidden="true">' + name + '</span>';
+  }
+  // the arrow of a link to another website (new tab): the brand tiles and the room tiles
+  function goSVG(cls) {
+    return '<svg class="' + cls + '" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5 11 11 5M6 5h5v5"/></svg>';
   }
   function pad(n) { return (n < 9 ? '0' : '') + (n + 1); }
   // V2: running text (the Ponuda lead, photo-slot descriptions) escaped, with every unit's name kept out of browser
@@ -58,10 +63,12 @@
     winter: { title: 'Zimsko radno vrijeme', period: NV.dayMonth(S.end, 1) + ' - ' + NV.dayMonth(S.start, -1) }
   };
 
-  // today: the weekday (0 = Monday) whose row is marked in the current table, or -1 for none
+  // today: the weekday (0 = Monday) whose row is marked in the current table, or -1 for none. One table all year; a unit
+  // open only part of the year (openPeriod, B&B Novalis) gives those dates instead of "cijele godine".
   function hourBlocks(today, season) {
     if (allYear) {
-      return [{ title: 'Radno vrijeme', period: 'cijele godine', now: true, rows: hourRows(u.hours.summer, today) }];
+      var o = u.openPeriod, period = o ? NV.dayMonth(o.start) + ' - ' + NV.dayMonth(o.end) : 'cijele godine';
+      return [{ title: 'Radno vrijeme', period: period, now: true, rows: hourRows(u.hours.summer, today) }];
     }
     return (season === 'summer' ? ['summer', 'winter'] : ['winter', 'summer']).map(function (s) {
       var now = s === season;
@@ -77,13 +84,21 @@
     return hourBlocks(today, season).map(function (b) {
       return '<div class="hours' + (b.now ? ' is-now' : '') + '">' +
         '<div class="hours__head"><h3 class="hours__title">' + esc(b.title) + '</h3>' +
-          (b.now && b.period !== 'cijele godine' ? '<span class="hours__badge">Sada</span>' : '') +
+          (b.now && !allYear ? '<span class="hours__badge">Sada</span>' : '') +
           '<span class="hours__period">' + esc(b.period) + '</span></div>' +
         '<dl class="hours__rows">' + b.rows.map(function (r) {
           return '<div class="hours__row' + (r.today ? ' is-today' : '') + '"><dt>' + esc(r.day) + '</dt><dd>' + esc(r.time) + '</dd></div>';
         }).join('') + '</dl>' +
       '</div>';
     }).join('');
+  }
+
+  // Boravak (page.stay; B&B Novalis): arrival and departure under the hours, as a table of the same kind
+  function stayHTML() {
+    return '<div class="hours hours--stay"><div class="hours__head"><h3 class="hours__title">Boravak</h3></div>' +
+      '<dl class="hours__rows">' + p.stay.map(function (r) {
+        return '<div class="hours__row"><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>';
+      }).join('') + '</dl></div>';
   }
 
   /* ---------------- Sections ---------------- */
@@ -122,8 +137,9 @@
   }
 
   // The hero: mark, label, title, lead, today's status (#heroStatus, renderLive), then the primary button (Upute or the
-  // unit's own cta) and the call link. V2: the street address under the status (a link to the Google listing) and the
-  // call / e-mail buttons instead of the call link.
+  // unit's own cta, .store-hero__cta) and the call link. V2: the street address under the status (a link to the Google
+  // listing) and the call / e-mail buttons instead of the call link. Pattern 'lace' (B&B Novalis) lays the hotel's lace
+  // rosette behind the copy (decorative).
   function heroHTML() {
     var cta = p.cta || { label: 'Upute', href: mapsHref, icon: 'directions' };
     var ext = /^https?:/.test(cta.href) ? ' target="_blank" rel="noopener"' : '';
@@ -133,14 +149,15 @@
         '<li><span aria-current="page" translate="no">' + esc(u.name) + '</span></li></ol></nav>' +
       '<section class="store-hero" aria-labelledby="h-store">' +
         '<div class="store-hero__panel">' +
+          (p.pattern === 'lace' ? '<div class="store-hero__lace" aria-hidden="true"></div>' : '') +
           '<div class="store-hero__copy">' + markHTML(p.mark) +
-            '<span class="store-hero__label">' + esc(p.label) + (p.endorse ? ' · ' + NV.logoSVG('novalis', 'red', 16) : '') + '</span>' +
+            '<span class="store-hero__label">' + esc(p.label) + '</span>' +
             // The mark is the store's name drawn large; the heading carries the name for readers and search.
             '<h1 class="store-hero__title" id="h-store"><span class="vh" translate="no">' + esc(u.name) + ': </span>' + esc(p.title) + '</h1>' +
             '<p class="store-hero__lead">' + esc(p.lead) + '</p>' +
             (V2 ? '<div class="store-hero__place"><div id="heroStatus"></div>' + NV.addrHTML(u, 'store-hero__addr') + '</div>' : '<div id="heroStatus"></div>') +
             '<div class="store-hero__actions">' +
-              '<a class="btn btn--lg" href="' + esc(cta.href) + '"' + ext + '>' + esc(cta.label) + ico(cta.icon || 'arrow_forward') + (ext ? NEW_TAB : '') + '</a>' +
+              '<a class="btn btn--lg' + (p.cta ? ' store-hero__cta' : '') + '" href="' + esc(cta.href) + '"' + ext + '>' + esc(cta.label) + ico(cta.icon || 'arrow_forward') + (ext ? NEW_TAB : '') + '</a>' +
               (V2 ? contactHTML(cta) : '<a class="store-hero__call" href="' + esc(telHref) + '">' + ico('call', 'sm') + esc(telLabel) + '</a>') +
             '</div>' +
           '</div>' +
@@ -180,7 +197,9 @@
   var LETTERS = 'ABCDEFGH';
 
   // Zones on a 12 x 5 plate (abstract, not the shop's layout): two layouts (alternating floors), for 1 to 6 categories.
+  // A single category (Valis's 1. kat) fills the plate.
   function zoneLayout(n, alt) {
+    if (n === 1) return [[0.6, 0.6, 10.8, 3.8]];
     var top = alt ? Math.floor(n / 2) : Math.ceil(n / 2), out = [], i;
     if (alt && n > 2) { // a full-depth block on the left, the rest in two rows
       out.push([0.6, 0.6, 3.2, 3.8]);
@@ -201,6 +220,7 @@
   // shape. With the floors turned against each other, the upper plate's lowest corner sits over the lower plate's
   // highest one, so STEP clears that point by GAP; the leftmost and rightmost corners of all plates line up and get a
   // guide each (front and back guides would cross the plates). Flat faces: left-facing sides take the lighter tone.
+  // A single floor (Hiper Bau, Veleprodaja) faces right, towards its legend beside it.
   // Returns the SVG and each plate's centre height (0-1) for its legend.
   function buildingSVG(groups) {
     var W = 12, D = 5, T = 0.7, H = 0.5, C = 0.866, S = 0.5, PAD = 0.7, GAP = 1;
@@ -213,7 +233,7 @@
         poly(c + A, [P(x, y, z0 + h, turn), P(x, y + d, z0 + h, turn), P(x, y + d, z0, turn), P(x, y, z0, turn)]) +
         poly(c + '-t', [P(x, y, z0 + h, turn), P(x + w, y, z0 + h, turn), P(x + w, y + d, z0 + h, turn), P(x, y + d, z0 + h, turn)]);
     }
-    function turned(i) { return i % 2 === 0; }
+    function turned(i) { return i % 2 === 0 && n > 1; }
     function floor(g, i) {
       var z = -i * STEP, t = turned(i), zones = zoneLayout(g.items.length, i % 2 === 1).map(function (q, k) { return { q: q, k: k }; });
       var s = box(0, 0, W, D, z - T, T, 'iso-plate', t, true);
@@ -264,18 +284,19 @@
   // The building first (decorative), then one legend per floor, top floor first. From 1200 the legends flank the
   // building, each level with its plate (--at): the first floor's on the left (its plate faces left), the second's on
   // the right. With departments (floors--dept) the legends stay in the page flow instead (css), so an opened one
-  // pushes the page down rather than covering it.
+  // pushes the page down rather than covering it. A single floor's legend sits right of the building (no floor--start).
+  // A floor without a sign (B&B Novalis: levels named by what is on them) shows none.
   function floorsHTML(groups) {
     var b = buildingSVG(groups), dept = groups.some(function (g) { return g.items.some(function (it) { return it.d; }); });
     return '<div class="floors floors--' + groups.length + (dept ? ' floors--dept' : '') + '">' +
       '<div class="floors__building">' + b.svg + '</div>' +
       groups.map(function (g, gi) {
         var name = g.brand ? '<span translate="no">' + esc(g.name) + '</span>' : esc(g.name);
-        return '<div class="floor floor--' + esc(g.tone) + (gi % 2 ? '' : ' floor--start') + '" style="--at:' + b.at[gi] + '">' +
+        return '<div class="floor floor--' + esc(g.tone) + (gi % 2 || groups.length < 2 ? '' : ' floor--start') + '" style="--at:' + b.at[gi] + '">' +
           '<div class="floor__legend">' +
-            '<span class="floor__sign" aria-hidden="true">' + esc(g.sign) + '</span>' +
+            (g.sign ? '<span class="floor__sign" aria-hidden="true">' + esc(g.sign) + '</span>' : '') +
             '<div class="floor__key">' + stackSVG(groups.length, gi) +
-              '<h3 class="floor__name" id="h-ponuda-' + gi + '"><span class="vh">Razina ' + esc(g.sign) + ': </span>' + name + '</h3>' +
+              '<h3 class="floor__name" id="h-ponuda-' + gi + '">' + (g.sign ? '<span class="vh">Razina ' + esc(g.sign) + ': </span>' : '') + name + '</h3>' +
               (g.note ? '<p class="floor__note">' + esc(g.note) + '</p>' : '') +
               '<ol class="floor__list" aria-labelledby="h-ponuda-' + gi + '">' + g.items.map(itemHTML).join('') + '</ol>' +
             '</div>' +
@@ -299,6 +320,42 @@
       (groups ? floorsHTML(groups) : offerListHTML()) +
       (p.offerNote ? '<p class="offer__note">' + esc(p.offerNote) + '</p>' : '') +
     '</section>';
+  }
+
+  /* Brendovi (V2, page.brands; Hiper Bau, WEB-11): one tile per brand, alphabetical. A brand with a confirmed site is a
+     link to it in a new tab (its site for Croatia, else its European or international one), named by its logo's alt
+     text; one without stays a plain logo. Each logo file is 320 x 160 with the logo already trimmed and centred at an
+     even visual size, so every tile only frames it. Phones and tablets show whole rows first; the button shows the
+     rest (brandsMore). */
+  var BRANDS = 'assets/img/brendovi/';
+  var GO = goSVG('brand__go');
+  function brandsHTML() {
+    return '<section class="store-sec" aria-labelledby="h-brendovi">' + headHTML('brendovi', 'Brendovi', p.brandsLead) +
+      '<ul class="brands" id="brandList">' + p.brands.map(function (b) {
+        var img = '<img src="' + esc(asset(BRANDS + b[1] + '.webp')) + '" alt="' + esc(b[0]) + '" width="160" height="80" loading="lazy" decoding="async" translate="no">';
+        return '<li class="brands__item">' + (b[2]
+          ? '<a class="brand" href="' + esc(b[2]) + '" target="_blank" rel="noopener">' + img + NEW_TAB + GO + '</a>'
+          : '<span class="brand">' + img + '</span>') + '</li>';
+      }).join('') + '</ul>' +
+      '<button type="button" class="btn-sm brands__more" aria-controls="brandList">Prikaži sve brendove (' + p.brands.length + ')</button>' +
+    '</section>';
+  }
+
+  /* Sobe (V2, page.rooms; B&B Novalis): one tile per room type with its photo (decorative: the name follows), name
+     (h3), size and guests. The name is the tile's one link, stretched over it (as on the unit cards), to the room's page
+     on the unit's website in a new tab; the arrow on the photo says it leaves the site. The last tile (roomsAll) opens
+     the full list there. */
+  function roomsHTML() {
+    return '<section class="store-sec" aria-labelledby="h-sobe">' + headHTML('sobe', 'Sobe', p.roomsLead) +
+      '<ul class="rooms">' + p.rooms.map(function (r) {
+        return '<li class="room"><div class="room__media">' + NV.slotHTML(asset(r[3]), r[0], '') + goSVG('room__go') + '</div>' +
+          '<h3 class="room__name"><a class="room__link" href="' + esc(r[4]) + '" target="_blank" rel="noopener">' + esc(r[0]) + NEW_TAB + '</a></h3>' +
+          '<p class="room__meta">' + esc(r[1]) + ' · ' + esc(r[2]) + '</p></li>';
+      }).join('') +
+      (p.roomsAll ? '<li class="room room--all"><a class="room__all" href="' + esc(p.roomsAll) + '" target="_blank" rel="noopener">' +
+          '<span class="room__all-t">Pogledajte sve sobe</span> <span class="room__all-site"><span translate="no">' +
+          esc(p.roomsAll.replace(/^https?:\/\/|\/.*$/g, '')) + '</span>' + goSVG('room__all-go') + '</span>' + NEW_TAB + '</a></li>' : '') +
+      '</ul></section>';
   }
 
   function galleryHTML() {
@@ -435,7 +492,7 @@
     var z = NV.zagrebNow(), season = NV.currentSeason(z), st = NV.unitStatus(u, z);
     setHTML($('#heroStatus'), statusHTML('store-hero__status', st));
     // a day with hours of its own (holiday, exception) marks no weekday row: the status above says it all
-    setHTML($('#visitHours'), statusHTML('visit__status', st) + hoursHTML(st.regular ? z.day : -1, season));
+    setHTML($('#visitHours'), statusHTML('visit__status', st) + hoursHTML(st.regular ? z.day : -1, season) + (p.stay ? stayHTML() : ''));
     related.render(relatedCardsHTML(z));
   }
 
@@ -526,10 +583,26 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(later);
   }
 
+  // V2 Brendovi: phones and tablets first show whole rows (css hides the rest); the button shows them all, then goes,
+  // and focus moves to the first brand that was hidden. It shows only while some brands are hidden at that width.
+  function brandsMore(list, btn) {
+    function hidden() { return [].filter.call(list.children, function (li) { return getComputedStyle(li).display === 'none'; }); }
+    function sync() { btn.hidden = !hidden().length; }
+    btn.addEventListener('click', function () {
+      var to = hidden().map(function (li) { return li.querySelector('a'); }).filter(Boolean)[0];
+      list.classList.add('is-all');
+      btn.remove();
+      removeEventListener('resize', sync);
+      if (to) to.focus();
+    });
+    addEventListener('resize', sync);
+    sync();
+  }
+
   $('.page').classList.add('store', 'store--' + p.theme);
   if (V2) $('.page').classList.add('store--v2');
   $('#store').innerHTML = V2
-    ? heroHTML() + visitHTML() + offerHTML() + galleryHTML() + relatedHTML()
+    ? heroHTML() + visitHTML() + offerHTML() + (p.brands ? brandsHTML() : '') + (p.rooms ? roomsHTML() : '') + galleryHTML() + relatedHTML()
     : heroHTML() + factsHTML() + offerHTML() + galleryHTML() + visitHTML() + relatedHTML();
   // the related cards rise in like the landing page's the first time they come into view (NV.cardGrid)
   var related = NV.cardGrid($('#related'));
@@ -537,6 +610,7 @@
   NV.holdQuickbar($('.store-hero__actions'));
   if (V2) quiet($('.store-hero__actions'));
   if (V2 && $('.floors--dept')) deptPlace($('.floors--dept'));
+  if (V2 && p.brands) brandsMore($('#brandList'), $('.brands__more'));
   renderLive();
   initMap();
   addStructuredData();

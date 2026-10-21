@@ -29,20 +29,26 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   Pages in a folder (`o-nama/` and the store pages) set `<body data-root="../" data-home="../">` so asset paths and section links point back to the site root.
 - **Plain addresses (user's choice, 2026-10-16):** the address bar shows only `/`, `/o-nama/`, `/hiper-novalis/` …, never `#section`, `?…` or `index.html`.
   site.js scrolls `#…` links without touching the address (`NV.goTo`) and strips any hash/query a page arrives with once it has loaded; don't write state into the URL.
-- **Store pages:** one folder per unit with a page (`hiper-novalis/`, `market-novalis/`, `hiper-bau/`, `veleprodaja/`, `valis/`, `pod-zvon/`), each an identical `index.html` shell with
+- **Store pages:** one folder per unit (`hiper-novalis/`, `market-novalis/`, `hiper-bau/`, `veleprodaja/`, `valis/`, `pod-zvon/`, `hotel-novalis/`), each an identical `index.html` shell with
   `<body data-unit="…" data-root="../" data-home="../">`. Link to them with `NV.unitHref(u)` (clean `slug/` URLs; site.js adds `index.html` on click when opened from disk).
   `js/poslovnica.js` has two layouts. By default a store page shows hero, Ključne brojke, Ponuda, Galerija, Radno vrijeme i lokacija, Povezane poslovnice.
-  A unit with `page.layout: 'v2'` (Market Novalis, WEB-9, approved 2026-10-20; Hiper Novalis, WEB-8, approved 2026-10-21; the other stores opt in through their own tickets WEB-10 - WEB-13)
-  shows hero (cart badge beside a stacked lockup via `NV.tileSVG`, address linked to the Google listing, Upute plus icon-only call/e-mail buttons whose
+  A unit with `page.layout: 'v2'` (Market Novalis, WEB-9, approved 2026-10-20; Hiper Novalis, WEB-8, approved 2026-10-21; Hiper Bau, WEB-11, built 2026-10-21; Valis, WEB-12, and Pod Zvon, WEB-10, built 2026-10-21; Veleprodaja, WEB-13, built 2026-10-21 with a white hero, its word mark in red, label Novalis d.o.o., Zatražite ponudu instead of Upute (a size smaller on phones, `.store-hero__cta`), Ponuda one floor like Hiper Bau with only Oprema za ugostiteljstvo opening)
+  shows hero (cart badge beside a stacked lockup via `NV.tileSVG`; Hiper Bau has no logo file yet, so it keeps its typeset lockup, as does Pod Zvon; Valis keeps its logo (no "Dobro došli" script); address linked to the Google listing, Upute plus icon-only call/e-mail buttons whose
   number or address shows on hover/focus, Esc hides it), Radno vrijeme i lokacija (nothing under the map, pin in `--nv-red`), Ponuda (an isometric
   building of `page.floors` when every offer line names a floor; floors may carry a `note`; a short lead (body size) under the heading; sized to fit the screen height with them;
-  an offer line `['text', floor, 'details']` is a department that opens (+, native `<details>`) to what it sells, and then the legends stay in the page flow, from 1200 the top floor's level with the building's top and the ground floor's with its foot), Galerija (whole rows: 10 tiles, 5 across from 900), Ostale poslovnice (every other unit, `related` first, as many cards as fill whole rows). Its CSS is scoped to `.store--v2`;
+  an offer line `['text', floor, 'details']` is a department that opens (+, native `<details>`) to what it sells, and then the legends stay in the page flow, from 1200 the top floor's level with the building's top and the ground floor's with its foot; a single floor (Hiper Bau, Veleprodaja) faces right with its legend beside it;
+  Valis shows its 1. kat and prizemlje only (the 2. kat beauty centar is left out); Pod Zvon has three (1. kat konoba and meeting space, prizemlje pizzerija, podrum vinski podrum; user, 2026-10-21): from 1200 floors 1 and -1 share the left column, the building is narrower to fit the screen height),
+  Brendovi only where `page.brands` exists (Hiper Bau: 35 logos in `assets/img/brendovi/`, 320 x 160 WebP already trimmed and size-balanced; each links in a new tab to the brand's Croatian site, else its European/international one; `null` = no confirmed site, logo without a link; phones/tablets show 4 rows and "Prikaži sve brendove"), Galerija (whole rows: 10 tiles, 5 across from 900), Ostale poslovnice (every other unit, `related` first, as many cards as fill whole rows). Its CSS is scoped to `.store--v2`;
   units without the flag must render exactly as before. Either way only the hero takes the store's theme and mark.
   A gallery entry `[null, 'Foto: …']` shows a placeholder describing the photo still needed (a professional photographer will take them).
   Povezane poslovnice uses the landing's unit cards (`NV.cardHTML` + `NV.cardGrid`: hover panel, rise-in entrance, live hours).
-  B&B Novalis has no page — it links to hotelnovalis.hr.
+  B&B Novalis (`hotel-novalis/`, user's request 2026-10-21; it used to link out to hotelnovalis.hr) is v2 in the hotel's own look: theme `ink`
+  (dark with sand), its logo `assets/brand/bb-novalis-white.svg` and lace rosette (`pattern: 'lace'`, from 1100 px), "Rezervirajte" to its website
+  hotelnovalis.hr (the only hero button besides call/e-mail; a separate website button was removed as a duplicate), Boravak under the hours (`page.stay`), Ponuda as a two-level building
+  without floor signs (Krovne terase, Sobe), and Sobe after it (`page.rooms`: one row, three rooms opening their pages on hotelnovalis.hr in a new tab, plus a
+  "Pogledajte sve sobe" tile). Copy and photos come from hotelnovalis.hr (Novalis's own site).
 - **Cache busting:** every page loads CSS/JS with `?v=YYYYMMDD` (`-2`, `-3` … for later changes the same day). When you change any CSS or JS file, bump that version in all HTML pages
-  (`index.html`, `o-nama/index.html`, `pravila-o-privatnosti/index.html`, the six store `index.html` files), or browsers mix cached old scripts with new pages.
+  (`index.html`, `o-nama/index.html`, `pravila-o-privatnosti/index.html`, the seven store `index.html` files), or browsers mix cached old scripts with new pages.
 - Accessibility (WCAG 2.2 AA): every page starts with a skip link to its `<main>`; unit names are wrapped in `translate="no"`; links that open a new tab say so with a hidden " (nova kartica)" (`NV.NEW_TAB`); text on brand colours is checked for 4.5:1.
 - **Privacy (`pravila-o-privatnosti/`, same address as on novalis.hr):** the Pravila o privatnosti, linked from every footer and the inquiry form.
   It says the site uses no cookies or browser storage and names every outside service (Vercel; OpenFreeMap, which delivers the
@@ -53,9 +59,9 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   (canonical + Open Graph), `robots.txt` and `sitemap.xml`; JSON-LD URLs follow the canonical link. Page `<head>` tags (title, description,
   og:image) are per page — keep them in sync with `data/units.js`. Business info for Google (schema.org JSON-LD) is built from the data
   (`schema`, address, phone); only hours with `hoursConfirmed: true` are published. `vercel.json` adds trailing slashes and redirects.
-- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 9 pages, `robots.txt` and
+- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 10 pages, `robots.txt` and
   `sitemap.xml`; add 301s in `vercel.json` for old WordPress URLs (`/bistro-i-slasticarna-valis/` → `/valis/`, `/about/` → `/o-nama/`,
-  `/kontakt/` → `/#upit`, `/hotel-novalis/` → https://hotelnovalis.hr, old news posts → `/`). Blockers: the daily price-list CSVs
+  `/kontakt/` → `/#upit`, old news posts → `/`; `/hotel-novalis/` is now a page here too). Blockers: the daily price-list CSVs
   (`/info-o-cijenama/`, legally required for supermarkets) need a home, plus a jobs page.
 - Shapes: the Novalis "tab" — three rounded corners, bottom-left square: `border-radius: R R R 0`; panels, cards and photos use `var(--shape-tab)` (20px). No soft shadows.
 - Fonts: Figtree stands in for Karbon, Outfit for Sharp Sans until licensed files exist. Roles follow the design system (`css/ds.css`

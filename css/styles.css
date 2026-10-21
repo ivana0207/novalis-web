@@ -1428,10 +1428,18 @@ button.footer__link { cursor: pointer; }
 }
 .store--earth {
   --accent: var(--nv-brown); --mark: var(--nv-sand);
-  --hero-bg: var(--nv-brown); --hero-fg: #fff; --hero-ring: var(--nv-sand); --hero-dot: var(--nv-sand);
+  --hero-bg: var(--nv-brown); --hero-fg: #fff; --hero-ring: var(--nv-sand); --hero-dot: var(--nv-lime); /* open: green as on red and slate, 4.07:1 on brown */
   --btn-bg: var(--nv-sand); --btn-fg: var(--ink); --btn-hover-bg: #fff; --btn-hover-fg: var(--ink);
   --lockup-bold: var(--nv-sand);
 }
+/* B&B Novalis: dark ground with sand, as on hotelnovalis.hr (its bronze and beige, from the design system's earth
+   tokens). White on ink 15.13:1, sand on ink 7.33:1, ink on the sand button 7.33:1, the open dot's lime 8.4:1 */
+.store--ink {
+  --accent: var(--nv-brown); --mark: var(--nv-sand);
+  --hero-bg: var(--ink); --hero-fg: #fff; --hero-ring: var(--nv-sand); --hero-dot: var(--nv-lime);
+  --btn-bg: var(--nv-sand); --btn-fg: var(--ink); --btn-hover-bg: #fff; --btn-hover-fg: var(--ink);
+}
+.store--ink .store-hero__label { color: var(--nv-sand); }
 
 .crumbs { max-width: 1408px; margin: 0 auto; padding: 14px var(--gut); font: 400 14px/1.4 var(--font-primary); color: var(--muted); }
 .crumbs__list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
@@ -1457,7 +1465,7 @@ button.footer__link { cursor: pointer; }
 .store-hero__lockup span:last-child {
   font: 800 clamp(60px, 8vw, 112px)/.86 var(--font-display); letter-spacing: -.03em; color: var(--lockup-bold);
 }
-.store-hero__word { margin: 0; font: 300 clamp(28px, 3vw, 40px)/1 var(--font-primary); letter-spacing: .02em; }
+.store-hero__word { margin: 0; font: 300 clamp(28px, 3vw, 40px)/1 var(--font-primary); letter-spacing: .02em; color: var(--lockup); }
 .store-hero__label {
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
   font: 700 12px/16px var(--font-primary); letter-spacing: .04em; text-transform: uppercase;
@@ -1594,6 +1602,7 @@ button.footer__link { cursor: pointer; }
 .store--v2.store--slate  { --hero-inv: var(--nv-slate-dark); }  /* slate-dark on white 9.11:1 */
 .store--v2.store--violet { --hero-inv: #fff; }                  /* white on ink 15.13:1 */
 .store--v2.store--earth  { --hero-inv: var(--nv-brown); }       /* brown on white 7.43:1 */
+.store--v2.store--ink    { --hero-inv: var(--ink); }            /* ink on white 15.13:1 */
 
 /* the cart badge beside a stacked lockup, as in the header (NV.tileSVG): as tall as the lockup, 2.2 units from it
    (1 unit = 1/4 of the NOVALIS wordmark's height). The pair scales as one: badge 25.66 %, gap 7.09 %, lockup 67.25 % of
@@ -1625,6 +1634,10 @@ button.footer__link { cursor: pointer; }
 /* the primary button and the icon-only call and e-mail buttons. The row's class is what NV.holdQuickbar watches */
 .store--v2 .store-hero__actions { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); }
 .store--v2 .store-hero__contact { display: flex; gap: var(--space-2); }
+/* a unit's own button (Veleprodaja's "Zatražite ponudu") is almost twice as wide as Upute: on phones it is a size
+   smaller and below 375px it drops its icon, so the call button stays beside it down to 360px */
+@media (max-width: 559.98px) { .store--v2 .store-hero__cta { padding: 0 18px; font-size: 16px; } }
+@media (max-width: 374.98px) { .store--v2 .store-hero__cta .ms { display: none; } }
 /* 48 x 48 round icon button (the site's icon-only pattern: .round, .quickbar__btn), outlined in the hero text colour */
 .store--v2 .hero-ico {
   position: relative; display: grid; place-items: center; width: 48px; height: 48px; flex: none;
@@ -1692,8 +1705,21 @@ button.footer__link { cursor: pointer; }
 .store--v2 .store-sec__lead { max-width: 68ch; line-height: 1.6; text-wrap: balance; }
 .store--v2 .floor--warm  { --zone-t: var(--nv-yellow); --zone-a: var(--nv-orange);     --zone-b: var(--nv-red);      --badge: var(--nv-red); }
 .store--v2 .floor--slate { --zone-t: var(--nv-slate);  --zone-a: var(--nv-slate-dark); --zone-b: var(--nv-gray-850); --badge: var(--nv-slate-dark); }
+/* Valis's own violet instead of the Novalis red and yellow (sister brand: ds.css); lavender top, violet and deep violet
+   sides, all tints of the one token; white letters on the violet badge 5.72:1 */
+.store--v2 .floor--violet {
+  --zone-t: color-mix(in srgb, var(--nv-violet) 35%, #fff); --zone-a: var(--nv-violet);
+  --zone-b: color-mix(in srgb, var(--nv-violet) 60%, #000); --badge: var(--nv-violet);
+}
+/* Pod Zvon's sand and brown (its earth hero): sand top, brown and deep brown sides; white letters on the brown badge 7.43:1 */
+.store--v2 .floor--earth {
+  --zone-t: var(--nv-sand); --zone-a: var(--nv-brown);
+  --zone-b: color-mix(in srgb, var(--nv-brown) 60%, #000); --badge: var(--nv-brown);
+}
 .store--v2 .floors { display: flex; flex-direction: column; gap: var(--space-7); }
 .store--v2 .floors__building { width: 100%; max-width: 420px; }
+/* three floors on phones (Pod Zvon): twice as tall as wide, so narrower and centred (about 520px tall instead of 700) */
+@media (max-width: 699.98px) { .store--v2 .floors--3 .floors__building { max-width: 260px; align-self: center; } }
 .store--v2 .iso { display: block; width: 100%; height: auto; overflow: visible; }
 .store--v2 .iso-plate-t { fill: var(--nv-gray-150); }
 .store--v2 .iso-plate-a { fill: var(--nv-gray-400); }
@@ -1731,6 +1757,8 @@ button.footer__link { cursor: pointer; }
   /* the building fits the screen's height with the section heading and lead above it (--bldg: the two-floor drawing
      is 1.35 times as tall as wide), 280-400px wide; the legends scale down with it */
   .store--v2 { --bldg: clamp(280px, (100vh - 330px) * .74, 400px); }
+  /* three floors (Pod Zvon): the drawing is twice as tall as wide, so it is narrower (240-300px) to fit the same height */
+  .store--v2 .floors--3 { --bldg: clamp(240px, (100vh - 330px) * .5, 300px); }
   .store--v2 .floors__building { grid-column: 1 / -1; justify-self: center; width: var(--bldg); }
   .store--v2 .floor__legend { gap: var(--space-2); }
   .store--v2 .floor__sign { font-size: clamp(48px, 4vw, 60px); }
@@ -1743,18 +1771,20 @@ button.footer__link { cursor: pointer; }
   .store--v2 .floor__badge { width: 20px; height: 20px; border-radius: 6px 6px 6px 0; font-size: 12px; }
 }
 /* two floors from 1200: the legends flank the building, each centred on its plate's height; floor 0's legend is
-   mirrored (right-aligned, badges and rule on the building side) so it faces its left-facing plate */
+   mirrored (right-aligned, badges and rule on the building side) so it faces its left-facing plate. Three floors
+   (Pod Zvon) the same way: floors 0 and 2 face left, so their legends share the left column (one above the other, each
+   at its plate's height) */
 @media (min-width: 1200px) {
-  .store--v2 .floors--2 { grid-template-columns: minmax(280px, 1fr) var(--bldg) minmax(280px, 1fr); grid-template-areas: "f0 bldg f1"; column-gap: var(--space-7); padding-block: var(--space-7) var(--space-6); }
-  .store--v2 .floors--2 .floors__building { grid-area: bldg; grid-column: auto; width: 100%; }
-  .store--v2 .floors--2 .floor { position: relative; }
-  .store--v2 .floors--2 .floor--start { grid-area: f0; }
-  .store--v2 .floors--2 .floor:not(.floor--start) { grid-area: f1; }
-  .store--v2 .floors--2 .floor__legend { position: absolute; left: 0; right: 0; top: var(--at); transform: translateY(-50%); }
-  .store--v2 .floors--2 .floor--start .floor__legend, .store--v2 .floors--2 .floor--start .floor__key { align-items: flex-end; text-align: right; }
+  .store--v2 :is(.floors--2, .floors--3) { grid-template-columns: minmax(280px, 1fr) var(--bldg) minmax(280px, 1fr); grid-template-areas: "f0 bldg f1"; column-gap: var(--space-7); padding-block: var(--space-7) var(--space-6); }
+  .store--v2 :is(.floors--2, .floors--3) .floors__building { grid-area: bldg; grid-column: auto; width: 100%; }
+  .store--v2 :is(.floors--2, .floors--3) .floor { position: relative; }
+  .store--v2 :is(.floors--2, .floors--3) .floor--start { grid-area: f0; }
+  .store--v2 :is(.floors--2, .floors--3) .floor:not(.floor--start) { grid-area: f1; }
+  .store--v2 :is(.floors--2, .floors--3) .floor__legend { position: absolute; left: 0; right: 0; top: var(--at); transform: translateY(-50%); }
+  .store--v2 :is(.floors--2, .floors--3) .floor--start .floor__legend, .store--v2 :is(.floors--2, .floors--3) .floor--start .floor__key { align-items: flex-end; text-align: right; }
   .store--v2 .floor__key { padding-left: var(--space-5); }
-  .store--v2 .floors--2 .floor--start .floor__key { padding: 0 var(--space-5) 0 0; border-left: 0; border-right: 2px solid var(--nv-gray-150); }
-  .store--v2 .floors--2 .floor--start .floor__item { flex-direction: row-reverse; }
+  .store--v2 :is(.floors--2, .floors--3) .floor--start .floor__key { padding: 0 var(--space-5) 0 0; border-left: 0; border-right: 2px solid var(--nv-gray-150); }
+  .store--v2 :is(.floors--2, .floors--3) .floor--start .floor__item { flex-direction: row-reverse; }
 }
 @media (forced-colors: active) {
   .store--v2 .iso polygon, .store--v2 .iso-badge path { fill: Canvas; stroke: CanvasText; stroke-width: .03; }
@@ -1784,6 +1814,9 @@ button.footer__link { cursor: pointer; }
 .store--v2 .dept[open] .dept__tog::before, .store--v2 .dept[open] .dept__tog::after { background: #fff; }
 .store--v2 .dept__body { margin: var(--space-2) 0 var(--space-3) var(--dept-ind); max-width: 32em; font: 400 16px/1.5 var(--font-primary); color: var(--nv-gray-700); text-wrap: pretty; }
 .store--v2 .floors--dept .floor__key, .store--v2 .floors--dept .floor__list { align-self: stretch; }
+/* plain lines among departments (Veleprodaja: only its equipment line opens) are as tall as a department's row, so
+   the list keeps an even rhythm */
+.store--v2 .floors--dept .floor__item:not(.floor__item--dept) { align-items: center; min-height: 32px; }
 @media (min-width: 700px) {
   /* side by side: an opened department doesn't stretch the other legend; the compact legend's 20px badge */
   .store--v2 .floors--dept { align-items: start; --dept-tog: 20px; --dept-ind: 30px; }
@@ -1813,6 +1846,53 @@ button.footer__link { cursor: pointer; }
   .store--v2 .dept__tog::before, .store--v2 .dept__tog::after { background: CanvasText; }
 }
 
+/* One floor (Hiper Bau, WEB-11; Veleprodaja, WEB-13): phones as above (building, then legend); from 700 the plate (facing right) and its
+   legend side by side, the pair centred in the section like the two-floor buildings: the legend column is as wide as
+   its closed rows, and an opened department's text takes that width instead of setting it (width 0, min-width), so
+   opening one never widens the legend or shifts the pair. The drawing's own side margin (the SVG's PAD, 0.7 of its
+   16.12 units) is pulled out on the left, so the visible pair sits equally far from both edges. The closed legend is
+   centred on the drawing (js deptPlace: --dept-top is the drawing's height less the closed legend's) and hangs from
+   there, so an opened department only grows downwards */
+@media (min-width: 700px) {
+  .store--v2 .floors--1 { grid-template-columns: minmax(0, 520px) max-content; justify-content: center; align-items: start; column-gap: var(--space-7); }
+  .store--v2 .floors--1 .floors__building { grid-column: auto; justify-self: stretch; width: 100%; max-width: none; margin-left: -4.34%; }
+  .store--v2 .floors--1 .dept__body { width: 0; min-width: calc(100% - var(--dept-ind)); }
+  .store--v2 .floors--dept.floors--1 .floor { margin-top: calc(var(--dept-top, 0px) / 2); }
+}
+
+/* Brendovi (page.brands; Hiper Bau, WEB-11): equal white tiles (2:1), 3 across on phones, 4 on tablets, 5 from 900 and
+   7 from 1200 (35 = 7 x 5). Each logo file is 320 x 160 with its logo trimmed and centred at an even visual size, so a
+   tile only frames it. A linked tile: on hover its frame turns ink (2px, drawn inside, so nothing moves) and an arrow
+   shows in its top-right corner (the brand's own site, in a new tab). Phones and tablets first show four whole rows
+   (12, 16) and a button for the rest (js: brandsMore) */
+.store--v2 .brands { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+.store--v2 .brand {
+  position: relative; display: grid; place-items: center; aspect-ratio: 2 / 1;
+  border-radius: 14px 14px 14px 0; background: #fff; box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+.store--v2 .brand img { display: block; width: 100%; height: auto; }
+.store--v2 .brand__go {
+  position: absolute; top: 6px; right: 6px; width: 16px; height: 16px;
+  fill: none; stroke: var(--ink); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-out);
+}
+.store--v2 a.brand:hover { box-shadow: inset 0 0 0 2px var(--ink); }
+.store--v2 a.brand:hover .brand__go, .store--v2 a.brand:focus-visible .brand__go { opacity: 1; }
+.store--v2 .brands__more { margin-top: var(--space-4); }
+@media (max-width: 559.98px) { .store--v2 .brands:not(.is-all) > :nth-child(n + 13) { display: none; } }
+@media (min-width: 560px) and (max-width: 899.98px) {
+  .store--v2 .brands { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .store--v2 .brands:not(.is-all) > :nth-child(n + 17) { display: none; }
+}
+@media (min-width: 900px) { .store--v2 .brands { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-3); } }
+@media (min-width: 1200px) { .store--v2 .brands { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .store--v2 .brand, .store--v2 .brand__go { transition: none; } }
+@media (forced-colors: active) {
+  .store--v2 .brand { border: 1px solid CanvasText; }
+  .store--v2 .brand__go { stroke: LinkText; }
+}
+
 /* Galerija: a long gallery (5 or more photos and photo slots) fills whole rows: 2 across on phones (the rule above),
    3 on tablets; 7 or more (Market Novalis has 10) stay 2 across up to 900, then go 5 across (10 = 5 x 2, 2 x 5).
    Shorter ones keep the auto-fill row */
@@ -1840,3 +1920,67 @@ button.footer__link { cursor: pointer; }
 @media (min-width: 900px) { .store--v2 #related { --cols: 3; } }
 @media (min-width: 1200px) { .store--v2 #related { --cols: 4; } }
 @media (min-width: 560px) and (max-width: 899.98px), (min-width: 1200px) { .store--v2 #related > .card:nth-child(4) { display: grid; } }
+
+/* =================== B&B Novalis (hotel-novalis/, v2 with the hotel's own look) ===================
+   The hotel's lace rosette in the hero (pattern 'lace'),
+   Boravak under the hours (page.stay) and Sobe (page.rooms). Each only renders for a unit that has it. */
+.room__go, .room__all-go { flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the lace rosette (hotelnovalis.hr; a sand-coloured file, as a CSS mask wouldn't load from disk), at low strength,
+   its centre just below the panel's bottom-left corner, so the panel shows less than a quarter of it, behind the status
+   and buttons. Only while the copy and the photo sit side by side (from about 1030): stacked, it would only show in the
+   strip around the photo. White text over it stays above 11:1 */
+.store--v2 .store-hero__panel:has(> .store-hero__lace) { position: relative; overflow: clip; }
+.store-hero__lace {
+  display: none; position: absolute; left: -220px; bottom: -260px; width: 440px; height: 440px; pointer-events: none;
+  background: url(../assets/brand/bb-novalis-cipka.svg) center / contain no-repeat; opacity: .14;
+}
+@media (min-width: 1100px) { .store-hero__lace { display: block; } }
+.store-hero__lace ~ .store-hero__copy, .store-hero__lace ~ .store-hero__media { position: relative; }
+@media (forced-colors: active) { .store-hero__lace { display: none; } }
+
+/* Boravak: a table like the hours, in ink like the current one */
+.hours--stay .hours__head { border-bottom-color: var(--ink); }
+.hours--stay .hours__title, .hours--stay .hours__row { color: var(--ink); }
+
+/* Sobe: 2 across on phones and tablets, 4 from 900 (three rooms and the full list: one row). A tile is its photo (4:3,
+   the Novalis tab) with the arrow chip (the hotel's website, new tab), then name and size; the name's link covers the
+   whole tile. Hover and focus: the photo zooms in a little and the name turns brown, as on the unit cards */
+.store--v2 .rooms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); }
+.store--v2 .room { position: relative; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.store--v2 .room__media { position: relative; aspect-ratio: 4 / 3; margin-bottom: 6px; border-radius: var(--shape-tab); overflow: hidden; }
+.store--v2 .room .slot img { transition: transform 320ms var(--ease-out); }
+.store--v2 .room__go { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; padding: 8px; border-radius: 10px 10px 10px 0; background: #fff; color: var(--ink); }
+.store--v2 .room__name { margin: 0; font: 700 17px/1.3 var(--font-primary); color: var(--ink); overflow-wrap: anywhere; }
+.store--v2 .room__link, .store--v2 .room__link:hover { color: inherit; }
+.store--v2 .room__link::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--shape-tab); }
+.store--v2 .room__link:focus-visible { outline: none; }
+.store--v2 .room__link:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 6px; }
+.store--v2 .room__meta { margin: 0; font: 400 15px/1.4 var(--font-primary); color: var(--muted); font-variant-numeric: tabular-nums; }
+.store--v2 .room:is(:hover, :has(:focus-visible)) .slot img { transform: scale(1.04); }
+.store--v2 .room:is(:hover, :has(:focus-visible)) .room__name { color: var(--accent); }
+/* the last tile: the full list on the hotel's website, the hero's ink and sand with the lace rosette in its corner */
+.store--v2 .room__all {
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; aspect-ratio: 4 / 3;
+  padding: var(--space-4); border-radius: var(--shape-tab); overflow: hidden; background: var(--ink); color: #fff;
+}
+.store--v2 .room__all::before {
+  content: ""; position: absolute; right: -35%; top: -35%; width: 90%; aspect-ratio: 1; opacity: .22;
+  background: url(../assets/brand/bb-novalis-cipka.svg) center / contain no-repeat;
+  transition: transform 320ms var(--ease-out);
+}
+.store--v2 .room__all:hover { color: #fff; }
+.store--v2 .room__all:hover::before { transform: rotate(15deg); }
+.store--v2 .room__all-t { position: relative; font: 700 19px/1.25 var(--font-primary); }
+.store--v2 .room__all-site { position: relative; display: inline-flex; align-items: center; gap: 4px; font: 700 15px/1.3 var(--font-primary); color: var(--nv-sand); }
+.store--v2 .room__all:focus-visible { outline-offset: 4px; }
+@media (max-width: 559.98px) {
+  .store--v2 .room__name { font-size: 16px; }
+  .store--v2 .room__meta { font-size: 14px; }
+  .store--v2 .room__all { padding: var(--space-3); }
+  .store--v2 .room__all-t { font-size: 16px; }
+  .store--v2 .room__all-site { font-size: 14px; }
+}
+@media (min-width: 900px) { .store--v2 .rooms { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); } }
+@media (prefers-reduced-motion: reduce) { .store--v2 .room .slot img, .store--v2 .room__all::before { transition: none; } }
+@media (forced-colors: active) { .store--v2 .room__all { border: 1px solid CanvasText; } .store--v2 .room__all::before { display: none; } }
