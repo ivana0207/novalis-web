@@ -281,13 +281,14 @@ window.NV = (function () {
   }
 
   // The cart badge (brand mark) is drawn red with a yellow cart; on red it flips to a yellow badge with a red cart.
-  // The dark-red shadow plate stays in both.
+  // The dark-red shadow plate stays in both. cls (default "logo-mark", the header's badge, which shrinks below 375 px and
+  // hides below 360) gives another place its own rules: the store hero's badge beside the stacked lockup.
   var TILE_FLIP = { '#d71920': 'var(--nv-yellow)', '#ffcb05': 'var(--nv-red)' };
 
-  function tileSVG(variant, h) {
+  function tileSVG(variant, h, cls) {
     var d = P.tile;
     var w = +(h * d.w / d.h).toFixed(2);
-    return '<svg class="logo-mark" aria-hidden="true" focusable="false" viewBox="0 0 ' + d.w + ' ' + d.h + '" width="' + w +
+    return '<svg class="' + (cls || 'logo-mark') + '" aria-hidden="true" focusable="false" viewBox="0 0 ' + d.w + ' ' + d.h + '" width="' + w +
       '" height="' + h + '">' + d.p.map(function (p) {
         return '<path d="' + p[0] + '" style="fill:' + (variant === 'yellow' && TILE_FLIP[p[1]] || p[1]) + '"/>';
       }).join('') + '</svg>';
@@ -310,12 +311,13 @@ window.NV = (function () {
   }
 
   /* ---------------- Image slots ---------------- */
-  function placeholderHTML(text) {
-    return '<div class="slot__ph"><span class="ms" aria-hidden="true">image</span><span>' + esc(text) + '</span></div>';
+  // html (optional): the description as ready, escaped markup (e.g. with a unit name in translate="no")
+  function placeholderHTML(text, html) {
+    return '<div class="slot__ph"><span class="ms" aria-hidden="true">image</span><span>' + (html || esc(text)) + '</span></div>';
   }
 
-  function slotHTML(src, placeholder, alt) {
-    var inner = src ? '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy" decoding="async">' : placeholderHTML(placeholder);
+  function slotHTML(src, placeholder, alt, phHTML) {
+    var inner = src ? '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy" decoding="async">' : placeholderHTML(placeholder, phHTML);
     return '<div class="slot" data-placeholder="' + esc(placeholder) + '">' + inner + '</div>';
   }
 
@@ -629,7 +631,7 @@ window.NV = (function () {
     D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
     $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
     goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
-    NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
+    NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, tileSVG: tileSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays
   };

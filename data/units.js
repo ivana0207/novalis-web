@@ -60,6 +60,13 @@
      *   (logo file · lockup [light word, bold word] · word · image with a script greeting).
      *   Logo and image marks give their drawn size in px (w, h) so the page doesn't shift while they load.
      *   offer items are 'text' or ['text', 'where'] · gallery items are [photo, alt]; no photo = placeholder slot.
+     *   layout: 'v2' opts the unit into the reworked store page (WEB-9; Market Novalis so far, the others opt in in their
+     *   own tickets): hero, Radno vrijeme i lokacija, Ponuda, Galerija, Povezane poslovnice, no Ključne brojke (facts),
+     *   the street address and icon-only call / e-mail buttons in the hero, nothing under the map. With it:
+     *     label is the category only (the street shows under the status) · mark.badge ('red' | 'yellow', as in the
+     *     header) puts the cart badge beside a stacked logo file · floors: [{ name, sign, tone (warm · slate), brand,
+     *     note }], top floor first (brand: a store name, kept out of translation; note: a short line under the floor's
+     *     name); when every offer item is ['text', floor name] Ponuda draws the floors with one legend each.
      */
     units: [
       {
@@ -109,23 +116,34 @@
         },
         photo: IMG + 'market-novalis-ulaz.jpg', photoHint: 'Foto: Market u centru, izlog i police',
         page: {
-          theme: 'yellow',
-          mark: { logo: 'assets/brand/market-novalis-stacked-red.svg', w: 203, h: 80 },
-          label: 'Trgovine · Josipa Kunkere 8, Novalja',
-          title: 'U strogom centru Novalje.',
+          theme: 'yellow', layout: 'v2',
+          mark: { logo: 'assets/brand/market-novalis-stacked-red.svg', w: 203, h: 80, badge: 'red' },
+          label: 'Trgovine',
+          title: 'U samom centru Novalje.',
           lead: 'Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje na 600 m², u zgradi robne kuće Novalis.',
           photo: IMG + 'market-novalis.jpg', photoAlt: 'Zgrada robne kuće Novalis s lučnim prozorima u centru Novalje', photoPos: '50% 35%',
-          facts: [['600 m²', 'prodajnog prostora'], ['2', 'razine: prizemlje i suteren'], ['Kunkere 8', 'adresa u centru grada']],
-          offerLead: 'Namirnice i proizvodi za domaćinstvo u prizemlju, drogerija u suterenu.',
+          offerLead: 'Dvije razine: Market Novalis s namirnicama i proizvodima za domaćinstvo, a razinu niže drogerija za ljepotu, njegu i zdravlje.',
+          floors: [
+            { name: 'Market Novalis', sign: '0', tone: 'warm', brand: true },
+            { name: 'Drogerija', sign: '-1', tone: 'slate', note: 'Poznata imena renomiranih proizvođača' }
+          ],
           offer: [
-            ['Prehrana', 'Prizemlje'], ['Proizvodi za domaćinstvo', 'Prizemlje'], ['Kozmetika', 'Suteren · drogerija'],
-            ['Parfemi', 'Suteren · drogerija'], ['Proizvodi za osobnu higijenu', 'Suteren · drogerija']
+            ['Prehrana', 'Market Novalis'], ['Proizvodi za domaćinstvo', 'Market Novalis'], ['Za kuhinju', 'Market Novalis'],
+            ['Slatkiši i grickalice', 'Market Novalis'], ['Smrznuti proizvodi', 'Market Novalis'],
+            ['Parfemi', 'Drogerija'], ['Kozmetika', 'Drogerija'], ['Proizvodi za osobnu higijenu', 'Drogerija'],
+            ['Njega', 'Drogerija'], ['Zdravlje', 'Drogerija']
           ],
           gallery: [
             [IMG + 'market-novalis-ulaz.jpg', 'Ulaz u Market i Drogeriju Novalis'],
-            [IMG + 'market-novalis-police.jpg', 'Police s namirnicama u prizemlju'],
+            [IMG + 'market-novalis-police.jpg', 'Prolaz između polica s grickalicama i slatkišima'],
+            [IMG + 'market-novalis-sokovi.jpg', 'Police sa sokovima i napicima'],
+            [IMG + 'market-novalis-zitarice.jpg', 'Police sa žitaricama i keksima za doručak'],
             [IMG + 'market-novalis-akcija.jpg', 'Akcijska ponuda na polici'],
-            [IMG + 'market-novalis-sladoled.jpg', 'Sladoled u zamrzivaču']
+            [IMG + 'market-novalis-smrznuto.jpg', 'Smrznuti proizvodi i sladoled u zamrzivaču'],
+            [null, 'Foto: Market Novalis, pogled na cijelu razinu od ulaza'],
+            [null, 'Foto: Drogerija, pogled na cijelu razinu'],
+            [null, 'Foto: kozmetika, njega i zdravlje na policama u Drogeriji'],
+            [null, 'Foto: osoblje Marketa na poslu uz police ili blagajnu']
           ],
           related: ['hotel-novalis', 'valis', 'hiper-novalis']
         }
