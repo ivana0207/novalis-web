@@ -184,8 +184,8 @@ window.NV.map = (function () {
   }
 
   // The map's credits: OpenStreetMap's attribution guidelines let them fold behind their ⓘ button only once they have
-  // been seen, after 5 seconds or at the first interaction. MapLibre unfolds them when they arrive (and folds them on a
-  // drag only); from then they fold after 5 seconds in view (scrolled away sooner, the count starts again) or at the first
+  // been seen, after 2 seconds or at the first interaction. MapLibre unfolds them when they arrive (and folds them on a
+  // drag only); from then they fold after 2 seconds in view (scrolled away sooner, the count starts again) or at the first
   // move or click on the map. Once the visitor uses ⓘ, it is theirs: nothing folds it for them.
   function foldCredits(map, el) {
     var credits = el.querySelector('.maplibregl-ctrl-attrib');
@@ -206,12 +206,12 @@ window.NV.map = (function () {
       map.on('movestart', fold);
       map.on('click', fold);
       credits.addEventListener('click', stop);
-      if (!('IntersectionObserver' in window)) { timer = setTimeout(fold, 5000); return; }
+      if (!('IntersectionObserver' in window)) { timer = setTimeout(fold, 2000); return; }
       // in view: (nearly) all of them, above the phones' quick buttons in the bottom-right corner (where the credits sit)
       var bar = document.querySelector('.quickbar'), below = bar ? bar.offsetHeight : 0;
       io = new IntersectionObserver(function (entries) {
         clearTimeout(timer);
-        if (entries[entries.length - 1].intersectionRatio >= 0.9) timer = setTimeout(fold, 5000);
+        if (entries[entries.length - 1].intersectionRatio >= 0.9) timer = setTimeout(fold, 2000);
       }, { threshold: 0.9, rootMargin: '0px 0px -' + below + 'px 0px' });
       io.observe(credits);
     }
