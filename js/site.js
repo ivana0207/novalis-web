@@ -1,5 +1,5 @@
 /* Novalis site — shared by every page: brand vectors, image slots, opening hours, unit cards, header (one menu per
-   business category, mobile menu with category groups, language toggle) and footer. Page scripts (app.js, occasions.js,
+   business category, mobile menu with category groups, language switch) and footer, in the page's language (LANG). Page scripts (app.js, occasions.js,
    poslovnica.js) build on window.NV.
    Loaded at the end of <body>, so the markup it works on is already parsed. */
 window.NV = (function () {
@@ -36,15 +36,87 @@ window.NV = (function () {
     return $('.site-header').offsetHeight;
   }
 
+  /* ---------------- Language ---------------- */
+  // A page's language is its address: the English pages live under /en/ (WEB-21) and say so in <html lang>. Nothing is
+  // stored or detected. Each script picks its texts for LANG; Croatian is the default.
+  var LANG = (document.documentElement.lang || 'hr').toLowerCase().split('-')[0];
+  // A data item's text in the page language: its en: { … } field on an English page, else the Croatian one
+  // (data/units.js; what en leaves out, such as most unit names, stays as it is).
+  function tx(o, key) {
+    var l = LANG !== 'hr' && o[LANG];
+    return l && Object.prototype.hasOwnProperty.call(l, key) ? l[key] : o[key];
+  }
+  // Pages with a version in another language: the Croatian page's folder from the site root ('' = the home page) →
+  // that version's. A page added here gets the language switch of both versions and the other language's links to it
+  // (unitHref) pointed at it. English: every page (WEB-21: the home page; the rest 2026-10-23), the general pages with
+  // English addresses, the store pages under their own slug (en.slug where the unit has one: Veleprodaja → wholesale).
+  var TWINS = { en: { '': 'en/', 'o-nama/': 'en/about-us/', 'zaposli-se/': 'en/careers/', 'pravila-o-privatnosti/': 'en/privacy-policy/' } };
+  D.units.forEach(function (u) { TWINS.en[u.slug + '/'] = 'en/' + ((u.en && u.en.slug) || u.slug) + '/'; });
+
+  // The shared texts in each language; the opening-hours lines are whole sentences of their own (unitStatus).
+  // t: a day's hours as in dayHours, null = closed.
+  var DAYS_ACC = ['ponedjeljak', 'utorak', 'srijedu', 'četvrtak', 'petak', 'subotu', 'nedjelju'];
+  var DAYS_EN = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var TEXTS = {
+    hr: {
+      newTab: ' (nova kartica)', place: 'Otvori na Google kartama', promo: 'Akcija', more: 'Više',
+      date: function (d, m) { return d + '. ' + (m + 1) + '.'; },                         // "15. 5."
+      reception: 'Recepcija 0 - 24 h', open24: 'Otvoreno 0 - 24 h', now: 'Otvoreno sada', closed: 'Zatvoreno',
+      until: function (close) { return 'Otvoreno do ' + close; },
+      // "Danas 07:00 - 19:00" / "Sutra 0 - 24 h" / "Danas zatvoreno"
+      day: function (tomorrow, t) { return (tomorrow ? 'Sutra' : 'Danas') + ' ' + (!t ? 'zatvoreno' : is24h(t) ? '0 - 24 h' : t[0] + ' - ' + t[1]); },
+      // "otvara sutra u 07:00" / "otvara u utorak u 07:00": the unit opens in i days, on weekday day (0 = Monday)
+      opens: function (i, day, at) { return 'otvara ' + (i === 1 ? 'sutra' : 'u ' + DAYS_ACC[day]) + ' u ' + at; },
+      // closed now, today's hours still to come: "Danas 07:00 - 19:00"
+      later: function (t, today) { return today; },
+      // a card while open: "Otvoreno · Danas 07:00 - 19:00"
+      card: function (today) { return 'Otvoreno · ' + today; }
+    },
+    en: {
+      newTab: ' (new tab)', place: 'Open in Google Maps', promo: 'Special offer', more: 'More',
+      date: function (d, m) { return d + ' ' + MONTHS_EN[m]; },                           // "15 May"
+      reception: 'Reception open 24 hours', open24: 'Open 24 hours', now: 'Open now', closed: 'Closed',
+      until: function (close) { return 'Open until ' + close; },
+      // "Today 07:00 - 19:00" / "Open 24 hours tomorrow" / "Closed today"
+      day: function (tomorrow, t) {
+        var w = tomorrow ? 'tomorrow' : 'today';
+        return !t ? 'Closed ' + w : is24h(t) ? 'Open 24 hours ' + w : (tomorrow ? 'Tomorrow ' : 'Today ') + t[0] + ' - ' + t[1];
+      },
+      // "opens tomorrow at 07:00" / "opens on Tuesday at 07:00"
+      opens: function (i, day, at) { return 'opens ' + (i === 1 ? 'tomorrow' : 'on ' + DAYS_EN[day]) + ' at ' + at; },
+      // "opens today at 07:00" (its closing time shows once it is open)
+      later: function (t) { return 'opens today at ' + t[0]; },
+      // "Open · Today 07:00 - 19:00"; open 0 - 24 h it says just that
+      card: function (today, t) { return is24h(t) ? 'Open 24 hours' : 'Open · ' + today; }
+    }
+  };
+  var T = TEXTS[LANG] || TEXTS.hr;
+
   /* ---------------- Paths ---------------- */
   // Site files in data/units.js are written relative to the site root.
   function asset(path) {
     return !path || /^([a-z]+:|\/)/i.test(path) ? path : ROOT + path;
   }
 
-  // A store page lives in its own folder (/hiper-bau/); units with their own website link there instead.
+  // A store page lives in its own folder (/hiper-bau/); units with their own website link there instead. A page in
+  // another language links to the unit's page in that language once there is one (TWINS), else to the Croatian page.
   function unitHref(u) {
-    return u.url || ROOT + u.slug + '/';
+    var p = u.slug + '/', t = TWINS[LANG] || {};
+    return u.url || ROOT + (has(t, p) ? t[p] : p);
+  }
+
+  // This page's folder from the site root ('o-nama/', 'en/'; '' on the home page), wherever the site is served or opened
+  var HERE = (function () {
+    var root = new URL(ROOT || './', location.href).pathname, path = location.pathname.replace(/[^\/]*$/, '');
+    return path.indexOf(root) === 0 ? path.slice(root.length) : '';
+  })();
+  // This page in language lang, from the site root: its own version there, else that language's home page
+  function langPath(lang) {
+    var mine = TWINS[LANG] || {};
+    var hr = LANG === 'hr' ? HERE : Object.keys(mine).filter(function (k) { return mine[k] === HERE; })[0] || '';
+    var t = TWINS[lang];
+    return !t ? hr : has(t, hr) ? t[hr] : t[''];
   }
 
   // Directions, phone link and phone label for a unit (company line when it has no own number).
@@ -60,10 +132,10 @@ window.NV = (function () {
   function telHref(u) { return 'tel:' + (u.tel || D.company.tel); }
   function telLabel(u) { return u.phone || D.company.phone; }
 
-  // "15. 5." (Croatian date style) for a season boundary 'MM-DD', shifted by whole days.
+  // A season boundary 'MM-DD', shifted by whole days, as the page language writes dates: "15. 5." / "15 May".
   function dayMonth(md, shift) {
     var dt = new Date(2001, +md.slice(0, 2) - 1, +md.slice(3) + (shift || 0));
-    return dt.getDate() + '. ' + (dt.getMonth() + 1) + '.';
+    return T.date(dt.getDate(), dt.getMonth());
   }
 
   // Folder links only resolve to index.html over http(s); when the site is opened from disk, add it on click.
@@ -103,8 +175,10 @@ window.NV = (function () {
   });
   window.addEventListener('load', function () {
     if (!location.hash && !location.search && !/\/index\.html$/.test(location.pathname)) return;
-    // from disk the file name stays: file:///…/novalis-web/ would open the folder listing on reload
-    var path = location.protocol === 'file:' ? location.pathname : location.pathname.replace(/index\.html$/, '');
+    // from disk the file name stays: file:///…/novalis-web/ would open the folder listing on reload; the not-found page
+    // (404.html, <body data-notfound>) keeps the path as it was typed
+    var keep = location.protocol === 'file:' || 'notfound' in document.body.dataset;
+    var path = keep ? location.pathname : location.pathname.replace(/index\.html$/, '');
     try { history.replaceState(history.state, '', path); } catch (err) { /* address stays as it came */ }
   });
 
@@ -114,8 +188,10 @@ window.NV = (function () {
   var PAGE_URL = (canonical ? canonical.href : location.href).replace(/[?#].*$/, '').replace(/index\.html$/, '');
   function absUrl(path) { return new URL(path, PAGE_URL).href; }
   var HOME_URL = absUrl(HOME || './');
+  // The site root: the company and each business have one @id on every page, whatever the page's language
+  var ROOT_URL = absUrl(ROOT || './');
 
-  var ORG = { '@type': 'Organization', '@id': HOME_URL + '#organizacija', name: D.company.name, url: HOME_URL };
+  var ORG = { '@type': 'Organization', '@id': ROOT_URL + '#organizacija', name: D.company.name, url: ROOT_URL };
   function postalAddress(address) {
     var street = address.split(',')[0].trim();
     return {
@@ -124,7 +200,8 @@ window.NV = (function () {
     };
   }
   // A unit's own page (or website): its JSON-LD @id, so the landing page and the store page describe the same business.
-  function unitId(u) { return u.url ? u.url : absUrl(unitHref(u)) + '#poslovnica'; }
+  // Always the Croatian page's address, so the English pages name the same business.
+  function unitId(u) { return u.url ? u.url : absUrl(ROOT + u.slug + '/') + '#poslovnica'; }
   function addJSONLD(data) {
     var el = document.createElement('script');
     el.type = 'application/ld+json';
@@ -135,7 +212,6 @@ window.NV = (function () {
   /* ---------------- Opening hours (Europe/Zagreb) ---------------- */
   // Every date is a calendar day in Novalja, kept as its UTC midnight and read with getUTC*, so the date arithmetic
   // never depends on the visitor's time zone (or its daylight saving).
-  var DAYS_ACC = ['ponedjeljak', 'utorak', 'srijedu', 'četvrtak', 'petak', 'subotu', 'nedjelju'];
   var DAY_MS = 864e5;
   var toMin = function (s) { var p = s.split(':'); return (+p[0]) * 60 + (+p[1]); };
   var has = function (o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); };
@@ -207,42 +283,43 @@ window.NV = (function () {
     return { t: u.hours[currentSeason(d)][d.day], special: false };
   }
 
-  // "otvara sutra u 07:00" / "otvara u utorak u 07:00": the first of the next 6 days the unit opens (after that the
-  // weekday would be ambiguous), or null.
+  // "otvara sutra u 07:00" / "otvara u utorak u 07:00" (T.opens): the first of the next 6 days the unit opens (after
+  // that the weekday would be ambiguous), or null.
   function nextOpen(u, d) {
     for (var i = 1; i <= 6; i++) {
       var n = calDay(d.ms + i * DAY_MS), t = dayHours(u, n).t;
-      if (t) return 'otvara ' + (i === 1 ? 'sutra' : 'u ' + DAYS_ACC[n.day]) + ' u ' + t[0];
+      if (t) return T.opens(i, n.day, t[0]);
     }
     return null;
   }
 
-  // "Danas 07:00 - 19:00" / "Sutra 0 - 24 h" / "Danas zatvoreno": a day's hours (t as in dayHours) after word.
-  function hoursLine(word, t) {
-    return word + ' ' + (!t ? 'zatvoreno' : t[0] === '00:00' && t[1] === '24:00' ? '0 - 24 h' : t[0] + ' - ' + t[1]);
-  }
+  // open round the clock (t as in dayHours)
+  function is24h(t) { return !!t && t[0] === '00:00' && t[1] === '24:00'; }
 
-  // A unit's status now (z: zagrebNow()). text: long status for cards · label: short status for map card and list ·
-  // today: the second line of map card and list, shown when hasToday: today's hours, tomorrow's once today's are over ·
-  // regular: today's hours are the weekly table's (store pages mark that row). A day closed by an exception, the open
-  // period or a holiday says only "Zatvoreno": no hours, no "otvara …". Once today's hours are over: "otvara …".
+  // A unit's status now (z: zagrebNow()), in the page language (T). text: long status for cards · label: short status
+  // for map card and list · today: the second line of map card and list, shown when hasToday: today's hours, tomorrow's
+  // once today's are over · card: the card's line (today's hours while open, else text) · regular: today's hours are
+  // the weekly table's (store pages mark that row). A day closed by an exception, the open period or a holiday says
+  // only "Zatvoreno": no hours, no "otvara …". Once today's hours are over: "otvara …".
   function unitStatus(u, z) {
     var h = dayHours(u, z), t = h.t, next;
-    var is24 = !!t && t[0] === '00:00' && t[1] === '24:00';
+    var is24 = is24h(t);
     var reception = u.category === 'smjestaj' && is24;
     var closedAllDay = !t && h.special;
     var open = !!t && (is24 || (z.min >= toMin(t[0]) && z.min < toMin(t[1])));
     var over = !!t && z.min >= toMin(t[1]);
-    var today = over ? hoursLine('Sutra', dayHours(u, calDay(z.ms + DAY_MS)).t) : hoursLine('Danas', t);
+    var today = over ? T.day(true, dayHours(u, calDay(z.ms + DAY_MS)).t) : T.day(false, t);
     var text;
-    if (reception) text = 'Recepcija 0 - 24 h';
-    else if (open) text = is24 ? 'Otvoreno 0 - 24 h' : 'Otvoreno do ' + t[1];
-    else if (t && !over) text = 'Zatvoreno · ' + today;
-    else if (!closedAllDay && (next = nextOpen(u, z))) text = 'Zatvoreno · ' + next;
-    else text = 'Zatvoreno';
+    if (reception) text = T.reception;
+    else if (open) text = is24 ? T.open24 : T.until(t[1]);
+    else if (t && !over) text = T.closed + ' · ' + T.later(t, today);
+    else if (!closedAllDay && (next = nextOpen(u, z))) text = T.closed + ' · ' + next;
+    else text = T.closed;
+    var hasToday = !reception && !closedAllDay;
     return {
-      open: open, text: text, today: today, hasToday: !reception && !closedAllDay, regular: !h.special,
-      label: reception ? 'Recepcija 0 - 24 h' : open ? 'Otvoreno sada' : 'Zatvoreno'
+      open: open, text: text, today: today, hasToday: hasToday, regular: !h.special,
+      label: reception ? T.reception : open ? T.now : T.closed,
+      card: open && hasToday ? T.card(today, t) : text
     };
   }
 
@@ -316,9 +393,10 @@ window.NV = (function () {
     return '<div class="slot__ph"><span class="ms" aria-hidden="true">image</span><span>' + (html || esc(text)) + '</span></div>';
   }
 
+  // A slot with a real photo (slot--photo) shows the loading look until the photo has come (css: Loading look).
   function slotHTML(src, placeholder, alt, phHTML) {
     var inner = src ? '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '" loading="lazy" decoding="async">' : placeholderHTML(placeholder, phHTML);
-    return '<div class="slot" data-placeholder="' + esc(placeholder) + '">' + inner + '</div>';
+    return '<div class="slot' + (src ? ' slot--photo' : '') + '" data-placeholder="' + esc(placeholder) + '">' + inner + '</div>';
   }
 
   function initStaticSlots() {
@@ -327,33 +405,69 @@ window.NV = (function () {
     });
   }
 
-  // A missing photo falls back to its placeholder instead of a broken-image icon.
+  // A photo that has come ends its frame's loading look (a photo slot, the store hero): is-loaded.
+  function photoFrame(img) {
+    return img.closest('.slot--photo:not(.is-loaded), .store-hero__media:not(.is-loaded)');
+  }
+  document.addEventListener('load', function (e) {
+    var img = e.target, frame = img && img.tagName === 'IMG' && photoFrame(img);
+    if (frame) frame.classList.add('is-loaded');
+  }, true);
+  // A photo the browser already has (a card drawn again, the map card, a page opened again) shows at once: no band, no
+  // fade. It is marked as soon as it is in the page, before anything is drawn; the page may have measured itself in the
+  // meantime (the map card does), which would make that change fade, so the fade is off for it.
+  if (window.MutationObserver) new MutationObserver(function (records) {
+    var ready = [];
+    records.forEach(function (r) {
+      for (var k = 0; k < r.addedNodes.length; k++) {
+        var n = r.addedNodes[k];
+        if (n.nodeType !== 1) continue;
+        var imgs = n.tagName === 'IMG' ? [n] : n.getElementsByTagName('img');
+        for (var j = 0; j < imgs.length; j++) {
+          var frame = imgs[j].complete && imgs[j].naturalWidth && photoFrame(imgs[j]);
+          if (frame) ready.push({ img: imgs[j], frame: frame });
+        }
+      }
+    });
+    ready.forEach(function (x) { x.img.style.transition = 'none'; x.frame.classList.add('is-loaded'); });
+    ready.forEach(function (x) { getComputedStyle(x.img).opacity; });   // applies the change now, without the fade
+    ready.forEach(function (x) { x.img.style.removeProperty('transition'); });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  // A missing photo falls back to its placeholder (as a slot without a photo) instead of a broken-image icon; the store
+  // hero's frame just stops its loading look.
   document.addEventListener('error', function (e) {
     var img = e.target;
     if (img && img.tagName === 'IMG') {
       var slot = img.closest('.slot');
-      if (slot) slot.innerHTML = placeholderHTML(slot.dataset.placeholder || '');
+      if (slot) {
+        slot.classList.remove('slot--photo', 'is-loaded');
+        slot.innerHTML = placeholderHTML(slot.dataset.placeholder || '');
+      }
+      else if (photoFrame(img)) photoFrame(img).classList.add('is-loaded');
     }
   }, true);
 
   /* ---------------- Header nav + footer ---------------- */
   // Every link to a unit goes to its store page, or to its own website in a new tab.
-  var NEW_TAB = '<span class="vh"> (nova kartica)</span>';
+  var NEW_TAB = '<span class="vh">' + T.newTab + '</span>';
 
   // Tooltip of a link to a unit's Google Business listing. Without the unit's name: an attribute can't keep part of its
   // text out of browser translation (translate="no").
-  var PLACE_TITLE = 'Otvori na Google kartama';
+  var PLACE_TITLE = T.place;
 
+  // A street address is a name: on a page in another language it stays out of browser translation, like unit names
+  var ADDR_NT = LANG === 'hr' ? '' : ' translate="no"';
   // A unit's address, as a link to its Google Business listing when it has one (class cls either way)
   function addrHTML(u, cls) {
     var href = placeHref(u);
     return href
-      ? '<a class="' + cls + ' addr-link" href="' + esc(href) + '" target="_blank" rel="noopener" title="' + PLACE_TITLE + '">' +
+      ? '<a class="' + cls + ' addr-link"' + ADDR_NT + ' href="' + esc(href) + '" target="_blank" rel="noopener" title="' + PLACE_TITLE + '">' +
           esc(u.address) + NEW_TAB + '</a>'
-      : '<span class="' + cls + '">' + esc(u.address) + '</span>';
+      : '<span class="' + cls + '"' + ADDR_NT + '>' + esc(u.address) + '</span>';
   }
   // Unit names are brand names: translate="no" keeps browser translation from turning "Pod Zvon" into "Under the Bell".
-  function nameHTML(u) { return '<span translate="no">' + esc(u.name) + '</span>'; }
+  function nameHTML(u) { return '<span translate="no">' + esc(tx(u, 'name')) + '</span>'; }
   // Header menu links end in the → the "Za svaku priliku" links use, also for a unit's own website (B&B Novalis);
   // that one still says it opens a new tab.
   function navIcoHTML(u) {
@@ -378,10 +492,10 @@ window.NV = (function () {
     // Desktop: a disclosure button per category (pictogram + label) with its own panel of unit links.
     $('#navCats').innerHTML = groups.map(function (g) {
       var u = direct(g);
-      if (u) return '<a ' + unitLinkAttrs(u, 'nav-link nav-direct') + '>' + pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</a>';
+      if (u) return '<a ' + unitLinkAttrs(u, 'nav-link nav-direct') + '>' + pictoSVG(g.c.picto, 22) + esc(tx(g.c, 'label')) + '</a>';
       return '<div class="nav-drop" data-cat="' + g.id + '">' +
         '<button type="button" class="nav-link nav-cat" id="nav-' + g.id + '" aria-expanded="false" aria-controls="nav-panel-' + g.id + '">' +
-        pictoSVG(g.c.picto, 22) + esc(g.c.label) + '</button>' +
+        pictoSVG(g.c.picto, 22) + esc(tx(g.c, 'label')) + '</button>' +
         '<ul class="dropdown dd-panel" id="nav-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
           return '<li><a ' + unitLinkAttrs(u, 'dd-item') + '>' + nameHTML(u) + navIcoHTML(u) + '</a></li>';
@@ -393,10 +507,10 @@ window.NV = (function () {
     $('#mobileGroups').innerHTML = groups.map(function (g) {
       var u = direct(g);
       if (u) return '<div class="mm-group"><a ' + unitLinkAttrs(u, 'mm-direct') + '>' +
-        pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span>' + navIcoHTML(u) + '</a></div>';
+        pictoSVG(g.c.picto, 22) + '<span>' + esc(tx(g.c, 'label')) + '</span>' + navIcoHTML(u) + '</a></div>';
       return '<div class="mm-group">' +
         '<button type="button" class="mm-toggle" id="mm-' + g.id + '" aria-expanded="false" aria-controls="mm-panel-' + g.id + '">' +
-        pictoSVG(g.c.picto, 22) + '<span>' + esc(g.c.label) + '</span><span class="ms ms--sm" aria-hidden="true">expand_more</span></button>' +
+        pictoSVG(g.c.picto, 22) + '<span>' + esc(tx(g.c, 'label')) + '</span><span class="ms ms--sm" aria-hidden="true">expand_more</span></button>' +
         '<ul class="mm-list" id="mm-panel-' + g.id + '" role="list" hidden>' +
         g.items.map(function (u) {
           return '<li><a ' + unitLinkAttrs(u, 'mm-item') + '>' + nameHTML(u) + navIcoHTML(u) + '</a></li>';
@@ -512,16 +626,16 @@ window.NV = (function () {
       var to = e.relatedTarget;
       if (ui.menu && to && !this.contains(to) && !$('#menuBtn').contains(to)) setMenu(false);
     });
-    window.matchMedia('(min-width: 1080px)').addEventListener('change', function (e) {
+    // the desktop nav takes over from the menu at 1080; on English pages, with their longer labels, at 1160 (css)
+    window.matchMedia('(min-width: ' + (LANG === 'en' ? 1160 : 1080) + 'px)').addEventListener('change', function (e) {
       if (e.matches) setMenu(false); else setOpen(null);
     });
 
-    // language switch (visual only — content is Croatian until translations exist)
-    $$('[data-lang]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        $$('[data-lang]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.lang === btn.dataset.lang); });
-      });
-    });
+    // language switch (header and footer): the page's own language is marked (aria-current, not a link), the other one
+    // links to this page in that language, or to that language's home page while this page has none (TWINS). The
+    // markup carries the same links for visitors without JS; this keeps them right as pages get their translations.
+    // ('' would be the site root seen from itself: './')
+    $$('a[data-lang]').forEach(function (a) { a.setAttribute('href', (ROOT + langPath(a.dataset.lang)) || './'); });
   }
 
   /* ---------------- Unit cards ---------------- */
@@ -529,10 +643,10 @@ window.NV = (function () {
   // (unitStatus) · photo: the picture, if not the unit's card photo.
   function cardData(u, st, photo) {
     return {
-      id: u.id, name: u.name, address: u.address, photo: asset(photo || u.photo), photoHint: u.photoHint, promo: !!u.promo,
+      id: u.id, name: tx(u, 'name'), address: u.address, photo: asset(photo || u.photo), photoHint: tx(u, 'photoHint'), promo: !!u.promo,
       href: unitHref(u), external: !!u.external, open: st.open,
       // today's hours with open/closed ("Otvoreno · Danas 07:00 - 19:00"), else the status ("Zatvoreno · otvara sutra u 07:00")
-      hours: st.open && st.hasToday ? 'Otvoreno · ' + st.today : st.text
+      hours: st.card
     };
   }
 
@@ -542,14 +656,14 @@ window.NV = (function () {
   function cardHTML(c, i) {
     return '<article class="card" id="' + esc(c.id) + '" style="--i:' + Math.min(i, 8) + '">' +
       '<div class="card__media">' + slotHTML(c.photo, c.photoHint, '') +
-        (c.promo ? '<span class="card__promo">Akcija</span>' : '') + '</div>' +
+        (c.promo ? '<span class="card__promo">' + T.promo + '</span>' : '') + '</div>' +
       '<div class="card__head"><h3 class="card__name"><a class="card__link" href="' + esc(c.href) + '"' +
         (c.external ? ' target="_blank" rel="noopener"' : '') + '><span class="card__nm" translate="no">' + esc(c.name) + '</span>' +
         (c.external ? NEW_TAB : '') + '</a></h3></div>' +
       '<div class="card__info"><span class="card__ghost" aria-hidden="true" translate="no">' + esc(c.name) + '</span>' +
-        '<div class="card__meta"><p class="card__addr">' + esc(c.address) + '</p>' +
+        '<div class="card__meta"><p class="card__addr"' + ADDR_NT + '>' + esc(c.address) + '</p>' +
           '<p class="card__hours status' + (c.open ? ' is-open' : '') + '"><span class="dot"></span><span>' + esc(c.hours) + '</span></p></div>' +
-        '<span class="card__more" aria-hidden="true">Više<span class="ms ms--xs">arrow_forward</span></span></div>' +
+        '<span class="card__more" aria-hidden="true">' + T.more + '<span class="ms ms--xs">arrow_forward</span></span></div>' +
     '</article>';
   }
 
@@ -628,7 +742,7 @@ window.NV = (function () {
   bind();
 
   return {
-    D: D, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
+    D: D, LANG: LANG, tx: tx, HOME: HOME, CAT_IDS: CAT_IDS, units: units, byId: byId, reduceMotion: reduceMotion,
     $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
     goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, tileSVG: tileSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,

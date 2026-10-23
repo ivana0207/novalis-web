@@ -5,8 +5,15 @@
 (function () {
   'use strict';
 
-  var NV = window.NV, D = NV.D, $ = NV.$, $$ = NV.$$, esc = NV.esc, setHTML = NV.setHTML;
+  var NV = window.NV, D = NV.D, $ = NV.$, $$ = NV.$$, esc = NV.esc, setHTML = NV.setHTML, tx = NV.tx;
   if (!$('#occasions')) return;
+
+  // texts in the page language (NV.LANG): "Proslave i događanja, 2 od 3" after an arrow, and the count-up's thousands
+  var TEXTS = {
+    hr: { of: ' od ', thousands: '.' },     // 100.000
+    en: { of: ' of ', thousands: ',' }      // 100,000
+  };
+  var T = TEXTS[NV.LANG] || TEXTS.hr;
 
   // Outline icons for this section only (24 grid, drawn in currentColor; the DS pictograms in brand-paths.js are solid).
   var OCC_ICON = {
@@ -25,9 +32,9 @@
   function occStepHTML(st, k) {
     var u = NV.byId[st.unit], ext = !!u.external;
     return '<li class="occ-step" style="--k:' + k + '"><span class="occ-step__n" aria-hidden="true">' + (k + 1) + '</span><div class="occ-step__body">' +
-      '<p class="occ-step__need">' + esc(st.text) + '</p>' +
+      '<p class="occ-step__need">' + esc(tx(st, 'text')) + '</p>' +
       '<a class="occ-step__link" href="' + esc(NV.unitHref(u)) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
-        '<span class="occ-step__name" translate="no">' + esc(st.label || u.name) + '</span>' +
+        '<span class="occ-step__name" translate="no">' + esc(st.label || tx(u, 'name')) + '</span>' +
         icoSVG('go', 'occ-step__go occ-step__go--in') + (ext ? NV.NEW_TAB : '') +
       '</a></div></li>';
   }
@@ -41,13 +48,13 @@
       return false;
     });
     return '<article class="occ-card' + (i === 0 ? ' is-active' : '') + '" id="' + esc(o.id) + '" aria-labelledby="h-' + esc(o.id) + '" style="--i:' + i + '">' +
-      '<div class="occ-card__media" aria-hidden="true">' + NV.slotHTML(NV.asset(o.photo), o.photoHint || '', '') + '</div>' +
+      '<div class="occ-card__media" aria-hidden="true">' + NV.slotHTML(NV.asset(o.photo), tx(o, 'photoHint') || '', '') + '</div>' +
       '<span class="occ-card__plus" aria-hidden="true">' + icoSVG('plus') + '</span>' +
       '<div class="occ-card__body">' +
         '<span class="occ-card__icon">' + icoSVG(o.icon) + '</span>' +
-        '<h3 class="occ-card__h" id="h-' + esc(o.id) + '">' + esc(o.title) + '</h3>' +
+        '<h3 class="occ-card__h" id="h-' + esc(o.id) + '">' + esc(tx(o, 'title')) + '</h3>' +
         '<div class="occ-card__more"><div class="occ-card__more-in">' +
-          '<p class="occ-card__desc">' + esc(o.desc) + '</p>' +
+          '<p class="occ-card__desc">' + esc(tx(o, 'desc')) + '</p>' +
           // role="list": Safari drops list semantics from lists styled with list-style: none
           '<ol class="occ-steps" role="list">' + steps.map(occStepHTML).join('') + '</ol>' +
         '</div></div>' +
@@ -93,7 +100,7 @@
         track.scrollTo({ left: Math.min(offsetOf(i), maxScroll()), behavior: behavior });
         show(i);
       }
-      $('#occLive').textContent = $('.occ-card__h', cards[i]).textContent + ', ' + (i + 1) + ' od ' + n;
+      $('#occLive').textContent = $('.occ-card__h', cards[i]).textContent + ', ' + (i + 1) + T.of + n;
     }
     $('#occPrev').addEventListener('click', function () { go(-1); });
     $('#occNext').addEventListener('click', function () { go(1); });
@@ -163,7 +170,7 @@
     function frame(t) {
       if (t0 === null) t0 = t;
       var p = Math.min(1, (t - t0) / 1600), v = Math.round(end * (1 - Math.pow(1 - p, 4))); // ease-out: fast, then settles
-      el.textContent = String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // Croatian grouping: 100.000
+      el.textContent = String(v).replace(/\B(?=(\d{3})+(?!\d))/g, T.thousands); // 100.000 / 100,000 (T)
       if (p < 1) requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stranica nije pronađena | Novalis</title>
+  <!-- Not found: the hosts (Vercel, GitHub Pages) show this page, with status 404, at any address that doesn't exist,
+       and the address stays as it was typed. It stays out of search results: noindex, no canonical or og:url, not in
+       sitemap.xml. -->
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#D6191F">
+  <!-- This page is served at any depth (/nepostoji, /a/b/c/), so a path relative to it would miss the site's files, and
+       one from the domain root ("/css/…") misses them on GitHub Pages and from disk. NV_ROOT is the site root: the
+       project's folder on GitHub Pages (ivana0207.github.io/novalis-web/), the folder of this file when it is opened from
+       disk, else "/" (Vercel). The stylesheets here and the scripts at the end of <body> are written from it, not set in
+       the markup, so the browser never asks for them at a wrong address first; the page's links are written from the
+       domain root ("/o-nama/") and get the root put in front. Without JavaScript the <noscript> copies serve the main
+       host (Vercel), where every link already works as written. -->
+  <!-- A missing address under the English pages (/en/…) gets this page in English: NV_EN sets the page language and
+       title here, and the script at the end of <body> swaps the markup for its English copy (template#notfound-en)
+       before the site's scripts run, so they work in English too. Without JavaScript it stays Croatian. -->
+  <script>
+    var NV_ROOT = (function (l) {
+      if (l.protocol === 'file:') return l.pathname.replace(/[^\/]*$/, '');
+      var m = /\.github\.io$/i.test(l.hostname) && /^\/[\w.~-]+\//.exec(l.pathname);
+      return m ? m[0] : '/';
+    })(location).replace(/[&"'<>]/g, function (c) { return '%' + c.charCodeAt(0).toString(16); });
+    var NV_EN = location.protocol !== 'file:' && /^en(\/|$)/i.test(location.pathname.slice(NV_ROOT.length));
+    if (NV_EN) {
+      document.documentElement.lang = 'en';
+      document.title = 'Page not found | Novalis';
+    }
+    document.write(
+      '<link rel="icon" href="' + NV_ROOT + 'assets/favicon.svg" type="image/svg+xml">' +
+      '<link rel="stylesheet" href="' + NV_ROOT + 'css/fonts.css?v=20261023-4">' +
+      '<link rel="stylesheet" href="' + NV_ROOT + 'css/ds.css?v=20261023-4">' +
+      '<link rel="stylesheet" href="' + NV_ROOT + 'css/styles.css?v=20261023-4">');
+  </script>
+  <noscript>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/fonts.css?v=20261023-4">
+    <link rel="stylesheet" href="/css/ds.css?v=20261023-4">
+    <link rel="stylesheet" href="/css/styles.css?v=20261023-4">
+  </noscript>
+</head>
+<!-- Stranica nije pronađena: the privacy page's shell (header, footer, quick buttons) around one short message and the
+     way back to the home page. data-root and data-home are set from NV_ROOT at the end of <body>; data-notfound keeps
+     site.js from changing the typed path (it still drops ?… and #…). -->
+<body data-root="/" data-home="/" data-notfound>
+<div class="page" id="top">
+  <a class="skip" href="#main">Preskoči na sadržaj</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="/" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Glavna navigacija">
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="/o-nama/">O nama</a>
+        <a class="nav-link" href="/zaposli-se/">Zaposli se</a>
+        <a class="nav-link" href="/#upit">Kontakt</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Jezik / Language">
+          <span class="lang__btn" data-lang="hr" aria-current="true" lang="hr">HR<span class="vh"> - Hrvatski (trenutni jezik)</span></span>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <a class="lang__btn" data-lang="en" href="/en/" hreflang="en" lang="en">EN<span class="vh"> - English</span></a>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Izbornik"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="/o-nama/">O nama</a>
+          <a href="/zaposli-se/">Zaposli se</a>
+          <a href="/#upit">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="notfound" aria-labelledby="h-404">
+      <div class="notfound__inner">
+        <h1 id="h-404" class="notfound__h1">Stranica nije pronađena</h1>
+        <p class="notfound__lead">Adresa je možda pogrešno upisana ili stranica više ne postoji.</p>
+        <p class="notfound__actions"><a class="btn btn--primary btn--lg" href="/">Na početnu</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Uživanje, strast i povjerenje - od 1990. u Novalji.</p>
+        </div>
+        <nav class="footer__col" aria-label="Poslovnice">
+          <h2 class="footer__h">Poslovnice</h2>
+          <div class="footer__stack" id="footerUnits"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Informacije">
+          <h2 class="footer__h">Informacije</h2>
+          <a href="/o-nama/" class="footer__link">O nama</a>
+          <a href="/zaposli-se/" class="footer__link">Zaposli se</a>
+          <a href="/#cjenici" class="footer__link">Cjenici</a>
+          <a href="/pravila-o-privatnosti/" class="footer__link">Pravila o privatnosti</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Kontakt</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, otok Pag</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · Sva prava pridržana</span>
+        <div class="footer__lang" role="group" aria-label="Jezik / Language">
+          <span class="lang__btn lang__btn--long" data-lang="hr" aria-current="true" lang="hr">Hrvatski<span class="vh"> (trenutni jezik)</span></span>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <a class="lang__btn lang__btn--long" data-lang="en" href="/en/" hreflang="en" lang="en">English</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK BUTTONS ============ -->
+  <nav class="quickbar" aria-label="Brze akcije">
+    <a href="tel:+38553662001" class="quickbar__btn quickbar__call"><span class="ms" aria-hidden="true">call</span><span class="vh">Nazovi</span></a>
+    <a href="/#lokacije" class="quickbar__btn quickbar__map"><span class="ms" aria-hidden="true">map</span><span class="vh">Karta poslovnica</span></a>
+  </nav>
+</div>
+
+<!-- The page in English, for a missing address under /en/ (NV_EN): the same shell with the English pages' header and
+     footer; its links are written from the domain root like the Croatian ones. -->
+<template id="notfound-en">
+<div class="page" id="top">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="/en/" class="bar__logo" aria-label="Novalis - home" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Main navigation">
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="/en/about-us/">About us</a>
+        <a class="nav-link" href="/en/careers/">Careers</a>
+        <a class="nav-link" href="/en/#upit">Contact</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Language">
+          <a class="lang__btn" data-lang="hr" href="/" hreflang="hr" lang="hr">HR<span class="vh"> - Hrvatski</span></a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn" data-lang="en" aria-current="true" lang="en">EN<span class="vh"> - English (current language)</span></span>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="/en/about-us/">About us</a>
+          <a href="/en/careers/">Careers</a>
+          <a href="/en/#upit">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="notfound" aria-labelledby="h-404">
+      <div class="notfound__inner">
+        <h1 id="h-404" class="notfound__h1">Page not found</h1>
+        <p class="notfound__lead">The address may have been mistyped, or the page no longer exists.</p>
+        <p class="notfound__actions"><a class="btn btn--primary btn--lg" href="/en/">Go to the home page</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Enjoyment, passion and trust - in Novalja since 1990.</p>
+        </div>
+        <nav class="footer__col" aria-label="Locations">
+          <h2 class="footer__h">Locations</h2>
+          <div class="footer__stack" id="footerUnits"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Information">
+          <h2 class="footer__h">Information</h2>
+          <a href="/en/about-us/" class="footer__link">About us</a>
+          <a href="/en/careers/" class="footer__link">Careers</a>
+          <a href="/en/#cjenici" class="footer__link">Price lists</a>
+          <a href="/en/privacy-policy/" class="footer__link">Privacy policy</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Contact</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, Pag island</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · All rights reserved</span>
+        <div class="footer__lang" role="group" aria-label="Language">
+          <a class="lang__btn lang__btn--long" data-lang="hr" href="/" hreflang="hr" lang="hr">Hrvatski</a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn lang__btn--long" data-lang="en" aria-current="true" lang="en">English<span class="vh"> (current language)</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK BUTTONS ============ -->
+  <nav class="quickbar" aria-label="Quick actions">
+    <a href="tel:+38553662001" class="quickbar__btn quickbar__call"><span class="ms" aria-hidden="true">call</span><span class="vh">Call</span></a>
+    <a href="/en/#lokacije" class="quickbar__btn quickbar__map"><span class="ms" aria-hidden="true">map</span><span class="vh">Map of locations</span></a>
+  </nav>
+</div>
+</template>
+
+<script>
+  // The site root (see <head>) for site.js and this page's links, then the site's scripts from it; under /en/ the
+  // English copy of the page first
+  (function (r) {
+    var b = document.body, en = document.getElementById('notfound-en');
+    if (NV_EN && en) document.querySelector('.page').replaceWith(en.content.cloneNode(true));
+    b.dataset.root = r;
+    b.dataset.home = NV_EN ? r + 'en/' : r;
+    if (r !== '/') [].forEach.call(document.querySelectorAll('a[href^="/"]'), function (a) {
+      var h = a.getAttribute('href');
+      if (h.charAt(1) !== '/') a.setAttribute('href', r + h.slice(1));
+    });
+    document.write(
+      '<script src="' + r + 'js/brand-paths.js?v=20261023-4"><\/script>' +
+      '<script src="' + r + 'data/units.js?v=20261023-4"><\/script>' +
+      '<script src="' + r + 'js/site.js?v=20261023-4"><\/script>');
+  })(NV_ROOT);
+</script>
+</body>
+</html>

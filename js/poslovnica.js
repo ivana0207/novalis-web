@@ -1,6 +1,7 @@
 /* Novalis store page (hiper-novalis/, market-novalis/, hiper-bau/, veleprodaja/, valis/, pod-zvon/, hotel-novalis/) — renders one
    unit's page from data/units.js on top of js/site.js. Every store page has the same sections; only the hero takes
-   the store's theme and mark. The unit comes from <body data-unit="…">.
+   the store's theme and mark. The unit comes from <body data-unit="…">; the English twins (en/<slug>/) show its English
+   texts (page.en).
    Two layouts: units with page.layout 'v2' (WEB-9; Market Novalis, Hiper Novalis, Hiper Bau, Valis, Pod Zvon,
    Veleprodaja: all six now) get the reworked page (V2 below: hero with the address and icon-only call / e-mail, Radno
    vrijeme i lokacija right under it, Ponuda with floors, Brendovi where the unit lists brands, Galerija, Ostale
@@ -11,9 +12,45 @@
 
   var NV = window.NV, D = NV.D, $ = NV.$, esc = NV.esc, setHTML = NV.setHTML, asset = NV.asset, NEW_TAB = NV.NEW_TAB;
 
-  var DAYS = ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'];
+  // The page's texts in its language (NV.LANG): Croatian on /<slug>/, English on /en/<slug>/
+  var TEXTS = {
+    hr: {
+      days: ['Ponedjeljak', 'Utorak', 'Srijeda', 'Četvrtak', 'Petak', 'Subota', 'Nedjelja'],
+      // "Ponedjeljak - subota", "Subota i nedjelja"
+      range: function (a, b, two) { return a + (two ? ' i ' : ' - ') + b.toLowerCase(); },
+      daily: 'Svaki dan', closed: 'zatvoreno', open24: '0 - 24 h',
+      summer: 'Ljetno radno vrijeme', winter: 'Zimsko radno vrijeme', hours: 'Radno vrijeme', allYear: 'cijele godine', now: 'Sada',
+      stay: 'Boravak', call: 'Nazovi: ', email: 'Pošalji e-poruku: ', directions: 'Upute',
+      crumbs: 'Putanja', home: 'Početna', units: 'Poslovnice',
+      facts: 'Ključne brojke', offer: 'Ponuda', level: 'Razina ', brands: 'Brendovi',
+      allBrands: function (n) { return 'Prikaži sve brendove (' + n + ')'; },
+      rooms: 'Sobe', allRooms: 'Pogledajte sve sobe', gallery: 'Galerija', enlarge: 'Povećaj fotografiju: ',
+      visit: 'Radno vrijeme i lokacija', mapFail: 'Karta se trenutno ne može prikazati.', mapOpen: 'Otvori u Google Maps',
+      map: 'Karta: ', onMaps: ' na Google kartama', others: 'Ostale poslovnice', related: 'Povezane poslovnice'
+    },
+    en: {
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      // "Monday - Saturday", "Saturday and Sunday"
+      range: function (a, b, two) { return a + (two ? ' and ' : ' - ') + b; },
+      daily: 'Every day', closed: 'Closed', open24: 'Open 24 hours',
+      summer: 'Summer opening hours', winter: 'Winter opening hours', hours: 'Opening hours', allYear: 'all year', now: 'Now',
+      stay: 'Your stay', call: 'Call: ', email: 'Email: ', directions: 'Directions',
+      crumbs: 'Breadcrumb', home: 'Home', units: 'Locations',
+      facts: 'Key figures', offer: 'What we offer', level: 'Level ', brands: 'Brands',
+      allBrands: function (n) { return 'Show all brands (' + n + ')'; },
+      rooms: 'Rooms', allRooms: 'See all rooms', gallery: 'Gallery', enlarge: 'Enlarge photo: ',
+      visit: 'Opening hours and location', mapFail: 'The map cannot be shown right now.', mapOpen: 'Open in Google Maps',
+      map: 'Map: ', onMaps: ' on Google Maps', others: 'Other locations', related: 'Related locations'
+    }
+  };
+  var T = TEXTS[NV.LANG] || TEXTS.hr;
+  var DAYS = T.days;
 
-  var u = NV.byId[document.body.dataset.unit], p = u.page;
+  // p: the unit's page content in the page language: on an English page its page.en fields (data/units.js) replace the
+  // Croatian ones whole, and en.captions the gallery's captions, in order. NAME: the unit's name in the page language.
+  var u = NV.byId[document.body.dataset.unit], p = Object.assign({}, u.page, NV.LANG !== 'hr' && u.page[NV.LANG] || {});
+  if (p.captions) p.gallery = p.gallery.map(function (g, i) { return [g[0], p.captions[i] || g[1]]; });
+  var NAME = NV.tx(u, 'name');
   var V2 = p.layout === 'v2';
   var mapsHref = NV.mapsHref(u), telHref = NV.telHref(u), telLabel = NV.telLabel(u);
   var allYear = JSON.stringify(u.hours.summer) === JSON.stringify(u.hours.winter);
@@ -36,12 +73,12 @@
 
   /* ---------------- Opening hours ---------------- */
   function fmt(t) {
-    if (!t) return 'zatvoreno';
-    return t[0] === '00:00' && t[1] === '24:00' ? '0 - 24 h' : t[0] + ' - ' + t[1];
+    if (!t) return T.closed;
+    return t[0] === '00:00' && t[1] === '24:00' ? T.open24 : t[0] + ' - ' + t[1];
   }
   function dayRange(a, b) {
     if (a === b) return DAYS[a];
-    return DAYS[a] + (b - a === 1 ? ' i ' : ' - ') + DAYS[b].toLowerCase();
+    return T.range(DAYS[a], DAYS[b], b - a === 1);
   }
   // Consecutive days with the same hours share a row: "Ponedjeljak - subota · 07:00 - 19:00".
   function hourRows(hrs, today) {
@@ -52,23 +89,23 @@
       else rows.push({ from: d, to: d, time: time });
     });
     return rows.map(function (r) {
-      return { day: rows.length === 1 ? 'Svaki dan' : dayRange(r.from, r.to), time: r.time, today: today >= r.from && today <= r.to };
+      return { day: rows.length === 1 ? T.daily : dayRange(r.from, r.to), time: r.time, today: today >= r.from && today <= r.to };
     });
   }
 
   // Season dates for the headings: summer 15. 5. - 30. 9., winter the rest of the year.
   var S = D.seasons.summer;
   var SEASONS = {
-    summer: { title: 'Ljetno radno vrijeme', period: NV.dayMonth(S.start) + ' - ' + NV.dayMonth(S.end) },
-    winter: { title: 'Zimsko radno vrijeme', period: NV.dayMonth(S.end, 1) + ' - ' + NV.dayMonth(S.start, -1) }
+    summer: { title: T.summer, period: NV.dayMonth(S.start) + ' - ' + NV.dayMonth(S.end) },
+    winter: { title: T.winter, period: NV.dayMonth(S.end, 1) + ' - ' + NV.dayMonth(S.start, -1) }
   };
 
   // today: the weekday (0 = Monday) whose row is marked in the current table, or -1 for none. One table all year; a unit
   // open only part of the year (openPeriod, B&B Novalis) gives those dates instead of "cijele godine".
   function hourBlocks(today, season) {
     if (allYear) {
-      var o = u.openPeriod, period = o ? NV.dayMonth(o.start) + ' - ' + NV.dayMonth(o.end) : 'cijele godine';
-      return [{ title: 'Radno vrijeme', period: period, now: true, rows: hourRows(u.hours.summer, today) }];
+      var o = u.openPeriod, period = o ? NV.dayMonth(o.start) + ' - ' + NV.dayMonth(o.end) : T.allYear;
+      return [{ title: T.hours, period: period, now: true, rows: hourRows(u.hours.summer, today) }];
     }
     return (season === 'summer' ? ['summer', 'winter'] : ['winter', 'summer']).map(function (s) {
       var now = s === season;
@@ -84,7 +121,7 @@
     return hourBlocks(today, season).map(function (b) {
       return '<div class="hours' + (b.now ? ' is-now' : '') + '">' +
         '<div class="hours__head"><h3 class="hours__title">' + esc(b.title) + '</h3>' +
-          (b.now && !allYear ? '<span class="hours__badge">Sada</span>' : '') +
+          (b.now && !allYear ? '<span class="hours__badge">' + T.now + '</span>' : '') +
           '<span class="hours__period">' + esc(b.period) + '</span></div>' +
         '<dl class="hours__rows">' + b.rows.map(function (r) {
           return '<div class="hours__row' + (r.today ? ' is-today' : '') + '"><dt>' + esc(r.day) + '</dt><dd>' + esc(r.time) + '</dd></div>';
@@ -95,7 +132,7 @@
 
   // Boravak (page.stay; B&B Novalis): arrival and departure under the hours, as a table of the same kind
   function stayHTML() {
-    return '<div class="hours hours--stay"><div class="hours__head"><h3 class="hours__title">Boravak</h3></div>' +
+    return '<div class="hours hours--stay"><div class="hours__head"><h3 class="hours__title">' + T.stay + '</h3></div>' +
       '<dl class="hours__rows">' + p.stay.map(function (r) {
         return '<div class="hours__row"><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>';
       }).join('') + '</dl></div>';
@@ -126,13 +163,13 @@
   // the end of the accessible name ("Nazovi: <name>, 098 441 149"); the unit name stays out of translation.
   // No e-mail in the data, or the primary button already writes to it (Veleprodaja): no e-mail button.
   function contactHTML(cta) {
-    var name = '<span translate="no">' + esc(u.name) + '</span>';
+    var name = '<span translate="no">' + esc(NAME) + '</span>';
     var mail = u.email && cta.href !== 'mailto:' + u.email;
     return '<div class="store-hero__contact">' +
         '<a class="hero-ico" href="' + esc(telHref) + '">' + ico('call') +
-          '<span class="vh">Nazovi: ' + name + ', </span><span class="hero-ico__tip" translate="no">' + esc(telLabel) + '</span></a>' +
+          '<span class="vh">' + T.call + name + ', </span><span class="hero-ico__tip" translate="no">' + esc(telLabel) + '</span></a>' +
         (mail ? '<a class="hero-ico" href="mailto:' + esc(u.email) + '">' + ico('mail') +
-          '<span class="vh">Pošalji e-poruku: ' + name + ', </span><span class="hero-ico__tip" translate="no">' + esc(u.email) + '</span></a>' : '') +
+          '<span class="vh">' + T.email + name + ', </span><span class="hero-ico__tip" translate="no">' + esc(u.email) + '</span></a>' : '') +
       '</div>';
   }
 
@@ -141,19 +178,19 @@
   // listing) and the call / e-mail buttons instead of the call link. Pattern 'lace' (B&B Novalis) lays the hotel's lace
   // rosette behind the copy (decorative).
   function heroHTML() {
-    var cta = p.cta || { label: 'Upute', href: mapsHref, icon: 'directions' };
+    var cta = p.cta || { label: T.directions, href: mapsHref, icon: 'directions' };
     var ext = /^https?:/.test(cta.href) ? ' target="_blank" rel="noopener"' : '';
-    return '<nav class="crumbs" aria-label="Putanja"><ol class="crumbs__list">' +
-        '<li><a href="' + esc(NV.HOME) + '">Početna</a></li>' +
-        '<li><a href="' + esc(NV.HOME) + '#poslovnice">Poslovnice</a></li>' +
-        '<li><span aria-current="page" translate="no">' + esc(u.name) + '</span></li></ol></nav>' +
+    return '<nav class="crumbs" aria-label="' + T.crumbs + '"><ol class="crumbs__list">' +
+        '<li><a href="' + esc(NV.HOME) + '">' + T.home + '</a></li>' +
+        '<li><a href="' + esc(NV.HOME) + '#poslovnice">' + T.units + '</a></li>' +
+        '<li><span aria-current="page" translate="no">' + esc(NAME) + '</span></li></ol></nav>' +
       '<section class="store-hero" aria-labelledby="h-store">' +
         '<div class="store-hero__panel">' +
           (p.pattern === 'lace' ? '<div class="store-hero__lace" aria-hidden="true"></div>' : '') +
           '<div class="store-hero__copy">' + markHTML(p.mark) +
             '<span class="store-hero__label">' + esc(p.label) + '</span>' +
             // The mark is the store's name drawn large; the heading carries the name for readers and search.
-            '<h1 class="store-hero__title" id="h-store"><span class="vh" translate="no">' + esc(u.name) + ': </span>' + esc(p.title) + '</h1>' +
+            '<h1 class="store-hero__title" id="h-store"><span class="vh" translate="no">' + esc(NAME) + ': </span>' + esc(p.title) + '</h1>' +
             '<p class="store-hero__lead">' + esc(p.lead) + '</p>' +
             (V2 ? '<div class="store-hero__place"><div id="heroStatus"></div>' + NV.addrHTML(u, 'store-hero__addr') + '</div>' : '<div id="heroStatus"></div>') +
             '<div class="store-hero__actions">' +
@@ -174,7 +211,7 @@
   }
 
   function factsHTML() {
-    return '<section class="store-sec store-sec--facts" aria-labelledby="h-brojke"><h2 class="vh" id="h-brojke">Ključne brojke</h2><dl class="facts">' +
+    return '<section class="store-sec store-sec--facts" aria-labelledby="h-brojke"><h2 class="vh" id="h-brojke">' + T.facts + '</h2><dl class="facts">' +
       p.facts.map(function (f) {
         return '<div class="facts__item"><dt>' + esc(f[1]) + '</dt><dd>' + esc(f[0]) + '</dd></div>';
       }).join('') + '</dl></section>';
@@ -184,12 +221,13 @@
      offer line names one of them and no floor has more than 6 (the zone layouts go from 1 to 6); otherwise the numbered
      list. Each floor: an isometric plate with one zone per category (abstract blocks, not the shop's real layout) and a
      legend: sign, name (h3), its note if any, the categories (ol) with the zone letters. A line with details
-     (['text', floor, 'details'], Hiper Novalis) is a department that opens to show them. */
+     (['text', floor, 'details'], Hiper Novalis) is a department that opens to show them. Offer lines name their floor
+     by its Croatian name in every language; the legend shows the floor's name and note in the page language. */
   function floorGroups() {
     var f = p.floors;
     if (!f || !p.offer.every(function (it) { return typeof it !== 'string' && f.some(function (x) { return x.name === it[1]; }); })) return null;
     var groups = f.map(function (fl) {
-      return { name: fl.name, sign: fl.sign, tone: fl.tone, brand: !!fl.brand, note: fl.note,
+      return { name: NV.tx(fl, 'name'), sign: fl.sign, tone: fl.tone, brand: !!fl.brand, note: NV.tx(fl, 'note'),
         items: p.offer.filter(function (it) { return it[1] === fl.name; }).map(function (it) { return { t: it[0], d: it[2] || '' }; }) };
     }).filter(function (g) { return g.items.length; });
     return groups.some(function (g) { return g.items.length > 6; }) ? null : groups;
@@ -296,7 +334,7 @@
           '<div class="floor__legend">' +
             (g.sign ? '<span class="floor__sign" aria-hidden="true">' + esc(g.sign) + '</span>' : '') +
             '<div class="floor__key">' + stackSVG(groups.length, gi) +
-              '<h3 class="floor__name" id="h-ponuda-' + gi + '">' + (g.sign ? '<span class="vh">Razina ' + esc(g.sign) + ': </span>' : '') + name + '</h3>' +
+              '<h3 class="floor__name" id="h-ponuda-' + gi + '">' + (g.sign ? '<span class="vh">' + T.level + esc(g.sign) + ': </span>' : '') + name + '</h3>' +
               (g.note ? '<p class="floor__note">' + esc(g.note) + '</p>' : '') +
               '<ol class="floor__list" aria-labelledby="h-ponuda-' + gi + '">' + g.items.map(itemHTML).join('') + '</ol>' +
             '</div>' +
@@ -316,7 +354,7 @@
 
   function offerHTML() {
     var groups = V2 && floorGroups();
-    return '<section class="store-sec" aria-labelledby="h-ponuda">' + headHTML('ponuda', 'Ponuda', p.offerLead) +
+    return '<section class="store-sec" aria-labelledby="h-ponuda">' + headHTML('ponuda', T.offer, p.offerLead) +
       (groups ? floorsHTML(groups) : offerListHTML()) +
       (p.offerNote ? '<p class="offer__note">' + esc(p.offerNote) + '</p>' : '') +
     '</section>';
@@ -330,14 +368,14 @@
   var BRANDS = 'assets/img/brendovi/';
   var GO = goSVG('brand__go');
   function brandsHTML() {
-    return '<section class="store-sec" aria-labelledby="h-brendovi">' + headHTML('brendovi', 'Brendovi', p.brandsLead) +
+    return '<section class="store-sec" aria-labelledby="h-brendovi">' + headHTML('brendovi', T.brands, p.brandsLead) +
       '<ul class="brands" id="brandList">' + p.brands.map(function (b) {
         var img = '<img src="' + esc(asset(BRANDS + b[1] + '.webp')) + '" alt="' + esc(b[0]) + '" width="160" height="80" loading="lazy" decoding="async" translate="no">';
         return '<li class="brands__item">' + (b[2]
           ? '<a class="brand" href="' + esc(b[2]) + '" target="_blank" rel="noopener">' + img + NEW_TAB + GO + '</a>'
           : '<span class="brand">' + img + '</span>') + '</li>';
       }).join('') + '</ul>' +
-      '<button type="button" class="btn-sm brands__more" aria-controls="brandList">Prikaži sve brendove (' + p.brands.length + ')</button>' +
+      '<button type="button" class="btn-sm brands__more" aria-controls="brandList">' + T.allBrands(p.brands.length) + '</button>' +
     '</section>';
   }
 
@@ -346,14 +384,14 @@
      on the unit's website in a new tab; the arrow on the photo says it leaves the site. The last tile (roomsAll) opens
      the full list there. */
   function roomsHTML() {
-    return '<section class="store-sec" aria-labelledby="h-sobe">' + headHTML('sobe', 'Sobe', p.roomsLead) +
+    return '<section class="store-sec" aria-labelledby="h-sobe">' + headHTML('sobe', T.rooms, p.roomsLead) +
       '<ul class="rooms">' + p.rooms.map(function (r) {
         return '<li class="room"><div class="room__media">' + NV.slotHTML(asset(r[3]), r[0], '') + goSVG('room__go') + '</div>' +
           '<h3 class="room__name"><a class="room__link" href="' + esc(r[4]) + '" target="_blank" rel="noopener">' + esc(r[0]) + NEW_TAB + '</a></h3>' +
           '<p class="room__meta">' + esc(r[1]) + ' · ' + esc(r[2]) + '</p></li>';
       }).join('') +
       (p.roomsAll ? '<li class="room room--all"><a class="room__all" href="' + esc(p.roomsAll) + '" target="_blank" rel="noopener">' +
-          '<span class="room__all-t">Pogledajte sve sobe</span> <span class="room__all-site"><span translate="no">' +
+          '<span class="room__all-t">' + T.allRooms + '</span> <span class="room__all-site"><span translate="no">' +
           esc(p.roomsAll.replace(/^https?:\/\/|\/.*$/g, '')) + '</span>' + goSVG('room__all-go') + '</span>' + NEW_TAB + '</a></li>' : '') +
       '</ul></section>';
   }
@@ -365,11 +403,11 @@
   });
   function galleryHTML() {
     var k = 0;
-    return '<section class="store-sec" aria-labelledby="h-galerija">' + headHTML('galerija', 'Galerija') +
+    return '<section class="store-sec" aria-labelledby="h-galerija">' + headHTML('galerija', T.gallery) +
       '<ul class="gallery">' + p.gallery.map(function (g) {
         if (g[0]) {
           return '<li class="gallery__item gallery__item--photo">' + NV.slotHTML(asset(g[0]), g[1], '') +
-            '<button type="button" class="gallery__open" data-photo="' + (k++) + '" aria-haspopup="dialog"><span class="vh">Povećaj fotografiju: ' + brandHTML(g[1]) + '</span></button></li>';
+            '<button type="button" class="gallery__open" data-photo="' + (k++) + '" aria-haspopup="dialog"><span class="vh">' + T.enlarge + brandHTML(g[1]) + '</span></button></li>';
         }
         return '<li class="gallery__item">' + (V2 ? NV.slotHTML(null, g[1], g[1], brandHTML(g[1])) : NV.slotHTML(null, g[1], g[1])) + '</li>';
       }).join('') + '</ul></section>';
@@ -379,23 +417,23 @@
   // under the map the name, address, e-mail, Upute and call. V2: nothing under the map (address and call are in the hero).
   function visitInfoHTML() {
     return '<div class="visit__info">' +
-      '<div class="visit__addr"><span class="visit__name" translate="no">' + esc(u.name) + '</span>' + NV.addrHTML(u, 'visit__street') +
+      '<div class="visit__addr"><span class="visit__name" translate="no">' + esc(NAME) + '</span>' + NV.addrHTML(u, 'visit__street') +
         (u.email ? '<a href="mailto:' + esc(u.email) + '">' + esc(u.email) + '</a>' : '') + '</div>' +
       '<div class="visit__actions">' +
-        '<a class="btn-sm btn-sm--accent" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">' + ico('directions', 'sm') + 'Upute' + NEW_TAB + '</a>' +
+        '<a class="btn-sm btn-sm--accent" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">' + ico('directions', 'sm') + T.directions + NEW_TAB + '</a>' +
         '<a class="btn-sm" href="' + esc(telHref) + '">' + ico('call', 'sm') + esc(telLabel) + '</a>' +
       '</div>' +
     '</div>';
   }
   function visitHTML() {
-    return '<section class="store-sec" aria-labelledby="h-posjet">' + headHTML('posjet', 'Radno vrijeme i lokacija') +
+    return '<section class="store-sec" aria-labelledby="h-posjet">' + headHTML('posjet', T.visit) +
       '<div class="visit">' +
         '<div class="visit__hours" id="visitHours"></div>' +
         '<div class="visit__place" id="karta">' +
           '<div class="store-map">' +
             '<div class="store-map__canvas" id="storeMap"></div>' +
-            '<p class="map__note map__note--fail" id="storeMapFail" hidden>Karta se trenutno ne može prikazati. ' +
-              '<a class="map__link" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">Otvori u Google Maps' + NEW_TAB + '</a></p>' +
+            '<p class="map__note map__note--fail" id="storeMapFail" hidden>' + T.mapFail + ' ' +
+              '<a class="map__link" href="' + esc(mapsHref) + '" target="_blank" rel="noopener">' + T.mapOpen + NEW_TAB + '</a></p>' +
           '</div>' +
           (V2 ? '' : visitInfoHTML()) +
         '</div>' +
@@ -409,13 +447,13 @@
   function initMap() {
     if (!NV.map) { $('#storeMapFail').hidden = false; return; } // js/map.js didn't load
     NV.map.create($('#storeMap'), {
-      label: 'Karta: ' + u.name + ', ' + u.address,
+      label: T.map + NAME + ', ' + u.address,
       map: { center: NV.map.lngLat(u), zoom: 16 }
     }, function (map, gl) {
       var place = NV.placeHref(u);
       var mk = NV.map.pin(map, gl, u, place
         ? '<a class="pin pin--store" href="' + esc(place) + '" target="_blank" rel="noopener" title="' + NV.PLACE_TITLE + '">' +
-            '<span class="pin__head"></span><span class="vh"><span translate="no">' + esc(u.name) + '</span> na Google kartama' + NEW_TAB + '</span></a>'
+            '<span class="pin__head"></span><span class="vh"><span translate="no">' + esc(NAME) + '</span>' + T.onMaps + NEW_TAB + '</span></a>'
         : '<span class="pin pin--store"><span class="pin__head"></span></span>');
       if (!place) mk.getElement().setAttribute('aria-hidden', 'true'); // a plain mark: the map's own label names the place
     }, function (hadFocus) {
@@ -431,7 +469,7 @@
   })) : p.related;
   function relatedHTML() {
     var id = V2 ? 'ostale' : 'povezane';
-    return '<section class="store-sec store-sec--last" aria-labelledby="h-' + id + '">' + headHTML(id, V2 ? 'Ostale poslovnice' : 'Povezane poslovnice') +
+    return '<section class="store-sec store-sec--last" aria-labelledby="h-' + id + '">' + headHTML(id, V2 ? T.others : T.related) +
       '<div class="cards" id="related"></div></section>';
   }
   function relatedCardsHTML(z) {
@@ -479,9 +517,10 @@
     return specs.length ? specs : undefined;
   }
 
+  // In the page language; a unit named differently there keeps its Croatian name too (as on the home page)
   function addStructuredData() {
     var business = Object.assign({ '@context': 'https://schema.org' }, u.schema, {
-      '@id': NV.unitId(u), name: u.name, description: p.lead, url: NV.PAGE_URL,
+      '@id': NV.unitId(u), name: NAME, alternateName: NAME !== u.name ? u.name : undefined, description: p.lead, url: NV.PAGE_URL,
       image: [p.photo].concat(p.gallery.map(function (g) { return g[0]; })).filter(Boolean).map(function (src) { return NV.absUrl(asset(src)); }),
       telephone: u.tel || D.company.tel, email: u.email, address: NV.postalAddress(u.address), hasMap: mapsHref,
       openingHoursSpecification: openingHours(), specialOpeningHoursSpecification: specialHours(), parentOrganization: NV.ORG
@@ -489,7 +528,7 @@
     var crumbs = {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
       // "Poslovnice" is a section of the home page, not a page of its own, so the trail is two pages long
-      itemListElement: [['Početna', NV.HOME_URL], [u.name, NV.PAGE_URL]].map(function (c, i) {
+      itemListElement: [[T.home, NV.HOME_URL], [NAME, NV.PAGE_URL]].map(function (c, i) {
         return { '@type': 'ListItem', position: i + 1, name: c[0], item: c[1] };
       })
     };

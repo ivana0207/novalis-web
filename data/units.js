@@ -4,6 +4,12 @@
  * Radno vrijeme: indeks 0 = ponedjeljak … 6 = nedjelja; null = zatvoreno.
  * Radna vremena su PLACEHOLDER dok ih Novalis ne potvrdi (Pod Zvon je potvrđen na novalis.hr).
  * hoursConfirmed: true kad su potvrđena - samo potvrđena radna vremena idu tražilicama (schema.org).
+ * English (WEB-21, /en/): an item's en: { field: 'English text' } beside its Croatian fields is what an English page
+ * shows instead (NV.tx in js/site.js); a field it leaves out shows as in Croatian (names, addresses). Texts the code
+ * matches rather than shows (an offer line's floor) keep pointing at the Croatian field. Draft, from the WEB-21 copy deck;
+ * the store pages' English (page.en, the floors' en, 2026-10-23) translates their Croatian copy, the B&B's reuses
+ * hotelnovalis.hr/en/ where it has the same text. A unit's en.slug is its English page's folder (en/<slug>/) when it
+ * differs from slug.
  * (Loaded as a script, not fetched, so the site also works when opened straight from disk.)
  */
 (function () {
@@ -33,10 +39,10 @@
     // Order here is the order of filters, menu groups and unit numbering.
     // direct: the header shows the category as a plain link to its only unit's page instead of a menu.
     categories: [
-      { id: 'trgovine', label: 'Trgovine', picto: 'cart' },
-      { id: 'smjestaj', label: 'Smještaj', picto: 'suitcase' },
-      { id: 'gastro', label: 'Gastro', picto: 'cloche' },
-      { id: 'veleprodaja', label: 'Veleprodaja', picto: 'boxes', direct: true }
+      { id: 'trgovine', label: 'Trgovine', picto: 'cart', en: { label: 'Shops' } },
+      { id: 'smjestaj', label: 'Smještaj', picto: 'suitcase', en: { label: 'Accommodation' } },
+      { id: 'gastro', label: 'Gastro', picto: 'cloche', en: { label: 'Food & drink' } },
+      { id: 'veleprodaja', label: 'Veleprodaja', picto: 'boxes', direct: true, en: { label: 'Wholesale' } }
     ],
     /*
      * slug: the store page's folder (/hiper-bau/ → hiper-bau/index.html), same addresses as on novalis.hr.
@@ -88,6 +94,7 @@
           winter: week(wk('07:00', '19:00'), wk('07:00', '19:00'), null)
         },
         photo: 'assets/img/hiper-novalis-storefront.jpg', photoHint: 'Foto: Hiper Novalis, ulaz i parking',
+        en: { photoHint: 'Photo: Hiper Novalis, entrance and car park' },
         page: {
           theme: 'red', layout: 'v2',
           mark: { logo: 'assets/brand/hiper-novalis-stacked-yellow.svg', w: 224, h: 88, badge: 'yellow' },
@@ -100,8 +107,8 @@
           // sentence in offerLead is novalis.hr's own).
           offerLead: 'Dvije etaže i deset odjela: u prizemlju namirnice, delikatese, restoran, pića i sve za plažu i vrt, a na katu namještaj, tehnika, informatika, školski pribor i sve ostalo za dom. Dio artikala u našoj ponudi je jedinstven u Hrvatskoj, jer mi sami vršimo nabavu i uvoz svih onih artikala koji se pokažu traženima, a nije ih moguće nabaviti na ovim prostorima.',
           floors: [
-            { name: '1. kat', sign: '1', tone: 'slate' },
-            { name: 'Prizemlje', sign: '0', tone: 'warm' }
+            { name: '1. kat', sign: '1', tone: 'slate', en: { name: 'First floor' } },
+            { name: 'Prizemlje', sign: '0', tone: 'warm', en: { name: 'Ground floor' } }
           ],
           offer: [
             ['Namještaj i dom', '1. kat', 'Više od 2.000 m² namještaja i svega za uređenje doma, od dnevnog boravka i spavaće sobe do kuhinje i blagovaonice. Namještaj po mjeri dizajniramo, izrađujemo i sklapamo. Kućni tekstil i posteljina, zavjese i karniše, kupaonski namještaj i sanitarije.'],
@@ -127,7 +134,34 @@
             [null, 'Foto: ljetni asortiman za plažu i vrt'],
             [null, 'Foto: caffe bar']
           ],
-          related: ['hiper-bau', 'veleprodaja', 'market-novalis']
+          related: ['hiper-bau', 'veleprodaja', 'market-novalis'],
+          // English page (en/hiper-novalis/): offer lines keep their Croatian floor (matched with floors), captions follow
+          // the gallery's order
+          en: {
+            label: 'Shops',
+            title: 'From groceries to boating gear.',
+            lead: 'Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.',
+            photoAlt: 'Hiper Novalis: a sign with department pictograms and the entrance to the centre',
+            offerLead: 'Two floors and ten departments: groceries, delicatessen, a restaurant, drinks and everything for the beach and garden on the ground floor, and furniture, appliances, computers, school supplies and everything else for the home upstairs. Some of the products we offer are unique in Croatia, because we source and import ourselves everything that is in demand but cannot be found in this region.',
+            offer: [
+              ['Furniture and home', '1. kat', 'More than 2,000 m² of furniture and everything for furnishing your home, from the living room and bedroom to the kitchen and dining room. We design, make and assemble made-to-measure furniture. Home textiles and bedding, curtains and curtain rails, bathroom furniture and sanitaryware.'],
+              ['Appliances', '1. kat', 'White goods: fridges, freezers, washing machines, dishwashers and cookers. Small household appliances, televisions and audio equipment. Air conditioners, fans, stoves and heaters. Indoor and outdoor lighting and electrical equipment.'],
+              ['Computers and school supplies', '1. kat', 'Computers, laptops, monitors and printers. Mobile and landline phones and phone accessories: cases, chargers and headphones. Office and school supplies: notebooks, pens and pencils, and school bags.'],
+              ['Boating and vehicles', '1. kat', 'Marine equipment for the boat and the sea. Car range: car accessories and car care products. Bicycles, e-bikes and other electric vehicles.'],
+              ['Clothing, tools and toys', '1. kat', 'Clothing, hand and power tools, toys and souvenirs. Something for everyone.'],
+              ['Supermarket', 'Prizemlje', 'Food and household products from Croatian and foreign producers.'],
+              ['Delicatessen', 'Prizemlje', 'Cured meats, cheeses and other delicacies for your table.'],
+              ['Restaurant and café bar', 'Prizemlje', 'A self-service restaurant with dishes that are always freshly prepared, and a café bar.'],
+              ['Drinks wholesale', 'Prizemlje', 'HoReCa range for the hospitality trade: competitive prices, fast delivery and expert staff.'],
+              ['Everything for the beach, garden and home', 'Prizemlje', 'A 100 m² summer range for the beach and swimming. Garden furniture: sets, tables, chairs, sun loungers, swings, benches, parasols and awnings. Camping and fishing.']
+            ],
+            captions: [
+              'Wine and drinks department', 'The self-service restaurant terrace', 'Fresh bread rolls',
+              'Photo: entrance and covered car park', 'Photo: the ground-floor supermarket, a view of the whole floor',
+              'Photo: the furniture showroom upstairs', 'Photo: white goods and household appliances',
+              'Photo: computers and office supplies', 'Photo: the summer range for the beach and garden', 'Photo: the café bar'
+            ]
+          }
         }
       },
       {
@@ -141,6 +175,7 @@
           winter: week(wk('07:00', '20:00'), wk('07:00', '20:00'), null)
         },
         photo: IMG + 'market-novalis-ulaz.jpg', photoHint: 'Foto: Market u centru, izlog i police',
+        en: { photoHint: 'Photo: the Market in the town centre, shop window and shelves' },
         page: {
           theme: 'yellow', layout: 'v2',
           mark: { logo: 'assets/brand/market-novalis-stacked-red.svg', w: 203, h: 80, badge: 'red' },
@@ -151,7 +186,8 @@
           offerLead: 'Dvije razine: Market Novalis s namirnicama i proizvodima za domaćinstvo, a razinu niže drogerija za ljepotu, njegu i zdravlje.',
           floors: [
             { name: 'Market Novalis', sign: '0', tone: 'warm', brand: true },
-            { name: 'Drogerija', sign: '-1', tone: 'slate', note: 'Poznata imena renomiranih proizvođača' }
+            { name: 'Drogerija', sign: '-1', tone: 'slate', note: 'Poznata imena renomiranih proizvođača',
+              en: { name: 'Drugstore', note: 'Well-known names from renowned manufacturers' } }
           ],
           offer: [
             ['Prehrana', 'Market Novalis'], ['Proizvodi za domaćinstvo', 'Market Novalis'], ['Za kuhinju', 'Market Novalis'],
@@ -171,7 +207,27 @@
             [null, 'Foto: kozmetika, njega i zdravlje na policama u Drogeriji'],
             [null, 'Foto: osoblje Marketa na poslu uz police ili blagajnu']
           ],
-          related: ['hotel-novalis', 'valis', 'hiper-novalis']
+          related: ['hotel-novalis', 'valis', 'hiper-novalis'],
+          en: {
+            label: 'Shops',
+            title: 'In the very centre of Novalja.',
+            lead: 'A 600 m² shop for food and everyday goods, in the Novalis department store building.',
+            photoAlt: 'The Novalis department store building with arched windows in the centre of Novalja',
+            offerLead: 'Two levels: Market Novalis with groceries and household products, and one level down a drugstore for beauty, personal care and health.',
+            offer: [
+              ['Food', 'Market Novalis'], ['Household products', 'Market Novalis'], ['For the kitchen', 'Market Novalis'],
+              ['Sweets and snacks', 'Market Novalis'], ['Frozen food', 'Market Novalis'],
+              ['Perfumes', 'Drogerija'], ['Cosmetics', 'Drogerija'], ['Personal hygiene', 'Drogerija'],
+              ['Personal care', 'Drogerija'], ['Health', 'Drogerija']
+            ],
+            captions: [
+              'Entrance to Market Novalis and the drugstore', 'An aisle between shelves of snacks and sweets',
+              'Shelves of juices and soft drinks', 'Shelves of breakfast cereals and biscuits', 'A special offer on the shelf',
+              'Frozen food and ice cream in the freezer', 'Photo: Market Novalis, a view of the whole floor from the entrance',
+              'Photo: the drugstore, a view of the whole floor', 'Photo: cosmetics, personal care and health products on the drugstore shelves',
+              'Photo: Market staff at work by the shelves or the till'
+            ]
+          }
         }
       },
       {
@@ -185,6 +241,7 @@
           winter: week(wk('07:00', '17:00'), wk('07:00', '13:00'), null)
         },
         photo: IMG + 'hiper-bau.jpg', photoHint: 'Foto: skladište pločica i materijala',
+        en: { photoHint: 'Photo: tile and materials warehouse' },
         page: {
           theme: 'slate', layout: 'v2', // slate hero: user's choice for WEB-11 (2026-10-21), was white
           mark: { lockup: ['HIPER', 'BAU'] },
@@ -262,7 +319,29 @@
             [null, 'Foto: oprema za bazene'],
             [null, 'Foto: osoblje Hiper Baua s kupcem']
           ],
-          related: ['hiper-novalis', 'veleprodaja', 'market-novalis']
+          related: ['hiper-novalis', 'veleprodaja', 'market-novalis'],
+          en: {
+            label: 'Shops',
+            title: 'From the foundations to the roof.',
+            lead: 'Opened in 2019 in the business zone: 15,000 m², with 8,000 m² of indoor space and a covered car park. Building materials, roofing systems, drywall, a ceramics showroom, tools and boating gear.',
+            photoAlt: 'Hiper Bau campaign: a family painting a wall',
+            offerLead: 'Everything for building and for doing up your home and garden, in one place: from the ceramics showroom and building materials to tools, barbecues and pool equipment.',
+            offer: [
+              ['Ceramics and floor coverings', 'Hiper Bau', 'Ceramics showroom: tiles and wall coverings, with tools and materials for laying tiles. Floor coverings: laminate, vinyl, carpets and doormats, with fitting accessories.'],
+              ['Building materials', 'Hiper Bau', 'Materials for building and insulation, roofing systems and drywall. Joinery and building equipment.'],
+              ['Paints and varnishes', 'Hiper Bau', 'Paints and varnishes for walls and facades, wood and metal.'],
+              ['Tools and hardware', 'Hiper Bau', 'Hand and power tools and machines. Hardware.'],
+              ['Garden and barbecue', 'Hiper Bau', 'Gardening and olive growing. Barbecues of every kind and barbecue accessories.'],
+              ['Pools, firewood and boating', 'Hiper Bau', 'Pool equipment. Firewood: logs and pellets. Marine equipment.']
+            ],
+            brandsLead: 'We stock products from more than 30 manufacturers, from building materials and ceramics to tools and garden products.',
+            captions: [
+              'Photo: Hiper Bau entrance and covered car park', 'Photo: ceramics showroom, tiles on display panels',
+              'Photo: floor coverings, laminate and vinyl', 'Photo: building materials on pallets', 'Photo: paints and varnishes on the shelves',
+              'Photo: tools and machines', 'Photo: garden range and olive-growing equipment', 'Photo: barbecues and barbecue accessories',
+              'Photo: pool equipment', 'Photo: Hiper Bau staff with a customer'
+            ]
+          }
         }
       },
       {
@@ -276,6 +355,7 @@
           winter: week(wk('07:00', '15:00'), null, null)
         },
         photo: IMG + 'veleprodaja-pice.jpg', photoHint: 'Foto: kamion za dostavu, palete pića',
+        en: { name: 'Wholesale', slug: 'wholesale', photoHint: 'Photo: delivery lorry, pallets of drinks' },
         page: {
           theme: 'white', layout: 'v2', // white hero, as Hiper Bau's was (user, 2026-10-21)
           mark: { word: 'VELEPRODAJA' },
@@ -294,7 +374,7 @@
           // in novalis.hr's words, with the home page's "Veleprodaja: dodatne pogodnosti za partnere".
           offerLead: 'Za sve kupljene artikle dostupna vam je brza, kvalitetna, pouzdana i besplatna dostava. Uvijek smo dostupni, uz individualni pristup i dodatne pogodnosti za partnere.',
           floors: [
-            { name: 'Veleprodaja', sign: '0', tone: 'warm', brand: true }
+            { name: 'Veleprodaja', sign: '0', tone: 'warm', brand: true, en: { name: 'Wholesale' } }
           ],
           offer: [
             ['Voće i povrće', 'Veleprodaja'], ['Namirnice za ugostiteljstvo', 'Veleprodaja'],
@@ -315,7 +395,28 @@
             [null, 'Foto: kava i drugi napici'],
             [null, 'Foto: osoblje veleprodaje pri utovaru robe']
           ],
-          related: ['hiper-novalis', 'hiper-bau', 'market-novalis']
+          related: ['hiper-novalis', 'hiper-bau', 'market-novalis'],
+          // English page (en/wholesale/): the word mark in English too (WEB-21 Q-6: Veleprodaja = Wholesale everywhere)
+          en: {
+            mark: { word: 'WHOLESALE' },
+            title: 'A wide range of products, with free delivery.',
+            lead: 'Get everything your business needs in one place, from fruit, vegetables and food for the hospitality trade to equipment, drinks and coffee.',
+            photoAlt: 'Shelves of wine and drinks',
+            cta: { label: 'Request a quote', href: 'mailto:veleprodaja@novalis.com.hr', icon: 'mail' },
+            offerLead: 'Fast, reliable, high-quality and free delivery is available for everything you buy. We are always available, with a personal approach and extra benefits for partners.',
+            offer: [
+              ['Fruit and vegetables', 'Veleprodaja'], ['Food for the hospitality trade', 'Veleprodaja'],
+              ['Paper and plastic disposables', 'Veleprodaja'],
+              ['Hospitality equipment', 'Veleprodaja', 'Glasses, tablecloths, cutlery, tables and chairs, fridges, air conditioners and parasols.'],
+              ['Alcoholic and soft drinks', 'Veleprodaja', 'Distribution and sale of a wide choice of alcoholic and soft drinks. HoReCa range for the hospitality trade, with competitive prices, fast delivery and expert staff.'],
+              ['Coffee and other beverages', 'Veleprodaja']
+            ],
+            captions: [
+              'A fridge of beer', 'Photo: Novalis delivery vehicle', 'Photo: the wholesale warehouse', 'Photo: fruit and vegetables',
+              'Photo: food for the hospitality trade', 'Photo: paper and plastic disposables', 'Photo: glasses, tablecloths and cutlery',
+              'Photo: tables, chairs and parasols for terraces', 'Photo: coffee and other beverages', 'Photo: wholesale staff loading goods'
+            ]
+          }
         }
       },
       {
@@ -330,6 +431,7 @@
           winter: [wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '21:00'), wk('08:00', '22:00'), wk('08:00', '22:00'), wk('09:00', '21:00')]
         },
         photo: IMG + 'valis.jpg', photoHint: 'Foto: torte i kolači u vitrini',
+        en: { name: 'Valis Bistro & Pastry Shop', photoHint: 'Photo: cakes and pastries in the display case' },
         page: {
           theme: 'violet', layout: 'v2',
           mark: { image: 'assets/brand/valis-novalja-violet.png', w: 160, h: 120 }, // no "Dobro došli" script (user, 2026-10-21)
@@ -345,8 +447,8 @@
           // delicije: its Valis page ("uživajte u najboljim delicijama iz naše ponude").
           offerLead: 'Otvoren 2011. u samom centru Novalje, s kutkom za svakog gosta, od sladoleda na terasi do kave i vina na prvom katu.',
           floors: [
-            { name: '1. kat', sign: '1', tone: 'slate', note: 'Idilično uređen interijer' },
-            { name: 'Prizemlje', sign: '0', tone: 'violet' } // Valis's violet, not the Novalis red and yellow (user, 2026-10-21)
+            { name: '1. kat', sign: '1', tone: 'slate', note: 'Idilično uređen interijer', en: { name: 'First floor', note: 'An idyllic interior' } },
+            { name: 'Prizemlje', sign: '0', tone: 'violet', en: { name: 'Ground floor' } } // Valis's violet, not the Novalis red and yellow (user, 2026-10-21)
           ],
           offer: [
             ['Kavana: vrhunska kava, vina i delicije', '1. kat'],
@@ -362,7 +464,25 @@
             [null, 'Foto: kava i kolač na stolu u kavani'],
             [null, 'Foto: osoblje slastičarne za šankom ili uz vitrinu']
           ],
-          related: ['pod-zvon', 'market-novalis', 'hotel-novalis']
+          related: ['pod-zvon', 'market-novalis', 'hotel-novalis'],
+          // English: caffe = café (ground floor, terrace), kavana = coffee house (first floor)
+          en: {
+            label: 'Food & drink',
+            title: 'Bistro, pastry shop and coffee house on Trg Bazilike.',
+            lead: 'Our home-made ice cream is known far and wide. Enjoy it on the café\'s large terrace, and for excellent coffee and wine, drop in to the coffee house on the first floor.',
+            photoAlt: 'The Valis bistro interior with lavender chairs',
+            offerLead: 'Opened in 2011 in the very centre of Novalja, with a corner for every guest, from ice cream on the terrace to coffee and wine on the first floor.',
+            offer: [
+              ['Coffee house: excellent coffee, wines and delicacies', '1. kat'],
+              ['Bistro', 'Prizemlje'], ['Pastry shop: home-made cakes and ice cream', 'Prizemlje'], ['Café with a large terrace', 'Prizemlje']
+            ],
+            captions: [
+              'Forest fruits for desserts', 'Home-made pastry dough', 'The ground-floor bistro and café', 'A detail of the coffee house interior',
+              'Photo: the café terrace on Trg Bazilike', 'Photo: the display case with home-made ice cream',
+              'Photo: cakes and pastries in the pastry shop display case', 'Photo: the first-floor coffee house, a view of the whole room',
+              'Photo: coffee and cake on a table in the coffee house', 'Photo: pastry shop staff at the counter or by the display case'
+            ]
+          }
         }
       },
       {
@@ -376,6 +496,7 @@
           winter: daily(wk('16:00', '24:00'))
         },
         photo: IMG + 'pod-zvon-interijer.jpg', photoHint: 'Foto: terasa bistroa uz zvonik',
+        en: { photoHint: 'Photo: bistro terrace by the bell tower' },
         page: {
           theme: 'earth', layout: 'v2',
           mark: { lockup: ['BISTRO', 'POD ZVON'] },
@@ -390,9 +511,9 @@
           // tradicionalan dalmatinski način" moved to the lead so its legend line stays short.
           offerLead: 'Od degustacije vina u podrumu do jela s kaminskog ložišta, pripremljenih na tradicionalan dalmatinski način.',
           floors: [
-            { name: '1. kat', sign: '1', tone: 'slate' },
-            { name: 'Prizemlje', sign: '0', tone: 'earth' }, // Pod Zvon's own sand and brown, as Valis has its violet
-            { name: 'Podrum', sign: '-1', tone: 'slate' }
+            { name: '1. kat', sign: '1', tone: 'slate', en: { name: 'First floor' } },
+            { name: 'Prizemlje', sign: '0', tone: 'earth', en: { name: 'Ground floor' } }, // Pod Zvon's own sand and brown, as Valis has its violet
+            { name: 'Podrum', sign: '-1', tone: 'slate', en: { name: 'Basement' } }
           ],
           offer: [
             ['Konoba s kaminskim ložištem', '1. kat'], ['Mirni prostor za poslovne sastanke i rad na odmoru', '1. kat'],
@@ -411,7 +532,26 @@
             [null, 'Foto: mirni prostor na katu'],
             [null, 'Foto: osoblje bistroa uz stol s gostima']
           ],
-          related: ['valis', 'market-novalis', 'hotel-novalis']
+          related: ['valis', 'market-novalis', 'hotel-novalis'],
+          // English: konoba stays (the Dalmatian tavern), kaminsko ložište = open hearth, krušna peć = bread oven
+          en: {
+            label: 'Food & drink',
+            title: 'Right below the parish church bell tower.',
+            lead: 'A konoba and pizzeria in the very centre of Novalja, for the most discerning guests. Drop in for Dalmatian dishes from the open hearth, pizza from the bread oven or a glass of wine.',
+            photoAlt: 'A stone relief of a bell with the name Pod Zvon',
+            offerLead: 'From wine tasting in the cellar to dishes from the open hearth, prepared the traditional Dalmatian way.',
+            offer: [
+              ['Konoba with an open hearth', '1. kat'], ['A quiet space for business meetings and working on holiday', '1. kat'],
+              ['Pizzeria with a bread oven', 'Prizemlje'],
+              ['Wine cellar and wine tastings', 'Podrum']
+            ],
+            captions: [
+              'Interior: wooden beams, terracotta and white chairs', 'The dining room with its wooden ceiling', 'Tables set for dinner',
+              'An old cash register as an interior detail', 'Photo: the entrance to Bistro Pod Zvon below the parish church bell tower',
+              'Photo: the open hearth in the konoba', 'Photo: the wine cellar', 'Photo: the pizzeria with its bread oven',
+              'Photo: the quiet space upstairs', 'Photo: bistro staff at a table with guests'
+            ]
+          }
         }
       },
       {
@@ -423,6 +563,7 @@
         schema: { '@type': 'BedAndBreakfast', sameAs: 'https://hotelnovalis.hr/', checkinTime: '15:00', checkoutTime: '12:00', numberOfRooms: 23 },
         hours: { summer: allDay, winter: allDay }, openPeriod: { start: '04-01', end: '11-01' },
         photo: IMG + 'bb-novalis.jpg', photoHint: 'Foto: soba s pogledom, B&B Novalis',
+        en: { photoHint: 'Photo: room with a view, B&B Novalis' },
         page: {
           // The hotel's own look on the v2 store page (user, 2026-10-21): its logo and lace rosette (assets/brand/bb-novalis-*,
           // from hotelnovalis.hr), dark ground with sand like its site, its website (hotelnovalis.hr) as the primary button (user, 2026-10-21). Copy, rooms and photos from hotelnovalis.hr (Novalis's own site) and novalis.hr.
@@ -440,8 +581,8 @@
           // equipment; breakfast is on the first terrace).
           offerLead: 'Na krovu su dvije terase s hidromasažnim kadama, buffet doručkom i barom, a ispod njih sobe za odmor u samom centru grada. Gostima nudimo i besplatni parking te preporuke za izlete po otoku, do mjesta dobro znanih i još neotkrivenih.',
           floors: [
-            { name: 'Krovne terase', tone: 'earth', note: 'Isključivo za goste' },
-            { name: 'Sobe', tone: 'slate', note: 'Udobne, svijetle i prostrane' }
+            { name: 'Krovne terase', tone: 'earth', note: 'Isključivo za goste', en: { name: 'Roof terraces', note: 'For guests only' } },
+            { name: 'Sobe', tone: 'slate', note: 'Udobne, svijetle i prostrane', en: { name: 'Rooms', note: 'Comfortable, bright and spacious' } }
           ],
           offer: [
             ['Terasa s pogledom na more', 'Krovne terase'], ['Terasa s pogledom na Velebit', 'Krovne terase'],
@@ -471,7 +612,37 @@
             [IMG + 'hotel-novalis-rucnici.jpg', 'Ručnici s logom Novalis na krevetu'],
             [IMG + 'hotel-novalis-luka.jpg', 'Novalja i luka u sumrak, iz zraka']
           ],
-          related: ['valis', 'pod-zvon', 'market-novalis']
+          related: ['valis', 'pod-zvon', 'market-novalis'],
+          // English page: the title, "Book now" and the room names as on hotelnovalis.hr/en/ (title in British spelling);
+          // the buttons and room tiles open the English pages there
+          en: {
+            label: 'Accommodation',
+            title: 'Your oasis in the city centre.',
+            lead: 'Decorated with care and love, in the very centre of Novalja. Relax in comfortable rooms with king-size beds or in a hydromassage tub on the roof terrace, with a view of the sea or of Novalja\'s rooftops and bell towers.',
+            photoAlt: 'A roof terrace with a hydromassage tub and a sea view at dusk',
+            cta: { label: 'Book now', href: 'https://hotelnovalis.hr/en/' },
+            stay: [['Check-in', 'after 15:00'], ['Check-out', 'by 12:00']],
+            offerLead: 'On the roof there are two terraces with hydromassage tubs, a buffet breakfast and a bar, and below them rooms to relax in, in the very centre of town. We also offer our guests free parking and tips for trips around the island, to places both well known and still undiscovered.',
+            offer: [
+              ['Terrace with a sea view', 'Krovne terase'], ['Terrace with a view of Velebit', 'Krovne terase'],
+              ['Hydromassage tubs and sunbeds', 'Krovne terase'], ['Buffet breakfast', 'Krovne terase'], ['Bar with a wide choice of drinks', 'Krovne terase'],
+              ['Air conditioning and fast Wi-Fi', 'Sobe'], ['LCD TV, minibar and safe', 'Sobe'], ['Bathroom with a walk-in shower', 'Sobe'],
+              ['Kitchenette in some rooms', 'Sobe'], ['Sea or Velebit view', 'Sobe']
+            ],
+            roomsLead: 'We offer 23 units, 11 of them suites, with a view of the sea or of Velebit and the town rooftops.',
+            rooms: [
+              ['Suite Deluxe with sea view', '25 m²', '2 guests', IMG + 'hotel-novalis-suite-deluxe.jpg', 'https://hotelnovalis.hr/en/sobe/suite-deluxe-with-sea-view/'],
+              ['Studio Deluxe', '30 - 36 m²', '2 - 3 guests', IMG + 'hotel-novalis-studio-deluxe.jpg', 'https://hotelnovalis.hr/en/sobe/studio-deluxe/'],
+              ['Standard suite', '22 m²', '2 guests', IMG + 'hotel-novalis-suite.jpg', 'https://hotelnovalis.hr/en/sobe/standardni-suite/']
+            ],
+            roomsAll: 'https://hotelnovalis.hr/en/novalis-sobe/',
+            captions: [
+              'The building with its roof terrace above the rooftops of Novalja', 'The roof terrace at dusk, with a view of the harbour',
+              'A hydromassage tub on the roof terrace', 'Sunset from the roof terrace', 'A cocktail with a sea view', 'Reception',
+              'The lobby with a lace motif on the wall', 'A gold lace motif in the corridor', 'Towels with the Novalis logo on a bed',
+              'Novalja and the harbour at dusk, from the air'
+            ]
+          }
         }
       }
     ],
@@ -484,36 +655,51 @@
         id: 'gradnja', icon: 'gradnja', title: 'Gradnja i uređenje',
         photo: null, photoHint: 'Foto: uređenje doma - pločice, alati, svjetlo kroz prozor',
         desc: 'Od građevinskog materijala do namještaja po mjeri - cijeli projekt u Novalji, bez odlaska na kopno.',
+        en: {
+          title: 'Building and home improvement',
+          photoHint: 'Photo: home improvement - tiles, tools, light through a window',
+          desc: 'From building materials to made-to-measure furniture - your whole project in Novalja, with no trip to the mainland.'
+        },
         steps: [
-          { unit: 'hiper-bau', text: 'Građevinski materijal, suha gradnja, podne obloge, boje, stolarija i alati' },
-          { unit: 'hiper-novalis', text: 'Keramika, uvoz iz Italije prema narudžbi' },
-          { unit: 'hiper-novalis', text: 'Namještaj po mjeri s montažom' },
-          { unit: 'hiper-novalis', text: 'Sanitarije i bijela tehnika' },
-          { unit: 'hiper-novalis', text: 'Tekstil i opremanje' }
+          { unit: 'hiper-bau', text: 'Građevinski materijal, suha gradnja, podne obloge, boje, stolarija i alati', en: { text: 'Building materials, drywall, floor coverings, paints, joinery and tools' } },
+          { unit: 'hiper-novalis', text: 'Keramika, uvoz iz Italije prema narudžbi', en: { text: 'Ceramics, imported from Italy to order' } },
+          { unit: 'hiper-novalis', text: 'Namještaj po mjeri s montažom', en: { text: 'Made-to-measure furniture with installation' } },
+          { unit: 'hiper-novalis', text: 'Sanitarije i bijela tehnika', en: { text: 'Sanitaryware and white goods' } },
+          { unit: 'hiper-novalis', text: 'Tekstil i opremanje', en: { text: 'Textiles and furnishings' } }
         ]
       },
       {
         id: 'proslave', icon: 'proslave', title: 'Proslave i događanja',
         photo: null, photoHint: 'Foto: obiteljsko slavlje, stol s tortom u Pod Zvonu',
         desc: 'Pričesti, krizme, krštenja i obiteljska slavlja u Novalji - prostor za proslave, torta, smještaj za goste i nabava na jednom mjestu.',
+        en: {
+          title: 'Celebrations and events',
+          photoHint: 'Photo: family celebration, a table with a cake at Pod Zvon',
+          desc: 'First communions, confirmations, christenings and family celebrations in Novalja - a venue, a cake, rooms for your guests and shopping, all in one place.'
+        },
         steps: [
-          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Prostor za privatna događanja i proslave uz župnu crkvu, mediteranska i dalmatinska kuhinja' },
-          { unit: 'valis', label: 'Valis', text: 'Torte po narudžbi i kolači iz vlastite proizvodnje' },
-          { unit: 'hotel-novalis', text: 'Smještaj za goste u samom centru Novalje' },
-          { unit: 'hiper-novalis', text: 'Supermarket s namirnicama i pićem za proslavu kod kuće, uz veliko parkiralište' },
-          { unit: 'market-novalis', text: 'Sve što zatreba u zadnji čas, u centru grada' }
+          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Prostor za privatna događanja i proslave uz župnu crkvu, mediteranska i dalmatinska kuhinja', en: { text: 'A space for private events and celebrations beside the parish church, with Mediterranean and Dalmatian cuisine' } },
+          { unit: 'valis', label: 'Valis', text: 'Torte po narudžbi i kolači iz vlastite proizvodnje', en: { text: 'Cakes to order and pastries made in our own kitchen' } },
+          { unit: 'hotel-novalis', text: 'Smještaj za goste u samom centru Novalje', en: { text: 'Accommodation for guests in the very centre of Novalja' } },
+          { unit: 'hiper-novalis', text: 'Supermarket s namirnicama i pićem za proslavu kod kuće, uz veliko parkiralište', en: { text: 'A supermarket with food and drink for a celebration at home, and a large car park' } },
+          { unit: 'market-novalis', text: 'Sve što zatreba u zadnji čas, u centru grada', en: { text: 'Everything you need at the last minute, in the town centre' } }
         ]
       },
       {
         id: 'boravak', icon: 'boravak', title: 'Boravak u Novalji',
         photo: null, photoHint: 'Foto: jutarnja kava na terasi, pogled na Novalju',
         desc: 'Smještaj, nabava, kava i večera - sve što vam treba za opušten boravak, na dohvat ruke.',
+        en: {
+          title: 'Staying in Novalja',
+          photoHint: 'Photo: morning coffee on a terrace, view of Novalja',
+          desc: 'Accommodation, shopping, coffee and dinner - everything you need for a relaxed stay, close at hand.'
+        },
         steps: [
-          { unit: 'hotel-novalis', text: 'Sobe u centru Novalje s hidromasažnim kadama na terasama' },
-          { unit: 'hiper-novalis', text: 'Velika nabava uz veliko parkiralište, izvan gužve u centru' },
-          { unit: 'market-novalis', text: 'Namirnice i drogerija u centru' },
-          { unit: 'valis', label: 'Valis', text: 'Kava, domaći sladoled, bistro i kavana s izborom vina' },
-          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Napolitanska pizza i mediteranska kuhinja uz crkvu' }
+          { unit: 'hotel-novalis', text: 'Sobe u centru Novalje s hidromasažnim kadama na terasama', en: { text: 'Rooms in the centre of Novalja with hydromassage tubs on the terraces' } },
+          { unit: 'hiper-novalis', text: 'Velika nabava uz veliko parkiralište, izvan gužve u centru', en: { text: 'A big shop with a large car park, away from the crowds in the centre' } },
+          { unit: 'market-novalis', text: 'Namirnice i drogerija u centru', en: { text: 'Groceries and a drugstore in the town centre' } },
+          { unit: 'valis', label: 'Valis', text: 'Kava, domaći sladoled, bistro i kavana s izborom vina', en: { text: 'Coffee, home-made ice cream, a bistro and a café with a choice of wines' } },
+          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Napolitanska pizza i mediteranska kuhinja uz crkvu', en: { text: 'Neapolitan pizza and Mediterranean cuisine beside the church' } }
         ]
       }
     ]

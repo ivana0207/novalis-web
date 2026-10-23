@@ -74,10 +74,47 @@ button { font: inherit; }
 .slot img { width: 100%; height: 100%; object-fit: cover; }
 .slot__ph {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
-  max-width: 80%; text-align: center; color: rgba(38,38,38,.55);
+  max-width: 80%; text-align: center; color: var(--muted);
   font: 400 14px/1.35 var(--font-primary);
 }
 .slot__ph .ms { font-size: 30px; opacity: .7; }
+
+/* ---------- Loading look ---------- */
+/* Something that arrives late shows its frame's own tint, with a soft band of light crossing it left to right every 2 s
+   (leaning like the cart badge; the first one after .3 s, so a quick photo never shows it): a real photo on its way
+   (.slot--photo, from NV.slotHTML; without the stripes, which stay for a photo still missing), the store hero's photo,
+   a map being drawn (.is-loading, js/map.js) and the lightbox's enlarged photo (further down). The photo fades in over
+   it (the store hero's paints at once: it is the page's first picture); js/site.js sets is-loaded on its load, and a
+   photo that fails takes its placeholder as before. Decorative: nothing in it is read out. Reduced motion keeps the
+   still tint, forced colours leave out the band. */
+:root {
+  --sheen: color-mix(in srgb, var(--nv-white) 85%, transparent);       /* the band on light frames */
+  --sheen-dark: color-mix(in srgb, var(--nv-white) 14%, transparent);  /* on dark ones (occasion cards, lightbox) */
+}
+.slot--photo { background: var(--bg, #F2F0EC); }
+.slot--photo img { position: relative; opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+.slot--photo.is-loaded img { opacity: 1; }
+.slot--photo:not(.is-loaded)::before,
+.store-hero__media:not(.is-loaded)::before,
+.map.is-loading::before, .store-map.is-loading::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(75deg, transparent 25%, var(--sheen) 50%, transparent 75%);
+  transform: translateX(-100%); animation: nv-load 2s ease-in-out .3s infinite;
+}
+/* the map's canvas stays out of sight until the map is drawn, then fades in; its pins and buttons show all along */
+.map .maplibregl-canvas, .store-map .maplibregl-canvas { transition: opacity var(--dur-base) var(--ease-out); }
+.map.is-loading .maplibregl-canvas, .store-map.is-loading .maplibregl-canvas { opacity: 0; }
+@keyframes nv-load { 0% { transform: translateX(-100%); } 75%, 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .slot--photo:not(.is-loaded)::before,
+  .store-hero__media:not(.is-loaded)::before,
+  .map.is-loading::before, .store-map.is-loading::before { animation: none; }
+}
+@media (forced-colors: active) {
+  .slot--photo:not(.is-loaded)::before,
+  .store-hero__media:not(.is-loaded)::before,
+  .map.is-loading::before, .store-map.is-loading::before { display: none; }
+}
 
 /* ---------- Buttons & links ---------- */
 .btn {
@@ -182,13 +219,16 @@ button { font: inherit; }
 .dd-item:hover .nav-go { transform: translateX(3px); }
 
 .lang, .footer__lang { display: flex; align-items: center; }
+/* The language switch (WEB-21): the other language is a link to this page in it (or its home page), the page's own
+   language is plain text marked aria-current, underlined like a hovered link */
 .lang__btn {
+  display: inline-flex; align-items: center; justify-content: center;
   min-height: 44px; min-width: 44px; padding: 0 8px; border: 0; background: transparent;
   font: 700 14px/1 var(--font-primary); letter-spacing: .06em; color: #fff; cursor: pointer;
   text-decoration: none; text-decoration-color: var(--nv-yellow); text-decoration-thickness: 2px; text-underline-offset: 7px;
 }
 .lang__btn:hover { color: #fff; text-decoration-line: underline; }
-.lang__btn[aria-pressed="true"] { text-decoration-line: underline; }
+.lang__btn[aria-current] { text-decoration-line: underline; cursor: default; }
 .lang__btn--long { min-width: 0; padding: 0 10px; letter-spacing: .04em; }
 .lang__sep { width: 1px; height: 14px; background: rgba(255,255,255,.5); }
 
@@ -468,7 +508,7 @@ button { font: inherit; }
 @media (hover: hover) {
   .card { transition: transform 240ms var(--ease-out); }
   .card__media { box-shadow: 0 0 0 3px transparent; transition: box-shadow var(--dur-base) var(--ease-out); }
-  .card__media .slot img { transition: transform 320ms var(--occ-ease); }
+  .card__media .slot img { transition: transform 320ms var(--occ-ease), opacity var(--dur-base) var(--ease-out); }
   .card__head { padding: 12px 28px 0 0; }
   .card__nm { display: inline-block; position: relative; z-index: 5; transition: transform 240ms var(--ease-out); }
   .card__link { transition: color var(--dur-base) var(--ease-out); }
@@ -595,7 +635,7 @@ button { font: inherit; }
 }
 .occ-card__media { position: relative; overflow: clip; }
 /* placeholder tones until the photos exist (data/units.js occasions[].photo) */
-.occ-card__media .slot { --bg: var(--nv-slate-dark); }
+.occ-card__media .slot { --bg: var(--nv-slate-dark); --sheen: var(--sheen-dark); }
 .occ-card:nth-child(3n+2) .occ-card__media .slot { --bg: var(--nv-brown); }
 .occ-card:nth-child(3n) .occ-card__media .slot { --bg: var(--nv-slate); }
 .occ-card .slot__ph { color: color-mix(in srgb, var(--nv-white) 78%, transparent); }
@@ -610,6 +650,9 @@ button { font: inherit; }
   margin: 0; font: 700 clamp(22px, 2vw, 28px)/1.15 var(--font-primary); letter-spacing: -.015em; color: var(--nv-white);
   text-wrap: balance;
 }
+/* English (/en/, WEB-21): "improvement" is wider than a 320 px phone's card; it splits at a syllable ("improve-ment"),
+   not after any letter */
+html[lang="en"] .occ-card__h { hyphens: auto; }
 .occ-card__more { display: grid; grid-template-rows: 1fr; width: 100%; }
 .occ-card__more-in { min-height: 0; }
 .occ-card__desc { margin: var(--space-3) 0 0; font: 400 16px/1.5 var(--font-primary); color: var(--nv-white); text-wrap: pretty; }
@@ -890,6 +933,9 @@ button { font: inherit; }
   --ring: var(--nv-gray-850);
   position: relative; margin-top: 24px; height: 480px; border-radius: var(--shape-tab); overflow: hidden; background: #EFEBE5;
 }
+/* store pages: poslovnica.js fills <main> after load; until then it holds a screen so the footer is not painted up
+   top and pushed down (CLS) */
+main#store:empty { min-height: 100vh; }
 .map__canvas, .store-map__canvas { position: absolute; inset: 0; }
 .map__note {
   position: absolute; z-index: 3; left: 16px; bottom: 16px; max-width: calc(100% - 32px); margin: 0; padding: 10px 14px;
@@ -929,6 +975,10 @@ a.pin--store:hover { transform: scale(1.1); }
 .maplibregl-map { font: 400 12px/1.4 var(--font-primary); }
 .maplibregl-ctrl-group:not(:empty) { border: 1px solid var(--nv-gray-150); border-radius: 12px 12px 12px 0; box-shadow: none; overflow: hidden; }
 .maplibregl-ctrl-group button { width: 40px; height: 40px; }
+/* Keyboard focus on the map canvas: the frame's overflow:hidden would clip the canvas's own outline, so the ring is drawn
+   on the frame (it follows the tab shape); --nv-gray-850 on the warm map tint is well above 3:1 */
+.maplibregl-canvas:focus-visible { outline: none; }
+.map:has(.maplibregl-canvas:focus-visible), .store-map:has(.maplibregl-canvas:focus-visible) { outline: 3px solid var(--nv-gray-850); outline-offset: 3px; }
 .maplibregl-ctrl-group button:focus-visible { outline: 3px solid var(--nv-gray-850); outline-offset: -3px; box-shadow: none; }
 .maplibregl-ctrl-attrib { font: 400 12px/1.5 var(--font-primary); }
 .maplibregl-ctrl-attrib a { color: var(--ink); }
@@ -973,9 +1023,9 @@ a.pin--store:hover { transform: scale(1.1); }
   padding-top: 12px; border-top: 1px solid #EFEFEF;
 }
 .map-card__state { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.map-card__label { gap: 6px; font: 700 10px/1 var(--font-primary); letter-spacing: .14em; text-transform: uppercase; }
+.map-card__label { white-space: nowrap; gap: 6px; font: 700 10px/1 var(--font-primary); letter-spacing: .14em; text-transform: uppercase; }
 .map-card__label .dot { width: 6px; height: 6px; }
-.map-card__today { font: 400 13px/1.3 var(--font-primary); color: var(--label); }
+.map-card__today { white-space: nowrap; font: 400 13px/1.3 var(--font-primary); color: var(--label); }
 .map-card__actions { flex: none; display: flex; gap: 6px; }
 .round {
   width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
@@ -1164,14 +1214,14 @@ a.pin--store:hover { transform: scale(1.1); }
    in the eyebrow and the section numbers. The short summary sits on the muted surface in the Novalis tab. From 1024 the
    contents list stays beside the summary and the text (sticky); below that it comes between them. */
 .legal { padding: clamp(40px, 6vw, 96px) 0 clamp(88px, 9vw, 144px); }
-.legal__inner { max-width: 1408px; margin: 0 auto; padding: 0 var(--gut); }
-.legal__head { display: flex; flex-direction: column; gap: clamp(16px, 1.6vw, 24px); }
+.legal__inner, .notfound__inner { max-width: 1408px; margin: 0 auto; padding: 0 var(--gut); }
+.legal__head, .notfound__inner { display: flex; flex-direction: column; gap: clamp(16px, 1.6vw, 24px); }
 .legal__head .eyebrow { margin: 0; }
-.legal__h1 {
+.legal__h1, .notfound__h1 {
   margin: 0; font: 700 clamp(44px, 6.4vw, 96px)/.95 var(--font-display); letter-spacing: -.035em; color: var(--ink);
   text-wrap: balance;
 }
-.legal__lead { margin: 0; max-width: 46ch; font: 400 clamp(19px, 1.6vw, 24px)/1.4 var(--font-primary); color: var(--muted); text-wrap: pretty; }
+.legal__lead, .notfound__lead { margin: 0; max-width: 46ch; font: 400 clamp(19px, 1.6vw, 24px)/1.4 var(--font-primary); color: var(--muted); text-wrap: pretty; }
 .legal__date { margin: 0; font: 400 15px/1.4 var(--font-primary); color: var(--label); }
 .legal__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px; margin-top: clamp(40px, 5vw, 72px); }
 
@@ -1249,6 +1299,16 @@ a.pin--store:hover { transform: scale(1.1); }
   .legal__toc { display: none; }
 }
 
+/* ---------- Stranica nije pronađena (404.html) ---------- */
+/* The privacy page's head on its own (shared rules above): the headline, one sentence and the way back to the home page,
+   left in the site's column. Forced colours drop the button's red ground: an edge keeps it a button. */
+.notfound { padding: clamp(48px, 8vw, 128px) 0 clamp(96px, 10vw, 160px); }
+.notfound__h1 { overflow-wrap: break-word; }
+.notfound__actions { margin: clamp(12px, 1.4vw, 16px) 0 0; }
+@media (forced-colors: active) {
+  .notfound .btn { border: 2px solid LinkText; }
+}
+
 /* ---------- Inquiry ---------- */
 /* The same inset panel on the muted surface (light grey) as the occasions band; the last section before the footer. */
 .inquiry {
@@ -1266,8 +1326,9 @@ a.pin--store:hover { transform: scale(1.1); }
 .form { display: flex; flex-direction: column; gap: 20px; }
 .form__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 20px; }
 .field { display: flex; flex-direction: column; gap: 8px; font: 700 14px/1 var(--font-primary); color: var(--muted); }
+/* field edges in grey 55 (4.7:1 on white, 4.2:1 on the muted panel): a field must stand out at 3:1 (WCAG 1.4.11; WEB-23) */
 .field input, .field textarea {
-  border: 1.5px solid var(--field); border-radius: 8px 8px 8px 0; background: #fff;
+  border: 1.5px solid var(--nv-gray-550); border-radius: 8px 8px 8px 0; background: #fff;
   font: 400 17px/1 var(--font-primary); color: var(--ink);
 }
 .field input { height: 52px; padding: 0 16px; }
@@ -1276,6 +1337,19 @@ a.pin--store:hover { transform: scale(1.1); }
 .check { display: flex; align-items: flex-start; gap: 12px; font: 400 14px/1.55 var(--font-primary); color: var(--muted); cursor: pointer; }
 .check input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--nv-red); }
 .check a { text-decoration: underline; text-underline-offset: 3px; }
+/* field errors (contact form and Zaposli se), under the field: they never rely on colour alone, so there is the "!" tab,
+   bold text, a hidden "Greška: " and the thicker red edge, a hard ring with no blur so nothing moves */
+.form .field [aria-invalid="true"]:not([type="file"]) { border-color: var(--nv-red); box-shadow: inset 0 0 0 1px var(--nv-red); }
+.form__err { margin: 0; display: flex; gap: 8px; align-items: flex-start; font: 700 14px/1.45 var(--font-primary); color: var(--nv-red-dark); }
+.form__mark {
+  flex: none; width: 18px; height: 18px; margin-top: 1px; border-radius: 6px 6px 6px 0;
+  background: var(--nv-red); color: #fff; font: 700 12px/18px var(--font-primary); text-align: center;
+}
+.form__check { display: flex; flex-direction: column; gap: 6px; }
+.form__check .form__err { padding-left: 32px; }
+/* a field that focus is moved to stops a little below the sticky header */
+.form .field, .form__check { scroll-margin-top: 16px; }
+@media (forced-colors: active) { .form__mark { forced-color-adjust: none; } }
 
 .sent { min-height: 360px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
 .sent__h { font: 700 28px/1.1 var(--font-primary); color: var(--ink); }
@@ -1386,6 +1460,18 @@ button.footer__link { cursor: pointer; }
   .bar { gap: var(--space-5); }
   .mainnav { gap: 0; --nav-pad: var(--space-2); --cat-picto: 20px; }
   .mainnav__sep { margin: 0 var(--space-1); }
+}
+/* English (/en/, WEB-21): its labels are longer ("Accommodation", "Food & drink"), so each look starts later: the menu
+   button up to 1159, the compact row 1160-1289, the standard row from 1290 (js/site.js follows the 1160) */
+@media (min-width: 1080px) and (max-width: 1159.98px) {
+  html[lang="en"] .mainnav { display: none; }
+  html[lang="en"] .menu-btn { display: flex !important; }
+  html[lang="en"] .mobile-menu:not([hidden]) { display: block !important; }
+}
+@media (min-width: 1200px) and (max-width: 1289.98px) {
+  html[lang="en"] .bar { gap: var(--space-5); }
+  html[lang="en"] .mainnav { gap: 0; --nav-pad: var(--space-2); --cat-picto: 20px; }
+  html[lang="en"] .mainnav__sep { margin: 0 var(--space-1); }
 }
 
 /* Text for screen readers only */
@@ -1529,7 +1615,7 @@ button.footer__link { cursor: pointer; }
    doesn't clip; its slot keeps the shape); on hover the tile gets the cards' yellow edge, and the photo zooms in a little */
 .gallery__item--photo { overflow: visible; }
 .gallery__item--photo .slot { border-radius: inherit; transition: box-shadow var(--dur-base) var(--ease-out); }
-.gallery__item--photo .slot img { transition: transform 320ms var(--occ-ease); }
+.gallery__item--photo .slot img { transition: transform 320ms var(--occ-ease), opacity var(--dur-base) var(--ease-out); }
 .gallery__open {
   position: absolute; inset: 0; z-index: 1; width: 100%; padding: 0; border: 0; border-radius: inherit;
   background: none; cursor: zoom-in; -webkit-tap-highlight-color: transparent;
@@ -1574,7 +1660,31 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 .lightbox__img {
   width: min(100cqw, 100cqh * var(--r)); height: auto; aspect-ratio: var(--r);
   border-radius: var(--shape-tab); cursor: auto; -webkit-user-drag: none;
-  transition: transform 360ms cubic-bezier(.22, 1, .36, 1);
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1), opacity var(--dur-base) var(--ease-out);
+}
+/* the enlarged photo on its way (js/lightbox.js: is-loading): a 4:3 panel in the Novalis tab, white at 10% over the
+   veil, centred in the frame, with the loading band (a background layer three panels wide sliding across: the panel is
+   itself a pseudo-element, so it can't hold one); the photo fades in over it. A photo that can't load (is-failed) leaves
+   the panel still, with the image icon. A click on the panel is a click outside the photo: it closes, as before. */
+.lightbox__frame:is(.is-loading, .is-failed)::before {
+  content: ""; position: absolute; width: min(100cqw, 100cqh * 4 / 3); aspect-ratio: 4 / 3; pointer-events: none;
+  border-radius: var(--shape-tab);
+  background: linear-gradient(75deg, transparent 41.67%, var(--sheen-dark) 50%, transparent 58.33%) 100% 0 / 300% 100% no-repeat,
+    color-mix(in srgb, var(--nv-white) 10%, transparent);
+}
+.lightbox__frame.is-loading::before { animation: nv-load-bg 2s ease-in-out .3s infinite; }
+.lightbox__frame.is-failed::after {
+  content: "image" / ""; position: absolute; pointer-events: none;
+  font: normal 400 40px/1 'Material Symbols Rounded'; font-variation-settings: 'FILL' 1; letter-spacing: normal;
+  white-space: nowrap; -webkit-font-smoothing: antialiased; color: color-mix(in srgb, var(--nv-white) 70%, transparent);
+}
+/* hidden, the photo (or a failed one's alt text) takes no clicks: the panel counts as outside the photo */
+.lightbox__frame:is(.is-loading, .is-failed) .lightbox__img { opacity: 0; pointer-events: none; }
+@keyframes nv-load-bg { 0% { background-position: 100% 0; } 75%, 100% { background-position: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .lightbox__frame.is-loading::before { animation: none; } }
+@media (forced-colors: active) {
+  .lightbox__frame:is(.is-loading, .is-failed)::before { background: none; }
+  .lightbox__frame.is-failed::after { color: CanvasText; }
 }
 .lightbox:not(.lightbox--one) .lightbox__img { cursor: grab; }
 .lightbox.is-dragging, .lightbox.is-dragging .lightbox__img { cursor: grabbing; }
@@ -1985,7 +2095,6 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 /* Galerija: a long gallery (5 or more photos and photo slots) fills whole rows: 2 across on phones (the rule above),
    3 on tablets; 7 or more (Market Novalis has 10) stay 2 across up to 900, then go 5 across (10 = 5 x 2, 2 x 5).
    Shorter ones keep the auto-fill row */
-.store--v2 .slot__ph { color: var(--muted); }   /* photo-slot description: 6.36:1 on the slot, 5.91:1 on its stripes */
 /* phones and the 5-across row (tiles about as big as a phone's): smaller icon, gap and line height and a wider
    text box, so a description fits its 4:3 tile, also with text spacing (WCAG 1.4.12); below 360 the icon goes */
 @media (max-width: 559.98px) {
@@ -2038,7 +2147,7 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 .store--v2 .rooms { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); }
 .store--v2 .room { position: relative; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .store--v2 .room__media { position: relative; aspect-ratio: 4 / 3; margin-bottom: 6px; border-radius: var(--shape-tab); overflow: hidden; }
-.store--v2 .room .slot img { transition: transform 320ms var(--ease-out); }
+.store--v2 .room .slot img { transition: transform 320ms var(--ease-out), opacity var(--dur-base) var(--ease-out); }
 .store--v2 .room__go { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; padding: 8px; border-radius: 10px 10px 10px 0; background: #fff; color: var(--ink); }
 .store--v2 .room__name { margin: 0; font: 700 17px/1.3 var(--font-primary); color: var(--ink); overflow-wrap: anywhere; }
 .store--v2 .room__link, .store--v2 .room__link:hover { color: inherit; }
@@ -2073,3 +2182,139 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 @media (min-width: 900px) { .store--v2 .rooms { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6) var(--space-4); } }
 @media (prefers-reduced-motion: reduce) { .store--v2 .room .slot img, .store--v2 .room__all::before { transition: none; } }
 @media (forced-colors: active) { .store--v2 .room__all { border: 1px solid CanvasText; } .store--v2 .room__all::before { display: none; } }
+
+/* =================== Zaposli se (zaposli-se/, WEB-23) ===================
+   The privacy page's head and reading column beside the application form on the muted panel: from 1024 the text takes
+   5 of 12 columns and the panel 7, both starting at the eyebrow; below that one column, text first. The fields and their
+   errors are the contact form's (.form, .field, .form__err, .form__check, .check, .sent); everything this page adds is
+   here. Notices and the summary take focus. */
+.jobs__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-7); }
+.jobs__intro { display: flex; flex-direction: column; gap: clamp(28px, 3vw, 40px); min-width: 0; }
+.jobs__text { max-width: 62ch; font: 400 clamp(17px, 1.25vw, 18px)/1.65 var(--font-primary); color: var(--ink); overflow-wrap: break-word; }
+.jobs__text p { margin: 0 0 16px; text-wrap: pretty; }
+.jobs__text .jobs__offer-h { margin: 24px 0 10px; font-weight: 700; }
+.jobs__text .legal__sum-list { margin-bottom: 24px; }
+.jobs__text p:last-child { margin-bottom: 0; }
+.jobs__text a {
+  color: inherit; text-decoration: underline; text-decoration-color: var(--nv-gray-300);
+  text-decoration-thickness: 1.5px; text-underline-offset: 4px; transition: text-decoration-color var(--dur-base);
+}
+.jobs__text a:hover { color: var(--ink); text-decoration-color: var(--nv-red); }
+
+.jobs__panel {
+  min-width: 0; display: flex; flex-direction: column; gap: 20px;
+  padding: clamp(24px, 3.4vw, 48px); border-radius: var(--shape-tab); background: var(--surface-muted);
+}
+.jobs__h2 { margin: 0; font: 700 clamp(28px, 2.6vw, 40px)/1.05 var(--font-display); letter-spacing: -.02em; color: var(--ink); text-wrap: balance; }
+.jobs__lead { margin: -8px 0 0; font: 400 16px/1.5 var(--font-primary); color: var(--muted); }
+/* pairs side by side once both fit 260 px (the longest label stays on one line), else one field per row */
+.jobs__row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px; align-items: start; }
+.jobs .field { min-width: 0; line-height: 1.3; }
+.jobs .field input:not([type="file"]), .jobs .field textarea { width: 100%; min-width: 0; }
+.jobs .field textarea { min-height: 148px; }
+.jobs__hint { margin: 0; font: 400 14px/1.45 var(--font-primary); color: var(--muted); }
+
+/* the CV: the real file control lies invisibly over the dashed box, so a click anywhere on it or a file dropped on it
+   lands in it, and keyboards and screen readers use it directly; the box draws its hover, focus and error looks */
+.jobs__file { position: relative; }
+.jobs .jobs__file-input {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; padding: 0; border: 0;
+  opacity: 0; cursor: pointer;
+}
+.jobs__file-face {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-height: 76px; padding: 14px 16px;
+  border: 1.5px dashed var(--nv-gray-550); border-radius: var(--radius-sm) var(--radius-sm) var(--radius-sm) 0; background: #fff;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+.jobs__file-btn {
+  display: inline-flex; align-items: center; justify-content: center; max-width: 100%; min-height: 44px; padding: 8px 18px;
+  border: 1.5px solid var(--ink); border-radius: 12px 12px 12px 0; background: #fff; color: var(--ink);
+  font: 700 14px/1.2 var(--font-primary); letter-spacing: .04em; text-transform: uppercase; text-align: center;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.jobs__file-input:hover + .jobs__file-face { border-color: var(--ink); }
+.jobs__file-input:hover + .jobs__file-face .jobs__file-btn { background: var(--ink); color: #fff; }
+.jobs__file.is-over .jobs__file-face { border-style: solid; border-color: var(--nv-red); background: var(--surface-muted); }
+.jobs__file-input[aria-invalid="true"] + .jobs__file-face { border-style: solid; border-color: var(--nv-red); box-shadow: inset 0 0 0 1px var(--nv-red); }
+.jobs__file-input:focus-visible + .jobs__file-face { outline: 3px solid var(--nv-gray-850); outline-offset: 2px; border-style: solid; border-color: var(--ink); }
+.jobs__chip {
+  display: flex; align-items: center; gap: 12px; padding: 6px 6px 6px 12px; border-radius: 8px 8px 8px 0;
+  background: #fff; font: 400 15px/1.4 var(--font-primary); color: var(--ink);
+}
+.jobs__type {
+  flex: none; display: grid; place-items: center; min-width: 44px; height: 28px; padding: 0 6px; border-radius: 6px 6px 6px 0;
+  background: var(--nv-red-dark); color: #fff; font: 700 12px/1 var(--font-primary); letter-spacing: .04em;
+}
+.jobs__chip-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.jobs__chip-name b { font-weight: 700; }
+.jobs__chip-size { white-space: nowrap; }
+.jobs__remove {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; color: var(--ink); cursor: pointer; transition: background var(--dur-fast);
+}
+.jobs__remove:hover { background: var(--line); }
+
+.jobs__checks { display: flex; flex-direction: column; gap: 14px; }
+
+/* the button grows rather than cut "SLANJE PRIJAVE..." on narrow phones; while sending it turns deep red with the
+   site's loading band and keeps focus (aria-disabled); grey once the server said it can't send */
+.jobs__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding-top: 4px; }
+.jobs__send { height: auto; min-height: 56px; max-width: 100%; padding-block: 12px; line-height: 1.15; text-align: center; }
+.jobs__send.is-sending { position: relative; overflow: hidden; background: var(--nv-red-dark); color: #fff; cursor: progress; }
+.jobs__send.is-sending::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(75deg, transparent 25%, var(--sheen-dark) 50%, transparent 75%);
+  transform: translateX(-100%); animation: nv-load 2s ease-in-out .3s infinite;
+}
+.jobs__send[aria-disabled="true"]:not(.is-sending) { background: var(--nv-gray-150); color: var(--nv-gray-700); cursor: not-allowed; }
+.jobs__send[aria-disabled="true"]:active { transform: none; }
+
+/* errors summary, failure and "not available" notices */
+/* what focus is moved to (and the fields the summary links to) stops a little below the sticky header */
+.jobs__summary, .jobs__notice, .jobs__done { scroll-margin-top: 16px; }
+.jobs__summary, .jobs__notice { margin: 0; padding: 18px 22px; border-radius: 12px 12px 12px 0; background: #fff; }
+.jobs__summary, .jobs__notice--err { border: 2px solid var(--nv-red); }
+.jobs__summary { display: grid; gap: 10px; }
+.jobs__summary-h { margin: 0; display: flex; gap: 10px; align-items: flex-start; font: 700 17px/1.4 var(--font-primary); color: var(--ink); }
+.jobs__summary-h .form__mark { margin-top: 3px; }
+.jobs__summary ul { margin: 0; padding: 0 0 0 28px; list-style: none; display: grid; gap: 6px; }
+.jobs__summary a { font: 400 16px/1.5 var(--font-primary); color: var(--nv-red-dark); text-decoration: underline; text-underline-offset: 3px; }
+.jobs__summary a:hover { color: var(--ink); }
+.jobs__notice { display: flex; gap: 12px; align-items: flex-start; font: 400 16px/1.5 var(--font-primary); color: var(--ink); }
+.jobs__notice p { margin: 0; min-width: 0; text-wrap: pretty; }
+.jobs__notice .ms { margin-top: 1px; color: var(--nv-red); }
+.jobs__notice .form__mark { margin-top: 3px; }
+.jobs__notice a {
+  color: inherit; text-decoration: underline; text-decoration-color: var(--nv-red); text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px; overflow-wrap: anywhere;
+}
+.jobs__notice a:hover { color: var(--nv-red-dark); }
+
+/* sent: replaces the panel's heading and the form */
+.jobs__done { min-height: 320px; align-items: flex-start; gap: 14px; }
+.jobs__done .sent__h, .jobs__done .sent__p { margin: 0; }
+.jobs__done-mark {
+  display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 4px;
+  border-radius: 16px 16px 16px 0; background: var(--nv-yellow);
+}
+.jobs__done-mark::before {
+  content: ""; width: 22px; height: 11px; border-left: 4px solid var(--nv-red-dark); border-bottom: 4px solid var(--nv-red-dark);
+  transform: translateY(-3px) rotate(-45deg);
+}
+
+/* honeypot: off screen, never reached by Tab or a screen reader */
+.jobs__hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+@media (min-width: 1024px) {
+  .jobs__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: clamp(20px, 2.4vw, 32px); align-items: start; }
+  .jobs__intro { grid-column: 1 / 6; }
+  .jobs__panel { grid-column: 6 / 13; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jobs__send.is-sending::before { display: none; }
+}
+@media (forced-colors: active) {
+  .jobs__send { border: 2px solid ButtonText; }
+  .jobs__send.is-sending::before { display: none; }
+  .jobs__type, .jobs__done-mark { forced-color-adjust: none; }
+}

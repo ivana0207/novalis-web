@@ -56,6 +56,7 @@
     "structure": {
       "pages": [
         "index.html",
+        "en/index.html",
         "o-nama/index.html",
         "hiper-novalis/index.html",
         "market-novalis/index.html",
@@ -63,7 +64,19 @@
         "veleprodaja/index.html",
         "valis/index.html",
         "pod-zvon/index.html",
-        "pravila-o-privatnosti/index.html"
+        "hotel-novalis/index.html",
+        "pravila-o-privatnosti/index.html",
+        "zaposli-se/index.html",
+        "en/about-us/index.html",
+        "en/careers/index.html",
+        "en/privacy-policy/index.html",
+        "en/hiper-novalis/index.html",
+        "en/market-novalis/index.html",
+        "en/hiper-bau/index.html",
+        "en/wholesale/index.html",
+        "en/valis/index.html",
+        "en/pod-zvon/index.html",
+        "en/hotel-novalis/index.html"
       ],
       "redirectStubs": [
         "o-nama.html"
@@ -97,7 +110,7 @@
     "smokeTargeted": "node .claude/workflow/smoke.js --pages index,valis --widths 390,1440 --baseline .jira-work/<KEY>/evidence/smoke-baseline.json",
     "smokeBaseline": "node .claude/workflow/smoke.js --json .jira-work/<KEY>/evidence/smoke-baseline.json",
     "smokeOptions": "--root <workspace> (default: repo root), --pages <slugs>, --widths <px,...>, --no-axe, --shots <dir>, --json <file>, --baseline <json from an earlier --json run: its failures are KNOWN, only new ones fail>. Full run ~60 s (8 pages x 3 widths with axe).",
-    "knownIssues": "Baseline 2026-10-10: index.html links to #posao, #privatnost, #cjenici have no target (jobs/privacy/price-list pages not built yet; WEB-20, WEB-23).",
+    "knownIssues": "Baseline 2026-10-10: index.html links to #cjenici (price lists) have no target: no page or ticket yet (the novalis.hr /info-o-cijenama/ CSVs). The jobs page is /zaposli-se/ (WEB-23). 404.html (WEB-27) is not in stack.structure.pages: smoke.js expects HTTP 200, a canonical and a description, which the not-found page must not have; check it with .jira-work/WEB-27/evidence/dev/check-web27.js --only 404 and axe-404.js. The dead #cjenici anchor is kept on /en/ too (WEB-21 Q-14: 'Price lists', parity with HR).",
     "build": null,
     "lint": null,
     "typecheck": null,

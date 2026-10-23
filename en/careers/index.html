@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Careers | Novalis</title>
+  <meta name="description" content="Work with us at Novalis on the island of Pag. Send an open application and your CV (PDF or Word) to the HR department of Novalis d.o.o.">
+  <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
+  <link rel="canonical" href="https://novalis-web.vercel.app/en/careers/">
+  <!-- the same page in Croatian (zaposli-se/), the default -->
+  <link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/zaposli-se/">
+  <link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/careers/">
+  <link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/zaposli-se/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Novalis">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="hr_HR">
+  <meta property="og:url" content="https://novalis-web.vercel.app/en/careers/">
+  <meta property="og:title" content="Careers | Novalis">
+  <meta property="og:description" content="Work with us at Novalis on the island of Pag. Send an open application and your CV (PDF or Word) to the HR department of Novalis d.o.o.">
+  <meta property="og:image" content="https://novalis-web.vercel.app/assets/img/hiper-novalis-storefront.jpg">
+  <meta property="og:image:alt" content="Hiper Novalis shopping centre in Novalja">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#D6191F">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../css/fonts.css?v=20261023-4">
+  <link rel="stylesheet" href="../../css/ds.css?v=20261023-4">
+  <link rel="stylesheet" href="../../css/styles.css?v=20261023-4">
+</head>
+<!-- Careers, the English twin of zaposli-se/index.html (WEB-23; keep the two in step): the same form, posting to the
+     same function (api/apply.mjs), which e-mails the application to kadrovska@novalis.com.hr. js/zaposli-se.js shows
+     the form only where it can be sent, and its messages in the page language. -->
+<body data-root="../../" data-home="../">
+<div class="page" id="top">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="../" class="bar__logo" aria-label="Novalis - home" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Main navigation">
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="../about-us/">About us</a>
+        <a class="nav-link" href="./" aria-current="page">Careers</a>
+        <a class="nav-link" href="../#upit">Contact</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Language">
+          <a class="lang__btn" data-lang="hr" href="../../zaposli-se/" hreflang="hr" lang="hr">HR<span class="vh"> - Hrvatski</span></a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn" data-lang="en" aria-current="true" lang="en">EN<span class="vh"> - English (current language)</span></span>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="../about-us/">About us</a>
+          <a href="./" aria-current="page">Careers</a>
+          <a href="../#upit">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="legal jobs" aria-labelledby="h-zaposli">
+      <div class="legal__inner jobs__grid">
+        <div class="jobs__intro">
+          <header class="legal__head">
+            <p class="eyebrow">Careers</p>
+            <h1 id="h-zaposli" class="legal__h1">Work with us</h1>
+          </header>
+          <div class="jobs__text">
+            <p>Novalis is always looking for good people. We know that people are one of the most important factors in a company's success and growth, so at Novalis we look for talented employees whose dedication and motivation make an exceptional contribution to the company's goals.</p>
+            <p class="jobs__offer-h">We offer candidates:</p>
+            <ul class="legal__sum-list" role="list">
+              <li>a dynamic, pleasant and stimulating working environment,</li>
+              <li>opportunities for professional development and permanent employment,</li>
+              <li>the chance to earn more through our reward scheme.</li>
+            </ul>
+            <p>If you would like to join our successful team, send us an open application.</p>
+            <p>Contact us at: <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a></p>
+            <p class="jobs__pointer" hidden>Or apply using the form below.</p>
+          </div>
+        </div>
+
+        <!-- ============ APPLICATION ============ -->
+        <section class="jobs__panel" id="prijava" aria-labelledby="h-prijava">
+          <h2 id="h-prijava" class="jobs__h2">Send your application</h2>
+          <noscript>
+            <div class="jobs__notice"><span class="ms" aria-hidden="true">mail</span><p>The form needs JavaScript. You can email your CV to <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a>.</p></div>
+          </noscript>
+          <div class="jobs__notice" id="jobsOff" tabindex="-1" hidden><span class="ms" aria-hidden="true">mail</span><p>The form cannot be sent at the moment. Please email your CV to <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a>.</p></div>
+
+          <form class="form jobs__form" id="jobsForm" action="../../api/apply" method="post" enctype="multipart/form-data" novalidate hidden>
+            <p class="jobs__lead">You can leave the fields marked optional empty.</p>
+
+            <div class="jobs__summary" id="jobsSummary" tabindex="-1" hidden>
+              <p class="jobs__summary-h"><span class="form__mark" aria-hidden="true">!</span><span>Your application has not been sent. Please correct the marked fields.</span></p>
+              <ul role="list"></ul>
+            </div>
+            <!-- failure (F), too many tries (F') and "not available" found on sending (I): js/zaposli-se.js fills it -->
+            <div class="jobs__notice jobs__notice--err" id="jobsFail" tabindex="-1" hidden><span class="form__mark" aria-hidden="true">!</span><span class="ms" aria-hidden="true" hidden>mail</span><p></p></div>
+
+            <div class="jobs__row">
+              <div class="field">
+                <label for="jobs-ime">Full name</label>
+                <input id="jobs-ime" name="ime" required maxlength="100" autocomplete="name">
+                <p class="form__err" id="jobs-ime-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="jobs-email">Email</label>
+                <input id="jobs-email" name="email" type="email" required maxlength="254" autocomplete="email" spellcheck="false">
+                <p class="form__err" id="jobs-email-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+            </div>
+            <div class="jobs__row">
+              <div class="field">
+                <label for="jobs-telefon">Phone (optional)</label>
+                <input id="jobs-telefon" name="telefon" type="tel" maxlength="30" autocomplete="tel">
+                <p class="form__err" id="jobs-telefon-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="jobs-mjesto">Location / position (optional)</label>
+                <input id="jobs-mjesto" name="mjesto" maxlength="100">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="jobs-poruka">Message (optional)</label>
+              <p class="jobs__hint" id="jobs-poruka-hint">Tell us briefly why you would like to work at Novalis. Up to 1000 characters.</p>
+              <textarea id="jobs-poruka" name="poruka" rows="5" aria-describedby="jobs-poruka-hint"></textarea>
+              <p class="form__err" id="jobs-poruka-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+            </div>
+
+            <div class="field">
+              <label for="jobs-cv" id="jobs-cv-label">CV</label>
+              <p class="jobs__hint" id="jobs-cv-hint">PDF or Word (.pdf, .doc, .docx), up to 4 MB.</p>
+              <div class="jobs__file">
+                <input type="file" class="jobs__file-input" id="jobs-cv" name="cv" required
+                       accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                       aria-labelledby="jobs-cv-label jobs-cv-btn" aria-describedby="jobs-cv-hint">
+                <div class="jobs__file-face"><span class="jobs__file-btn" id="jobs-cv-btn">Choose a file</span></div>
+              </div>
+              <div class="jobs__chip" id="jobs-cv-chosen" hidden>
+                <span class="jobs__type" aria-hidden="true">PDF</span>
+                <span class="jobs__chip-name" id="jobs-cv-name">Selected: <b></b> <span class="jobs__chip-size"></span></span>
+                <button type="button" class="jobs__remove" aria-label="Remove file"><span class="ms" aria-hidden="true">close</span></button>
+              </div>
+              <p class="form__err" id="jobs-cv-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              <p class="vh" id="jobs-cv-live" role="status"></p>
+            </div>
+
+            <div class="jobs__checks">
+              <div class="form__check">
+                <label class="check"><input type="checkbox" id="jobs-privola" name="privola" value="da" required><span>I have read the <a href="../privacy-policy/" target="_blank" rel="noopener">privacy policy<span class="vh"> (new tab)</span></a> and I understand that <span translate="no">Novalis d.o.o.</span> will use the data from this form and my CV only to consider my job application.</span></label>
+                <p class="form__err" id="jobs-privola-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="form__check">
+                <label class="check"><input type="checkbox" id="jobs-privola12" name="privola12" value="da"><span>I agree that <span translate="no">Novalis d.o.o.</span> may keep my application for up to 12 months and consider me for future vacancies. (optional)</span></label>
+              </div>
+            </div>
+
+            <!-- honeypot: off screen and out of reach for keyboards and screen readers; a filled one marks a bot -->
+            <div class="jobs__hp" aria-hidden="true">
+              <label for="jobs-web">Leave this field empty</label>
+              <input id="jobs-web" name="web" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="jobs__actions"><button type="submit" class="btn btn--primary btn--lg jobs__send">Send application</button></div>
+            <p class="vh" id="jobsStatus" role="status"></p>
+          </form>
+
+          <div class="sent jobs__done" id="jobsDone" tabindex="-1" hidden>
+            <span class="jobs__done-mark" aria-hidden="true"></span>
+            <h2 class="sent__h" id="h-poslano">Thank you, your application has been sent.</h2>
+            <p class="sent__p">We have passed it on to our HR department.</p>
+          </div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Enjoyment, passion and trust - in Novalja since 1990.</p>
+        </div>
+        <nav class="footer__col" aria-label="Locations">
+          <h2 class="footer__h">Locations</h2>
+          <div class="footer__stack" id="footerUnits"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Information">
+          <h2 class="footer__h">Information</h2>
+          <a href="../about-us/" class="footer__link">About us</a>
+          <a href="./" class="footer__link" aria-current="page">Careers</a>
+          <a href="../#cjenici" class="footer__link">Price lists</a>
+          <a href="../privacy-policy/" class="footer__link">Privacy policy</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Contact</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, Pag island</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · All rights reserved</span>
+        <div class="footer__lang" role="group" aria-label="Language">
+          <a class="lang__btn lang__btn--long" data-lang="hr" href="../../zaposli-se/" hreflang="hr" lang="hr">Hrvatski</a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn lang__btn--long" data-lang="en" aria-current="true" lang="en">English<span class="vh"> (current language)</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK BUTTONS ============ -->
+  <nav class="quickbar" aria-label="Quick actions">
+    <a href="tel:+38553662001" class="quickbar__btn quickbar__call"><span class="ms" aria-hidden="true">call</span><span class="vh">Call</span></a>
+    <a href="../#lokacije" class="quickbar__btn quickbar__map"><span class="ms" aria-hidden="true">map</span><span class="vh">Map of locations</span></a>
+  </nav>
+</div>
+
+<script src="../../js/brand-paths.js?v=20261023-4"></script>
+<script src="../../data/units.js?v=20261023-4"></script>
+<script src="../../js/site.js?v=20261023-4"></script>
+<script src="../../js/zaposli-se.js?v=20261023-4"></script>
+</body>
+</html>

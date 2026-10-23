@@ -1,13 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://novalis-web.vercel.app/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/o-nama/</loc><lastmod>2026-10-14</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/hiper-novalis/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/market-novalis/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/hiper-bau/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/veleprodaja/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/valis/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/pod-zvon/</loc><lastmod>2026-10-10</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/hotel-novalis/</loc><lastmod>2026-10-21</lastmod></url>
-  <url><loc>https://novalis-web.vercel.app/pravila-o-privatnosti/</loc><lastmod>2026-10-19</lastmod></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url><loc>https://novalis-web.vercel.app/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/o-nama/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/o-nama/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/about-us/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/o-nama/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/about-us/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/o-nama/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/about-us/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/o-nama/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/zaposli-se/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/zaposli-se/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/careers/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/zaposli-se/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/careers/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/zaposli-se/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/careers/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/zaposli-se/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/hiper-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hiper-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hiper-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hiper-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/hiper-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hiper-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hiper-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hiper-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/market-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/market-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/market-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/market-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/market-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/market-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/market-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/market-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/hiper-bau/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hiper-bau/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hiper-bau/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hiper-bau/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/hiper-bau/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hiper-bau/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hiper-bau/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hiper-bau/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/veleprodaja/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/veleprodaja/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/wholesale/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/veleprodaja/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/wholesale/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/veleprodaja/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/wholesale/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/veleprodaja/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/valis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/valis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/valis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/valis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/valis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/valis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/valis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/valis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/pod-zvon/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/pod-zvon/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/pod-zvon/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/pod-zvon/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/pod-zvon/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/pod-zvon/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/pod-zvon/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/pod-zvon/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/hotel-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hotel-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hotel-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hotel-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/hotel-novalis/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/hotel-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/hotel-novalis/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/hotel-novalis/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/pravila-o-privatnosti/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/pravila-o-privatnosti/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/privacy-policy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/pravila-o-privatnosti/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/privacy-policy/</loc><lastmod>2026-10-23</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/pravila-o-privatnosti/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/privacy-policy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/pravila-o-privatnosti/"/>
+  </url>
 </urlset>

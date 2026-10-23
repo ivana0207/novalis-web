@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zaposli se | Novalis</title>
+  <meta name="description" content="Radite s nama u Novalisu na otoku Pagu. Pošaljite otvorenu molbu i životopis (PDF ili Word) kadrovskoj službi tvrtke Novalis d.o.o.">
+  <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
+  <link rel="canonical" href="https://novalis-web.vercel.app/zaposli-se/">
+  <!-- the same page in English (en/careers/); this Croatian page is the default -->
+  <link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/zaposli-se/">
+  <link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/careers/">
+  <link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/zaposli-se/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Novalis">
+  <meta property="og:locale" content="hr_HR">
+  <meta property="og:locale:alternate" content="en_GB">
+  <meta property="og:url" content="https://novalis-web.vercel.app/zaposli-se/">
+  <meta property="og:title" content="Zaposli se | Novalis">
+  <meta property="og:description" content="Radite s nama u Novalisu na otoku Pagu. Pošaljite otvorenu molbu i životopis (PDF ili Word) kadrovskoj službi tvrtke Novalis d.o.o.">
+  <meta property="og:image" content="https://novalis-web.vercel.app/assets/img/hiper-novalis-storefront.jpg">
+  <meta property="og:image:alt" content="Shopping centar Hiper Novalis u Novalji">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#D6191F">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/ds.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/styles.css?v=20261023-4">
+</head>
+<!-- Zaposli se (WEB-23): the text from novalis.hr/zaposli-se/ beside the job application form. The form posts to the
+     site's function (api/apply.mjs, Vercel), which e-mails the application and CV to kadrovska@novalis.com.hr. The form
+     ships hidden and js/zaposli-se.js shows it only where it can be sent (not from disk or the GitHub Pages copy);
+     elsewhere, and without JavaScript, a notice with the e-mail address takes its place. Nothing is stored in the browser. -->
+<body data-root="../" data-home="../">
+<div class="page" id="top">
+  <a class="skip" href="#main">Preskoči na sadržaj</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="../" class="bar__logo" aria-label="Novalis - početna" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Glavna navigacija">
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="../o-nama/">O nama</a>
+        <a class="nav-link" href="./" aria-current="page">Zaposli se</a>
+        <a class="nav-link" href="../#upit">Kontakt</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Jezik / Language">
+          <span class="lang__btn" data-lang="hr" aria-current="true" lang="hr">HR<span class="vh"> - Hrvatski (trenutni jezik)</span></span>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <a class="lang__btn" data-lang="en" href="../en/careers/" hreflang="en" lang="en">EN<span class="vh"> - English</span></a>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Izbornik"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="../o-nama/">O nama</a>
+          <a href="./" aria-current="page">Zaposli se</a>
+          <a href="../#upit">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <article class="legal jobs" aria-labelledby="h-zaposli">
+      <div class="legal__inner jobs__grid">
+        <div class="jobs__intro">
+          <header class="legal__head">
+            <p class="eyebrow">Karijera</p>
+            <h1 id="h-zaposli" class="legal__h1">Zaposli se</h1>
+          </header>
+          <div class="jobs__text">
+            <p>Novalis je tvrtka koja vrši kontinuiranu potragu za kvalitetnim djelatnicima. Svjesni smo kako su ljudski resursi jedan od najvažnijih čimbenika za uspjeh i razvoj tvrtke, stoga mi u Novalisu nastojimo pronaći kvalitetni ljudski potencijal, odnosno djelatnike koji svojom predanošću i motiviranošću iznimno doprinose ostvarenju organizacijskih ciljeva tvrtke.</p>
+            <p class="jobs__offer-h">Kandidatima nudimo:</p>
+            <ul class="legal__sum-list" role="list">
+              <li>dinamično, ugodno i poticajno radno okruženje,</li>
+              <li>mogućnost profesionalnog napredovanja i stalnog zaposlenja,</li>
+              <li>mogućnost dodatne zarade kroz sustav nagrađivanja.</li>
+            </ul>
+            <p>Ako želite postati dio našeg uspješnog tima, pošaljite nam otvorenu molbu.</p>
+            <p>Kontaktirajte nas na: <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a></p>
+            <p class="jobs__pointer" hidden>Ili pošaljite prijavu putem obrasca u nastavku.</p>
+          </div>
+        </div>
+
+        <!-- ============ PRIJAVA ============ -->
+        <section class="jobs__panel" id="prijava" aria-labelledby="h-prijava">
+          <h2 id="h-prijava" class="jobs__h2">Pošaljite prijavu</h2>
+          <noscript>
+            <div class="jobs__notice"><span class="ms" aria-hidden="true">mail</span><p>Za slanje obrasca potreban je JavaScript. Životopis možete poslati e-poštom na <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a>.</p></div>
+          </noscript>
+          <div class="jobs__notice" id="jobsOff" tabindex="-1" hidden><span class="ms" aria-hidden="true">mail</span><p>Slanje putem obrasca trenutačno nije moguće. Pošaljite životopis e-poštom na <a href="mailto:kadrovska@novalis.com.hr">kadrovska@novalis.com.hr</a>.</p></div>
+
+          <form class="form jobs__form" id="jobsForm" action="../api/apply" method="post" enctype="multipart/form-data" novalidate hidden>
+            <p class="jobs__lead">Polja označena kao neobavezna možete ostaviti praznima.</p>
+
+            <div class="jobs__summary" id="jobsSummary" tabindex="-1" hidden>
+              <p class="jobs__summary-h"><span class="form__mark" aria-hidden="true">!</span><span>Prijava nije poslana. Ispravite označena polja.</span></p>
+              <ul role="list"></ul>
+            </div>
+            <!-- failure (F), too many tries (F') and "not available" found on sending (I): js/zaposli-se.js fills it -->
+            <div class="jobs__notice jobs__notice--err" id="jobsFail" tabindex="-1" hidden><span class="form__mark" aria-hidden="true">!</span><span class="ms" aria-hidden="true" hidden>mail</span><p></p></div>
+
+            <div class="jobs__row">
+              <div class="field">
+                <label for="jobs-ime">Ime i prezime</label>
+                <input id="jobs-ime" name="ime" required maxlength="100" autocomplete="name">
+                <p class="form__err" id="jobs-ime-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="jobs-email">E-mail</label>
+                <input id="jobs-email" name="email" type="email" required maxlength="254" autocomplete="email" spellcheck="false">
+                <p class="form__err" id="jobs-email-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
+            </div>
+            <div class="jobs__row">
+              <div class="field">
+                <label for="jobs-telefon">Telefon (neobavezno)</label>
+                <input id="jobs-telefon" name="telefon" type="tel" maxlength="30" autocomplete="tel">
+                <p class="form__err" id="jobs-telefon-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="jobs-mjesto">Poslovnica / radno mjesto (neobavezno)</label>
+                <input id="jobs-mjesto" name="mjesto" maxlength="100">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="jobs-poruka">Poruka (neobavezno)</label>
+              <p class="jobs__hint" id="jobs-poruka-hint">Kratko nam recite zašto Vas zanima rad u Novalisu. Najviše 1000 znakova.</p>
+              <textarea id="jobs-poruka" name="poruka" rows="5" aria-describedby="jobs-poruka-hint"></textarea>
+              <p class="form__err" id="jobs-poruka-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+            </div>
+
+            <div class="field">
+              <label for="jobs-cv" id="jobs-cv-label">Životopis</label>
+              <p class="jobs__hint" id="jobs-cv-hint">PDF ili Word (.pdf, .doc, .docx), najviše 4 MB.</p>
+              <div class="jobs__file">
+                <input type="file" class="jobs__file-input" id="jobs-cv" name="cv" required
+                       accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                       aria-labelledby="jobs-cv-label jobs-cv-btn" aria-describedby="jobs-cv-hint">
+                <div class="jobs__file-face"><span class="jobs__file-btn" id="jobs-cv-btn">Odaberi datoteku</span></div>
+              </div>
+              <div class="jobs__chip" id="jobs-cv-chosen" hidden>
+                <span class="jobs__type" aria-hidden="true">PDF</span>
+                <span class="jobs__chip-name" id="jobs-cv-name">Odabrano: <b></b> <span class="jobs__chip-size"></span></span>
+                <button type="button" class="jobs__remove" aria-label="Ukloni datoteku"><span class="ms" aria-hidden="true">close</span></button>
+              </div>
+              <p class="form__err" id="jobs-cv-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              <p class="vh" id="jobs-cv-live" role="status"></p>
+            </div>
+
+            <div class="jobs__checks">
+              <div class="form__check">
+                <label class="check"><input type="checkbox" id="jobs-privola" name="privola" value="da" required><span>Upoznat/a sam s <a href="../pravila-o-privatnosti/" target="_blank" rel="noopener">Pravilima o privatnosti<span class="vh"> (nova kartica)</span></a> i s time da <span translate="no">Novalis d.o.o.</span> podatke iz obrasca i životopis koristi samo za razmatranje moje prijave za posao.</span></label>
+                <p class="form__err" id="jobs-privola-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="form__check">
+                <label class="check"><input type="checkbox" id="jobs-privola12" name="privola12" value="da"><span>Pristajem da <span translate="no">Novalis d.o.o.</span> moju prijavu čuva do 12 mjeseci i razmatra me za buduća slobodna radna mjesta. (neobavezno)</span></label>
+              </div>
+            </div>
+
+            <!-- honeypot: off screen and out of reach for keyboards and screen readers; a filled one marks a bot -->
+            <div class="jobs__hp" aria-hidden="true">
+              <label for="jobs-web">Ne popunjavajte ovo polje</label>
+              <input id="jobs-web" name="web" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="jobs__actions"><button type="submit" class="btn btn--primary btn--lg jobs__send">Pošalji prijavu</button></div>
+            <p class="vh" id="jobsStatus" role="status"></p>
+          </form>
+
+          <div class="sent jobs__done" id="jobsDone" tabindex="-1" hidden>
+            <span class="jobs__done-mark" aria-hidden="true"></span>
+            <h2 class="sent__h" id="h-poslano">Hvala, prijava je poslana.</h2>
+            <p class="sent__p">Proslijedili smo je našoj kadrovskoj službi.</p>
+          </div>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Uživanje, strast i povjerenje - od 1990. u Novalji.</p>
+        </div>
+        <nav class="footer__col" aria-label="Poslovnice">
+          <h2 class="footer__h">Poslovnice</h2>
+          <div class="footer__stack" id="footerUnits"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Informacije">
+          <h2 class="footer__h">Informacije</h2>
+          <a href="../o-nama/" class="footer__link">O nama</a>
+          <a href="./" class="footer__link" aria-current="page">Zaposli se</a>
+          <a href="../#cjenici" class="footer__link">Cjenici</a>
+          <a href="../pravila-o-privatnosti/" class="footer__link">Pravila o privatnosti</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Kontakt</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, otok Pag</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · Sva prava pridržana</span>
+        <div class="footer__lang" role="group" aria-label="Jezik / Language">
+          <span class="lang__btn lang__btn--long" data-lang="hr" aria-current="true" lang="hr">Hrvatski<span class="vh"> (trenutni jezik)</span></span>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <a class="lang__btn lang__btn--long" data-lang="en" href="../en/careers/" hreflang="en" lang="en">English</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK BUTTONS ============ -->
+  <nav class="quickbar" aria-label="Brze akcije">
+    <a href="tel:+38553662001" class="quickbar__btn quickbar__call"><span class="ms" aria-hidden="true">call</span><span class="vh">Nazovi</span></a>
+    <a href="../#lokacije" class="quickbar__btn quickbar__map"><span class="ms" aria-hidden="true">map</span><span class="vh">Karta poslovnica</span></a>
+  </nav>
+</div>
+
+<script src="../js/brand-paths.js?v=20261023-4"></script>
+<script src="../data/units.js?v=20261023-4"></script>
+<script src="../js/site.js?v=20261023-4"></script>
+<script src="../js/zaposli-se.js?v=20261023-4"></script>
+</body>
+</html>

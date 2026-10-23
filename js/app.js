@@ -6,6 +6,39 @@
 
   var NV = window.NV, D = NV.D, $ = NV.$, $$ = NV.$$, esc = NV.esc, setHTML = NV.setHTML;
 
+  // This page's texts in its language (NV.LANG): Croatian on /, English on /en/ (WEB-21)
+  var TEXTS = {
+    hr: {
+      all: 'Sve', map: 'Karta poslovnica Novalis u Novalji', outside: 'Vaša lokacija je izvan područja ove karte.',
+      close: 'Zatvori', directions: 'Upute', call: 'Nazovi', email: 'Vaš email',
+      directionsTo: function (name) { return 'Upute do ' + name + ' (nova kartica)'; },
+      callTo: function (name) { return 'Nazovi ' + name; },
+      summer: 'Ljetno radno vrijeme', winter: 'Zimsko radno vrijeme',
+      openCount: function (n, all) { return 'Trenutno otvoreno ' + n + ' od ' + all + ' poslovnica'; },
+      // inquiry form errors, worded like Zaposli se's (js/zaposli-se.js)
+      nameMissing: 'Upišite ime i prezime.',
+      emailMissing: 'Upišite adresu e-pošte.',
+      emailInvalid: 'Upišite ispravnu adresu e-pošte, primjerice ime@domena.hr.',
+      messageMissing: 'Upišite poruku.',
+      consentMissing: 'Potvrdite da ste upoznati s Pravilima o privatnosti kako biste poslali upit.'
+    },
+    en: {
+      all: 'All', map: 'Map of Novalis locations in Novalja', outside: 'Your location is outside the area of this map.',
+      close: 'Close', directions: 'Directions', call: 'Call', email: 'your email address',
+      directionsTo: function (name) { return 'Directions to ' + name + ' (new tab)'; },
+      callTo: function (name) { return 'Call ' + name; },
+      summer: 'Summer opening hours', winter: 'Winter opening hours',
+      openCount: function (n, all) { return n + ' of ' + all + ' locations ' + (n === 1 ? 'is' : 'are') + ' open now'; },
+      nameMissing: 'Enter your full name.',
+      emailMissing: 'Enter your email address.',
+      emailInvalid: 'Enter a valid email address, for example name@example.com.',
+      messageMissing: 'Enter your message.',
+      consentMissing: 'Please confirm that you have read the privacy policy to send your enquiry.'
+    }
+  };
+  var T = TEXTS[NV.LANG] || TEXTS.hr;
+  var EMAIL = /^[^\s@"<>(),;:\\[\]]+@[^\s@"<>(),;:\\[\]]+\.[^\s@"<>(),;:\\[\].]{2,}$/;   // the same rule as Zaposli se (js/zaposli-se.js, api/apply.mjs)
+
   var params = new URLSearchParams(location.search), urlCat = params.get('kategorija');
   var state = { cat: NV.CAT_IDS.indexOf(urlCat) >= 0 ? urlCat : 'all', openOnly: false, view: 'map', sel: null, hov: null };
   var units = []; // view models, rebuilt every render()
@@ -40,23 +73,33 @@
 
   /* ---------------- Filters + cards ---------------- */
   function renderFilters() {
-    var list = [{ id: 'all', label: 'Sve' }].concat(D.categories);
+    // the tabs are rebuilt when a count or pressed state changes: a focused one keeps the focus
+    var box = $('#filters'), kept = box.contains(document.activeElement) ? document.activeElement.dataset.cat : null;
+    var list = [{ id: 'all', label: T.all }].concat(D.categories);
     setHTML($('#filters'), list.map(function (f) {
       var count = f.id === 'all' ? units.length : units.filter(function (u) { return u.category === f.id; }).length;
       return '<button type="button" class="tab" data-cat="' + f.id + '" aria-pressed="' + (state.cat === f.id) + '">' +
-        esc(f.label) + '<span class="tab__count">' + count + '</span></button>';
+        esc(NV.tx(f, 'label')) + '<span class="tab__count">' + count + '</span></button>';
     }).join(''));
     $('#openOnly').setAttribute('aria-pressed', state.openOnly);
+    var again = kept && box.querySelector('[data-cat="' + kept + '"]');
+    if (again && document.activeElement !== again) again.focus();
   }
 
   // The cards are NV.cardHTML; the grid (entrance, filter fade, focus kept on re-render) is NV.cardGrid.
-  var cards = NV.cardGrid($('#cards'));
+  var cards = NV.cardGrid($('#cards')), wasEmpty = false;
   function renderCards(swap) {
     var visible = units.filter(function (u) {
       return (state.cat === 'all' || u.category === state.cat) && (!state.openOnly || u.open);
     });
     cards.render(visible.map(NV.cardHTML).join(''), swap);
-    $('#noResults').hidden = visible.length > 0;
+    var empty = visible.length === 0;
+    $('#noResults').hidden = !empty;
+    // announced once, when the list turns empty (the 60 s refresh leaves the live region alone)
+    if (empty !== wasEmpty) {
+      wasEmpty = empty;
+      $('#noResultsLive').textContent = empty ? $('#noResults p').textContent : '';
+    }
   }
 
   /* ---------------- Map + list ---------------- */
@@ -83,7 +126,7 @@
     if (!NV.map) { $('#mapFail').hidden = false; return; } // js/map.js didn't load
     var lats = NV.units.map(function (u) { return u.geo[0]; }), lngs = NV.units.map(function (u) { return u.geo[1]; });
     NV.map.create($('#mapCanvas'), {
-      label: 'Karta poslovnica Novalis u Novalji',
+      label: T.map,
       map: {
         bounds: [[Math.min.apply(null, lngs), Math.min.apply(null, lats)], [Math.max.apply(null, lngs), Math.max.apply(null, lats)]],
         // room above for the pins' heads, below for the map credits, at the sides for pins pushed apart (NV.map.spread)
@@ -99,7 +142,7 @@
 
       var geo = new gl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, fitBoundsOptions: { maxZoom: 15 } });
       m.addControl(geo, 'top-right');
-      geo.on('outofmaxbounds', function () { mapMessage('Vaša lokacija je izvan područja ove karte.'); });
+      geo.on('outofmaxbounds', function () { mapMessage(T.outside); });
 
       var spread = function () { NV.map.spread(m, markers); };
       spread();
@@ -138,7 +181,7 @@
     setHTML($('#mapCard'),
       '<div class="map-card' + (previewId ? ' is-preview" aria-hidden="true" inert' : '" role="dialog"') + ' aria-label="' + esc(u.name) + '">' +
         '<div class="map-card__img">' + NV.slotHTML(u.photo, u.photoHint, u.name) +
-          '<button type="button" class="map-card__close" aria-label="Zatvori"><span class="ms ms--xs" aria-hidden="true">close</span></button>' +
+          '<button type="button" class="map-card__close" aria-label="' + T.close + '"><span class="ms ms--xs" aria-hidden="true">close</span></button>' +
         '</div>' +
         '<div class="map-card__body">' +
           '<div class="map-card__title"><span class="map-card__name" translate="no">' + esc(u.name) + '</span>' +
@@ -147,9 +190,9 @@
             '<div class="map-card__state">' + statusHTML('map-card__label', u.open, u.label) +
               (u.hasToday ? '<span class="map-card__today">' + esc(u.today) + '</span>' : '') + '</div>' +
             '<div class="map-card__actions">' +
-              '<a class="round" href="' + esc(u.mapsHref) + '" target="_blank" rel="noopener" aria-label="Upute do ' + esc(u.name) + ' (nova kartica)" title="Upute">' +
+              '<a class="round" href="' + esc(u.mapsHref) + '" target="_blank" rel="noopener" aria-label="' + esc(T.directionsTo(u.name)) + '" title="' + T.directions + '">' +
                 '<span class="ms ms--sm" aria-hidden="true">directions</span></a>' +
-              '<a class="round round--call" href="' + esc(u.callHref) + '" aria-label="Nazovi ' + esc(u.name) + '" title="Nazovi">' +
+              '<a class="round round--call" href="' + esc(u.callHref) + '" aria-label="' + esc(T.callTo(u.name)) + '" title="' + T.call + '">' +
                 '<span class="ms ms--sm" aria-hidden="true">call</span></a>' +
             '</div>' +
           '</div>' +
@@ -203,10 +246,10 @@
         '<div class="loc__state">' + statusHTML('loc__label', u.open, u.label) +
           (u.hasToday ? '<span class="loc__today">' + esc(u.today) + '</span>' : '') + '</div>' +
         '<div class="loc__actions">' +
-          '<a class="btn-sm" href="' + esc(u.mapsHref) + '" target="_blank" rel="noopener" aria-label="Upute do ' + esc(u.name) + ' (nova kartica)">' +
-            '<span class="ms ms--sm" aria-hidden="true">directions</span>Upute</a>' +
-          '<a class="btn-sm btn-sm--call" href="' + esc(u.callHref) + '" aria-label="Nazovi ' + esc(u.name) + '">' +
-            '<span class="ms ms--sm" aria-hidden="true">call</span>Nazovi</a>' +
+          '<a class="btn-sm" href="' + esc(u.mapsHref) + '" target="_blank" rel="noopener" aria-label="' + esc(T.directionsTo(u.name)) + '">' +
+            '<span class="ms ms--sm" aria-hidden="true">directions</span>' + T.directions + '</a>' +
+          '<a class="btn-sm btn-sm--call" href="' + esc(u.callHref) + '" aria-label="' + esc(T.callTo(u.name)) + '">' +
+            '<span class="ms ms--sm" aria-hidden="true">call</span>' + T.call + '</a>' +
         '</div>' +
       '</li>';
     }).join(''));
@@ -227,8 +270,8 @@
     var openCount = units.filter(function (u) { return u.open; }).length;
 
     $('#seasonIcon').textContent = vm.season === 'summer' ? 'sunny' : 'ac_unit';
-    $('#seasonLabel').textContent = vm.season === 'summer' ? 'Ljetno radno vrijeme' : 'Zimsko radno vrijeme';
-    $('#openStatus').textContent = 'Trenutno otvoreno ' + openCount + ' od ' + units.length + ' poslovnica';
+    $('#seasonLabel').textContent = vm.season === 'summer' ? T.summer : T.winter;
+    $('#openStatus').textContent = T.openCount(openCount, units.length);
     // the dot beside it is green only while something is open (grey like a closed unit's otherwise, e.g. all day on a holiday)
     $('.find__status .dot').classList.toggle('dot--open', openCount > 0);
 
@@ -262,6 +305,7 @@
     $('#resetFilters').addEventListener('click', function () {
       setCat('all'); state.openOnly = false;
       renderFilters(); renderCards(true);
+      $('#filters [data-cat="all"]').focus(); // the button just hid with the message
     });
     // links to a unit card that is currently filtered out: clear filters first
     document.addEventListener('click', function (e) {
@@ -328,10 +372,49 @@
       if (state.sel && !mapBox.contains(e.target)) { state.sel = null; syncMap(); }
     });
 
-    // inquiry form (front-end only until a backend endpoint exists)
-    $('#inquiryForm').addEventListener('submit', function (e) {
+    // inquiry form (front-end only until a backend endpoint exists). The browser's bubbles are off (only with JS, so
+    // without it required still stops the form); each error shows under its field and focus goes to the first one
+    var inquiry = $('#inquiryForm'), fields = inquiry.elements, tried = false;
+    inquiry.noValidate = true;
+    var CHECKS = {
+      ime: function () { return fields.ime.value.trim() ? '' : T.nameMissing; },
+      email: function () {
+        var v = fields.email.value.trim();
+        return !v ? T.emailMissing : v.length <= 254 && EMAIL.test(v) ? '' : T.emailInvalid;
+      },
+      poruka: function () { return fields.poruka.value.trim() ? '' : T.messageMissing; },
+      privola: function () { return fields.privola.checked ? '' : T.consentMissing; }
+    };
+    function setError(name, msg) {
+      var err = $('#upit-' + name + '-err');
+      $('.form__err-t', err).textContent = msg;
+      err.hidden = !msg;
+      if (msg) { fields[name].setAttribute('aria-invalid', 'true'); fields[name].setAttribute('aria-describedby', err.id); }
+      else { fields[name].removeAttribute('aria-invalid'); fields[name].removeAttribute('aria-describedby'); }
+    }
+    // after a failed send, an error goes as soon as its field is right (no new errors while typing)
+    function recheck(e) {
+      var name = e.target.name;
+      if (tried && CHECKS[name] && e.target.getAttribute('aria-invalid') === 'true' && !CHECKS[name]()) setError(name, '');
+    }
+    inquiry.addEventListener('input', recheck);
+    inquiry.addEventListener('change', recheck);
+    inquiry.addEventListener('submit', function (e) {
       e.preventDefault();
-      $('#sentEmail').textContent = this.elements.email.value.trim() || 'Vaš email';
+      tried = true;
+      var first = null;
+      Object.keys(CHECKS).forEach(function (name) {
+        var msg = CHECKS[name]();
+        setError(name, msg);
+        if (msg && !first) first = fields[name];
+      });
+      if (first) {
+        // the field with its label in view, clear of the sticky header
+        first.closest('.field, .form__check').scrollIntoView({ block: 'nearest' });
+        first.focus({ preventScroll: true });
+        return;
+      }
+      $('#sentEmail').textContent = fields.email.value.trim() || T.email;
       this.hidden = true;
       $('#formSent').hidden = false;
     });
@@ -360,13 +443,15 @@
     NV.addJSONLD({
       '@context': 'https://schema.org',
       '@graph': [
-        { '@type': 'WebSite', '@id': NV.HOME_URL + '#web', name: 'Novalis', url: NV.HOME_URL, inLanguage: 'hr', publisher: { '@id': NV.ORG['@id'] } },
+        { '@type': 'WebSite', '@id': NV.HOME_URL + '#web', name: 'Novalis', url: NV.HOME_URL, inLanguage: NV.LANG, publisher: { '@id': NV.ORG['@id'] } },
         Object.assign({}, NV.ORG, {
           alternateName: 'Novalis', foundingDate: String(C.founded), telephone: C.tel, email: C.email,
           address: NV.postalAddress(C.address),
           subOrganization: NV.units.map(function (u) {
+            // a unit named differently in the page language keeps its Croatian name too (Wholesale: Veleprodaja; PO, WEB-21)
+            var name = NV.tx(u, 'name');
             return Object.assign({}, u.schema, {
-              '@id': NV.unitId(u), name: u.name, url: NV.absUrl(NV.unitHref(u)),
+              '@id': NV.unitId(u), name: name, alternateName: name !== u.name ? u.name : undefined, url: NV.absUrl(NV.unitHref(u)),
               address: NV.postalAddress(u.address), telephone: u.tel || C.tel
             });
           })

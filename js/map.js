@@ -11,25 +11,43 @@ window.NV.map = (function () {
   // Pag and the coast around it: the map can't be dragged away from Novalja
   var BOUNDS = [[14.55, 44.25], [15.35, 44.85]];
 
-  // The map's credits in Croatian, saying which links open a new tab (the tile source's own credits are English)
+  // The map's texts in the page language (NV.LANG): its credits, saying which links open a new tab (the tile source's
+  // own credits are English), and labels for MapLibre's buttons, the map itself and the two-finger hint (touch screens
+  // only; css/styles.css hides the desktop one)
+  var TEXTS = {
+    hr: {
+      data: 'Podaci', osm: 'OpenStreetMap suradnici',
+      locale: {
+        'Map.Title': 'Karta',
+        'NavigationControl.ZoomIn': 'Povećaj',
+        'NavigationControl.ZoomOut': 'Smanji',
+        'GeolocateControl.FindMyLocation': 'Prikaži moju lokaciju',
+        'GeolocateControl.LocationNotAvailable': 'Lokacija nije dostupna',
+        'AttributionControl.ToggleAttribution': 'Prikaži ili sakrij izvore karte',
+        'CooperativeGesturesHandler.MobileHelpText': 'Kartu pomičite s dva prsta'
+      }
+    },
+    en: {
+      data: 'Data', osm: 'OpenStreetMap contributors',
+      locale: {
+        'Map.Title': 'Map',
+        'NavigationControl.ZoomIn': 'Zoom in',
+        'NavigationControl.ZoomOut': 'Zoom out',
+        'GeolocateControl.FindMyLocation': 'Show my location',
+        'GeolocateControl.LocationNotAvailable': 'Location not available',
+        'AttributionControl.ToggleAttribution': 'Show or hide map credits',
+        'CooperativeGesturesHandler.MobileHelpText': 'Use two fingers to move the map'
+      }
+    }
+  };
+  var T = TEXTS[window.NV.LANG] || TEXTS.hr;
   function creditLink(href, text) {
     return '<a href="' + href + '" target="_blank" rel="noopener">' + text + window.NV.NEW_TAB + '</a>';
   }
   var CREDITS = creditLink('https://openfreemap.org', 'OpenFreeMap') + ' ' +
-    creditLink('https://www.openmaptiles.org/', '&copy; OpenMapTiles') + ' Podaci: ' +
-    creditLink('https://www.openstreetmap.org/copyright', '&copy; OpenStreetMap suradnici');
-
-  // Croatian labels for MapLibre's buttons, the map itself and the two-finger hint (touch screens only; css/styles.css
-  // hides the desktop one)
-  var LOCALE = {
-    'Map.Title': 'Karta',
-    'NavigationControl.ZoomIn': 'Povećaj',
-    'NavigationControl.ZoomOut': 'Smanji',
-    'GeolocateControl.FindMyLocation': 'Prikaži moju lokaciju',
-    'GeolocateControl.LocationNotAvailable': 'Lokacija nije dostupna',
-    'AttributionControl.ToggleAttribution': 'Prikaži ili sakrij izvore karte',
-    'CooperativeGesturesHandler.MobileHelpText': 'Kartu pomičite s dva prsta'
-  };
+    creditLink('https://www.openmaptiles.org/', '&copy; OpenMapTiles') + ' ' + T.data + ': ' +
+    creditLink('https://www.openstreetmap.org/copyright', '&copy; ' + T.osm);
+  var LOCALE = T.locale;
 
   // Positron layer id → paint changes: warm land (the old placeholder's #EFEBE5), slate-tinted sea, white streets,
   // labels in the brand's slate and greys
@@ -114,10 +132,18 @@ window.NV.map = (function () {
   // label names the map for screen readers. ready(map, maplibregl) runs once it exists, before the style and tiles
   // arrive. fail(hadFocus) if it can't run, also after ready() when the style or the tiles never come: the map and its
   // pins are gone by then. hadFocus: focus was in the map's frame (a pin or the card), so the page can move it to its note.
+  // Until the map is drawn its frame shows the loading look (css .is-loading); it goes when the map is drawn, and before
+  // fail(), so the note shows on its own.
   function create(el, opts, ready, fail) {
+    var frame = el.parentNode;
+    frame.classList.add('is-loading');
+    function noMap(hadFocus) {
+      frame.classList.remove('is-loading');
+      fail(hadFocus);
+    }
     near(el, function () {
       load(function (gl) {
-        if (!gl) return fail(false);
+        if (!gl) return noMap(false);
         var map, styled = false, failed = false, tiles = 0;
         try {
           map = new gl.Map(Object.assign({
@@ -126,7 +152,7 @@ window.NV.map = (function () {
             dragRotate: false, pitchWithRotate: false, touchPitch: false, maxPitch: 0
           }, opts.map));
         } catch (e) {
-          return fail(false);
+          return noMap(false);
         }
         // set here, not as a Map option, so the tile source takes the site's credits
         map.setStyle(STYLE, {
@@ -143,11 +169,13 @@ window.NV.map = (function () {
         function giveUp() {
           if (failed) return;
           failed = true;
-          var hadFocus = el.parentNode.contains(document.activeElement);
+          var hadFocus = frame.contains(document.activeElement);
           map.remove();
-          fail(hadFocus);
+          noMap(hadFocus);
         }
         map.on('style.load', function () { styled = true; tint(map); });
+        // the style and the first tiles are drawn: the map takes over from the loading look
+        map.once('load', function () { frame.classList.remove('is-loading'); });
         // the style itself didn't arrive (offline, tile server down): drop the map, show the page's note. A failed tile
         // asks for no new frame, so the idle below might never come: ask for one.
         map.on('error', function (e) {
@@ -164,7 +192,7 @@ window.NV.map = (function () {
           if (!tiles) giveUp();
         });
         map.addControl(new gl.NavigationControl({ showCompass: false }), 'top-right');
-        keepInFrame(el.parentNode);
+        keepInFrame(frame);
         ready(map, gl);
       });
     });

@@ -2,7 +2,8 @@
    modal <dialog> over the page, which blurs under a dark veil. The arrows, the keyboard's ← and →, and a swipe of the
    finger (or a mouse drag) slide to the previous or next photo, round from the last back to the first. The X in the top
    right corner, Esc, the phone's back button or a click anywhere outside the photo closes it, and focus goes back to
-   that photo's tile in the gallery. Only photos open it: photo slots still waiting for a photo stay as they are.
+   that photo's tile in the gallery. Only photos open it: photo slots still waiting for a photo stay as they are. A photo
+   still on its way shows a loading panel in its place, and one that can't load a still panel with the image icon.
    Three slides (previous, current, next) sit side by side; a slide moves the track one width, then the slide that left
    the screen is filled with the next photo in line and moved to the far side. */
 (function () {
@@ -10,6 +11,14 @@
 
   var NV = window.NV;
   var EASE = 'cubic-bezier(.22, 1, .36, 1)';
+  // texts in the page language (NV.LANG); of(i, n): the counter read out before the caption, "Fotografija 2 od 10: "
+  var TEXTS = {
+    hr: { gallery: 'Galerija', close: 'Zatvori galeriju', prev: 'Prethodna fotografija', next: 'Sljedeća fotografija',
+      of: function (i, n) { return 'Fotografija ' + i + ' od ' + n + ': '; } },
+    en: { gallery: 'Gallery', close: 'Close gallery', prev: 'Previous photo', next: 'Next photo',
+      of: function (i, n) { return 'Photo ' + i + ' of ' + n + ': '; } }
+  };
+  var T = TEXTS[NV.LANG] || TEXTS.hr;
   var still = matchMedia('(prefers-reduced-motion: reduce)');
 
   function svg(d) {
@@ -29,24 +38,24 @@
     function build() {
       dlg = document.createElement('dialog');
       dlg.className = 'lightbox' + (n > 1 ? '' : ' lightbox--one');
-      dlg.setAttribute('aria-label', 'Galerija');
+      dlg.setAttribute('aria-label', T.gallery);
       dlg.innerHTML =
         '<div class="lightbox__stage"><div class="lightbox__track">' +
           '<div class="lightbox__slide"><div class="lightbox__frame"><img class="lightbox__img" alt="" draggable="false"></div></div>'.repeat(3) +
         '</div></div>' +
         '<p class="lightbox__cap" aria-live="polite"><span class="lightbox__count"></span><span class="lightbox__text"></span></p>' +
-        '<button type="button" class="lightbox__btn lightbox__close" aria-label="Zatvori galeriju">' + svg('M6 6l12 12M18 6 6 18') + '</button>' +
-        (n > 1 ? '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--prev" aria-label="Prethodna fotografija">' + svg('M15 5l-7 7 7 7') + '</button>' +
-          '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--next" aria-label="Sljedeća fotografija">' + svg('M9 5l7 7-7 7') + '</button>' : '');
+        '<button type="button" class="lightbox__btn lightbox__close" aria-label="' + T.close + '">' + svg('M6 6l12 12M18 6 6 18') + '</button>' +
+        (n > 1 ? '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--prev" aria-label="' + T.prev + '">' + svg('M15 5l-7 7 7 7') + '</button>' +
+          '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--next" aria-label="' + T.next + '">' + svg('M9 5l7 7-7 7') + '</button>' : '');
       stage = dlg.querySelector('.lightbox__stage');
       track = dlg.querySelector('.lightbox__track');
       count = dlg.querySelector('.lightbox__count');
       text = dlg.querySelector('.lightbox__text');
       slides = [].map.call(dlg.querySelectorAll('.lightbox__slide'), function (el) {
-        var img = el.querySelector('img');
-        // --r: the photo's width / height; css fits it to its frame with it (enlarged where the photo is smaller)
-        img.addEventListener('load', function () { img.style.setProperty('--r', img.naturalWidth / img.naturalHeight); });
-        return { el: el, img: img };
+        var s = { el: el, frame: el.querySelector('.lightbox__frame'), img: el.querySelector('img') };
+        s.img.addEventListener('load', function () { mark(s); });
+        s.img.addEventListener('error', function () { mark(s); });
+        return s;
       });
       document.body.appendChild(dlg);
 
@@ -105,10 +114,19 @@
       stage.addEventListener('pointercancel', release);
     }
 
+    // A slide's state, read from its photo as it is now (so a load that ends after the slide took another photo changes
+    // nothing): still coming, the frame shows the loading panel (css is-loading); failed, the still panel with the image
+    // icon (is-failed); there, --r = the photo's width / height, which css fits to the frame (enlarged where it is smaller).
+    function mark(s) {
+      var img = s.img, ok = img.complete && img.naturalWidth > 0;
+      if (ok) img.style.setProperty('--r', img.naturalWidth / img.naturalHeight);
+      s.frame.classList.toggle('is-loading', !img.complete);
+      s.frame.classList.toggle('is-failed', img.complete && !ok);
+    }
     function fill(s, k) {
       var ph = photos[mod(k)];
       if (s.img.getAttribute('src') !== ph.src) { s.img.style.removeProperty('--r'); s.img.src = ph.src; }
-      if (s.img.complete && s.img.naturalWidth) s.img.style.setProperty('--r', s.img.naturalWidth / s.img.naturalHeight);
+      mark(s);
       s.img.alt = ph.alt;
     }
     // slides in order previous, current, next; only the current one is read out
@@ -119,7 +137,7 @@
       });
     }
     function caption() {
-      count.innerHTML = n > 1 ? '<span aria-hidden="true">' + (i + 1) + ' / ' + n + '</span><span class="vh">Fotografija ' + (i + 1) + ' od ' + n + ': </span>' : '';
+      count.innerHTML = n > 1 ? '<span aria-hidden="true">' + (i + 1) + ' / ' + n + '</span><span class="vh">' + T.of(i + 1, n) + '</span>' : '';
       text.innerHTML = photos[i].caption;
     }
 

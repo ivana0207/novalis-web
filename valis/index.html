@@ -7,9 +7,14 @@
   <meta name="description" content="Bistro i slastičarna Valis na Trgu Bazilike u Novalji. Probajte naš nadaleko poznat sladoled iz vlastite proizvodnje na velikoj terasi ili kavu i vino u kavani na prvom katu.">
   <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
   <link rel="canonical" href="https://novalis-web.vercel.app/valis/">
+  <!-- the same page in English (en/valis/); this Croatian page is the default -->
+  <link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/valis/">
+  <link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/valis/">
+  <link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/valis/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Novalis">
   <meta property="og:locale" content="hr_HR">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:url" content="https://novalis-web.vercel.app/valis/">
   <meta property="og:title" content="Bistro i slastičarna Valis - Novalja | Novalis">
   <meta property="og:description" content="Bistro i slastičarna Valis na Trgu Bazilike u Novalji. Probajte naš nadaleko poznat sladoled iz vlastite proizvodnje na velikoj terasi ili kavu i vino u kavani na prvom katu.">
@@ -19,9 +24,9 @@
   <meta name="theme-color" content="#D6191F">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="../assets/img/poslovnice/valis.jpg" fetchpriority="high">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261021-24">
-  <link rel="stylesheet" href="../css/ds.css?v=20261021-24">
-  <link rel="stylesheet" href="../css/styles.css?v=20261021-24">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/ds.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/styles.css?v=20261023-4">
 </head>
 <!-- Store page: the content comes from data/units.js (unit "valis"), rendered by js/poslovnica.js. -->
 <body data-unit="valis" data-root="../" data-home="../">
@@ -37,15 +42,15 @@
         <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
         <span class="mainnav__sep" aria-hidden="true"></span>
         <a class="nav-link" href="../o-nama/">O nama</a>
-        <a class="nav-link" href="../#posao">Zaposli se</a>
+        <a class="nav-link" href="../zaposli-se/">Zaposli se</a>
         <a class="nav-link" href="../#upit">Kontakt</a>
       </nav>
 
       <div class="bar__end">
         <div class="lang" role="group" aria-label="Jezik / Language">
-          <button type="button" class="lang__btn" data-lang="hr" aria-pressed="true" aria-label="HR - Hrvatski" lang="hr">HR</button>
+          <span class="lang__btn" data-lang="hr" aria-current="true" lang="hr">HR<span class="vh"> - Hrvatski (trenutni jezik)</span></span>
           <span class="lang__sep" aria-hidden="true"></span>
-          <button type="button" class="lang__btn" data-lang="en" aria-pressed="false" aria-label="EN - English" lang="en">EN</button>
+          <a class="lang__btn" data-lang="en" href="../en/valis/" hreflang="en" lang="en">EN<span class="vh"> - English</span></a>
         </div>
         <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Izbornik"><span class="ms" aria-hidden="true">menu</span></button>
       </div>
@@ -54,7 +59,7 @@
         <div id="mobileGroups"><!-- rendered by js/site.js --></div>
         <div class="mm-extra">
           <a href="../o-nama/">O nama</a>
-          <a href="../#posao">Zaposli se</a>
+          <a href="../zaposli-se/">Zaposli se</a>
           <a href="../#upit">Kontakt</a>
         </div>
       </div>
@@ -78,7 +83,7 @@
         <nav class="footer__col" aria-label="Informacije">
           <h2 class="footer__h">Informacije</h2>
           <a href="../o-nama/" class="footer__link">O nama</a>
-          <a href="../#posao" class="footer__link">Zaposli se</a>
+          <a href="../zaposli-se/" class="footer__link">Zaposli se</a>
           <a href="../#cjenici" class="footer__link">Cjenici</a>
           <a href="../pravila-o-privatnosti/" class="footer__link">Pravila o privatnosti</a>
         </nav>
@@ -93,9 +98,9 @@
       <div class="footer__legal">
         <span>© <span data-year>2026</span> Novalis d.o.o. · Sva prava pridržana</span>
         <div class="footer__lang" role="group" aria-label="Jezik / Language">
-          <button type="button" class="lang__btn lang__btn--long" data-lang="hr" aria-pressed="true" lang="hr">Hrvatski</button>
+          <span class="lang__btn lang__btn--long" data-lang="hr" aria-current="true" lang="hr">Hrvatski<span class="vh"> (trenutni jezik)</span></span>
           <span class="lang__sep" aria-hidden="true"></span>
-          <button type="button" class="lang__btn lang__btn--long" data-lang="en" aria-pressed="false" lang="en">English</button>
+          <a class="lang__btn lang__btn--long" data-lang="en" href="../en/valis/" hreflang="en" lang="en">English</a>
         </div>
       </div>
     </div>
@@ -108,11 +113,11 @@
   </nav>
 </div>
 
-<script src="../js/brand-paths.js?v=20261021-24"></script>
-<script src="../data/units.js?v=20261021-24"></script>
-<script src="../js/site.js?v=20261021-24"></script>
-<script src="../js/map.js?v=20261021-24"></script>
-<script src="../js/lightbox.js?v=20261021-24"></script>
-<script src="../js/poslovnica.js?v=20261021-24"></script>
+<script src="../js/brand-paths.js?v=20261023-4"></script>
+<script src="../data/units.js?v=20261023-4"></script>
+<script src="../js/site.js?v=20261023-4"></script>
+<script src="../js/map.js?v=20261023-4"></script>
+<script src="../js/lightbox.js?v=20261023-4"></script>
+<script src="../js/poslovnica.js?v=20261023-4"></script>
 </body>
 </html>

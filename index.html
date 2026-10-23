@@ -7,9 +7,14 @@
   <meta name="description" content="Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka - poslovnice obiteljske tvrtke Novalis u Novalji, otok Pag.">
   <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
   <link rel="canonical" href="https://novalis-web.vercel.app/">
+  <!-- the same page in English (en/index.html, WEB-21); Croatian is the default -->
+  <link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/">
+  <link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/">
+  <link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Novalis">
   <meta property="og:locale" content="hr_HR">
+  <meta property="og:locale:alternate" content="en_GB">
   <meta property="og:url" content="https://novalis-web.vercel.app/">
   <meta property="og:title" content="Novalis Novalja - trgovine, gradnja, gastro i smještaj na Pagu">
   <meta property="og:description" content="Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka - poslovnice obiteljske tvrtke Novalis u Novalji, otok Pag.">
@@ -18,9 +23,9 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#D6191F">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/fonts.css?v=20261021-24">
-  <link rel="stylesheet" href="css/ds.css?v=20261021-24">
-  <link rel="stylesheet" href="css/styles.css?v=20261021-24">
+  <link rel="stylesheet" href="css/fonts.css?v=20261023-4">
+  <link rel="stylesheet" href="css/ds.css?v=20261023-4">
+  <link rel="stylesheet" href="css/styles.css?v=20261023-4">
   <!-- The hero entrance (css/styles.css) holds its first frame until the headline fonts, the icons and the photo are
        ready and the page scripts have run, at most 1.2 s. Otherwise, on a first visit it plays over an empty photo,
        swaps fonts halfway through and stutters while the scripts run. Asking for the fonts here also starts their
@@ -59,15 +64,15 @@
         <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
         <span class="mainnav__sep" aria-hidden="true"></span>
         <a class="nav-link" href="o-nama/">O nama</a>
-        <a class="nav-link" href="#posao">Zaposli se</a>
+        <a class="nav-link" href="zaposli-se/">Zaposli se</a>
         <a class="nav-link" href="#upit">Kontakt</a>
       </nav>
 
       <div class="bar__end">
         <div class="lang" role="group" aria-label="Jezik / Language">
-          <button type="button" class="lang__btn" data-lang="hr" aria-pressed="true" aria-label="HR - Hrvatski" lang="hr">HR</button>
+          <span class="lang__btn" data-lang="hr" aria-current="true" lang="hr">HR<span class="vh"> - Hrvatski (trenutni jezik)</span></span>
           <span class="lang__sep" aria-hidden="true"></span>
-          <button type="button" class="lang__btn" data-lang="en" aria-pressed="false" aria-label="EN - English" lang="en">EN</button>
+          <a class="lang__btn" data-lang="en" href="en/" hreflang="en" lang="en">EN<span class="vh"> - English</span></a>
         </div>
         <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Izbornik"><span class="ms" aria-hidden="true">menu</span></button>
       </div>
@@ -76,7 +81,7 @@
         <div id="mobileGroups"><!-- rendered by js/site.js --></div>
         <div class="mm-extra">
           <a href="o-nama/">O nama</a>
-          <a href="#posao">Zaposli se</a>
+          <a href="zaposli-se/">Zaposli se</a>
           <a href="#upit">Kontakt</a>
         </div>
       </div>
@@ -121,6 +126,7 @@
 
     <div class="cards" id="cards"></div>
 
+    <p class="vh" id="noResultsLive" role="status"></p>
     <div class="no-results" id="noResults" hidden>
       <p>U ovoj kategoriji trenutno ništa nije otvoreno.</p>
       <button type="button" class="link-btn" id="resetFilters">Prikaži sve poslovnice</button>
@@ -217,13 +223,29 @@
             <span class="sent__h">Hvala, upit je poslan.</span>
             <span class="sent__p">Javit ćemo Vam se na <span id="sentEmail">Vaš email</span> u najkraćem mogućem roku.</span>
           </div>
+          <!-- js/app.js turns off the browser's bubbles and writes each error under its field; without JS, required still stops it -->
           <form id="inquiryForm" class="form">
             <div class="form__row">
-              <label class="field">Ime i prezime<input required name="ime" autocomplete="name"></label>
-              <label class="field">Email<input required type="email" name="email" autocomplete="email" spellcheck="false"></label>
+              <div class="field">
+                <label for="upit-ime">Ime i prezime</label>
+                <input id="upit-ime" required name="ime" autocomplete="name">
+                <p class="form__err" id="upit-ime-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="upit-email">Email</label>
+                <input id="upit-email" required type="email" name="email" autocomplete="email" spellcheck="false">
+                <p class="form__err" id="upit-email-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+              </div>
             </div>
-            <label class="field">Vaša poruka<textarea required name="poruka" rows="5"></textarea></label>
-            <label class="check"><input required type="checkbox" name="privola"><span>Upoznat/a sam s <a href="pravila-o-privatnosti/" target="_blank" rel="noopener">Pravilima o privatnosti<span class="vh"> (nova kartica)</span></a> i s time da <span translate="no">Novalis d.o.o.</span> podatke iz obrasca koristi samo za odgovor na moj upit.</span></label>
+            <div class="field">
+              <label for="upit-poruka">Vaša poruka</label>
+              <textarea id="upit-poruka" required name="poruka" rows="5"></textarea>
+              <p class="form__err" id="upit-poruka-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+            </div>
+            <div class="form__check">
+              <label class="check"><input id="upit-privola" required type="checkbox" name="privola"><span>Upoznat/a sam s <a href="pravila-o-privatnosti/" target="_blank" rel="noopener">Pravilima o privatnosti<span class="vh"> (nova kartica)</span></a> i s time da <span translate="no">Novalis d.o.o.</span> podatke iz obrasca koristi samo za odgovor na moj upit.</span></label>
+              <p class="form__err" id="upit-privola-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Greška: </span><span class="form__err-t"></span></span></p>
+            </div>
             <div><button type="submit" class="btn btn--primary btn--lg">Pošalji upit</button></div>
           </form>
         </div>
@@ -247,7 +269,7 @@
         <nav class="footer__col" aria-label="Informacije">
           <h2 class="footer__h">Informacije</h2>
           <a href="o-nama/" class="footer__link">O nama</a>
-          <a href="#posao" class="footer__link">Zaposli se</a>
+          <a href="zaposli-se/" class="footer__link">Zaposli se</a>
           <a href="#cjenici" class="footer__link">Cjenici</a>
           <a href="pravila-o-privatnosti/" class="footer__link">Pravila o privatnosti</a>
         </nav>
@@ -262,9 +284,9 @@
       <div class="footer__legal">
         <span>© <span data-year>2026</span> Novalis d.o.o. · Sva prava pridržana</span>
         <div class="footer__lang" role="group" aria-label="Jezik / Language">
-          <button type="button" class="lang__btn lang__btn--long" data-lang="hr" aria-pressed="true" lang="hr">Hrvatski</button>
+          <span class="lang__btn lang__btn--long" data-lang="hr" aria-current="true" lang="hr">Hrvatski<span class="vh"> (trenutni jezik)</span></span>
           <span class="lang__sep" aria-hidden="true"></span>
-          <button type="button" class="lang__btn lang__btn--long" data-lang="en" aria-pressed="false" lang="en">English</button>
+          <a class="lang__btn lang__btn--long" data-lang="en" href="en/" hreflang="en" lang="en">English</a>
         </div>
       </div>
     </div>
@@ -277,11 +299,11 @@
   </nav>
 </div>
 
-<script src="js/brand-paths.js?v=20261021-24"></script>
-<script src="data/units.js?v=20261021-24"></script>
-<script src="js/site.js?v=20261021-24"></script>
-<script src="js/map.js?v=20261021-24"></script>
-<script src="js/occasions.js?v=20261021-24"></script>
-<script src="js/app.js?v=20261021-24"></script>
+<script src="js/brand-paths.js?v=20261023-4"></script>
+<script src="data/units.js?v=20261023-4"></script>
+<script src="js/site.js?v=20261023-4"></script>
+<script src="js/map.js?v=20261023-4"></script>
+<script src="js/occasions.js?v=20261023-4"></script>
+<script src="js/app.js?v=20261023-4"></script>
 </body>
 </html>

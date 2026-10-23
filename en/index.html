@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novalis Novalja - shops, building, food and stays on Pag</title>
+  <meta name="description" content="From everyday shopping to building and home improvement, from accommodation to a good meal - Novalis, a family company in Novalja on Pag island.">
+  <!-- Search engines & link previews: the site address lives here, in robots.txt and in sitemap.xml -->
+  <link rel="canonical" href="https://novalis-web.vercel.app/en/">
+  <!-- the same page in Croatian (index.html), the default -->
+  <link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/">
+  <link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/">
+  <link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Novalis">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:locale:alternate" content="hr_HR">
+  <meta property="og:url" content="https://novalis-web.vercel.app/en/">
+  <meta property="og:title" content="Novalis Novalja - shops, building, food and stays on Pag">
+  <meta property="og:description" content="From everyday shopping to building and home improvement, from accommodation to a good meal - Novalis, a family company in Novalja on Pag island.">
+  <meta property="og:image" content="https://novalis-web.vercel.app/assets/img/hiper-novalis-storefront.jpg">
+  <meta property="og:image:alt" content="Hiper Novalis shopping centre in Novalja">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#D6191F">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/ds.css?v=20261023-4">
+  <link rel="stylesheet" href="../css/styles.css?v=20261023-4">
+  <!-- The hero entrance (css/styles.css) holds its first frame until the headline fonts, the icons and the photo are
+       ready and the page scripts have run, at most 1.2 s. Otherwise, on a first visit it plays over an empty photo,
+       swaps fonts halfway through and stutters while the scripts run. Asking for the fonts here also starts their
+       download before the page is laid out. Without JS the entrance plays at once -->
+  <script>
+    (function (d) {
+      var root = d.documentElement, done = false;
+      function go() {
+        if (done) return;
+        done = true;
+        requestAnimationFrame(function () { root.classList.remove('hero-wait'); });
+      }
+      root.classList.add('hero-wait');
+      setTimeout(go, 1200);
+      if (!d.fonts || !window.Promise) return;
+      var ready = [d.fonts.load('700 1em Outfit', 'Everything for life'), d.fonts.load('400 1em Figtree', 'From everyday shopping'),
+        d.fonts.load('1em "Material Symbols Rounded"', 'call')];
+      d.addEventListener('DOMContentLoaded', function () {
+        var img = d.querySelector('.hero__bg img');
+        if (img && img.decode) ready.push(img.decode());
+        Promise.all(ready).then(go, go);
+      });
+    })(document);
+  </script>
+</head>
+<!-- The English home page (WEB-21), a twin of index.html: keep the two in step. data-root reaches the site files; with no
+     data-home its section links (#upit, #lokacije) stay on this page. Every page has an English twin under en/ (About
+     us, Careers, Privacy policy, the store pages; js/site.js TWINS); the static links here point at them. -->
+<body data-root="../">
+<div class="page" id="top">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header">
+    <div class="bar">
+      <a href="#top" class="bar__logo" aria-label="Novalis - home" data-logo="novalis" data-logo-mark="yellow" data-logo-color="yellow" data-logo-h="22"></a>
+
+      <nav class="mainnav" aria-label="Main navigation">
+        <div class="mainnav__cats" id="navCats"><!-- rendered by js/site.js --></div>
+        <span class="mainnav__sep" aria-hidden="true"></span>
+        <a class="nav-link" href="about-us/">About us</a>
+        <a class="nav-link" href="careers/">Careers</a>
+        <a class="nav-link" href="#upit">Contact</a>
+      </nav>
+
+      <div class="bar__end">
+        <div class="lang" role="group" aria-label="Language">
+          <a class="lang__btn" data-lang="hr" href="../" hreflang="hr" lang="hr">HR<span class="vh"> - Hrvatski</span></a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn" data-lang="en" aria-current="true" lang="en">EN<span class="vh"> - English (current language)</span></span>
+        </div>
+        <button type="button" class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Menu"><span class="ms" aria-hidden="true">menu</span></button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <div id="mobileGroups"><!-- rendered by js/site.js --></div>
+        <div class="mm-extra">
+          <a href="about-us/">About us</a>
+          <a href="careers/">Careers</a>
+          <a href="#upit">Contact</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-label="Introduction">
+    <div class="hero__bg" aria-hidden="true"><img src="../assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div>
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="section hero__inner">
+      <span class="eyebrow hero__eyebrow">A trusted local brand</span>
+      <h1 class="hero__title">
+        <span class="hero__line"><span class="hero__w" style="--i:0">Everything</span> <span class="hero__w" style="--i:1">for</span> <span class="hero__w" style="--i:2">life</span></span>
+        <span class="hero__line"><span class="hero__w" style="--i:3">on</span> <span class="hero__w" style="--i:4">Pag.</span></span>
+      </h1>
+      <p class="hero__lead">From everyday shopping to building and home improvement, from accommodation to a good meal. Novalis brings together everything we offer for your home, your leisure and your business&nbsp;- all on the island.</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary btn--lg hero__cta" href="#poslovnice">Find a location<span class="hero__btn-icon" aria-hidden="true"><span class="ms">arrow_downward</span></span></a>
+        <a class="btn btn--lg hero__call" href="tel:+38553662001"><span class="hero__call-label">Call us</span><span class="hero__btn-icon" aria-hidden="true"><span class="ms ms--sm">call</span></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POSLOVNICE ============ -->
+  <section id="poslovnice" class="section units" aria-labelledby="h-poslovnice">
+    <div class="units__head">
+      <div class="head">
+        <span class="eyebrow">Locations</span>
+        <h2 id="h-poslovnice" class="h2">Our locations</h2>
+      </div>
+      <span class="season"><span class="ms ms--xs" id="seasonIcon" aria-hidden="true">sunny</span><span id="seasonLabel"></span></span>
+    </div>
+
+    <div class="filters">
+      <div class="filters__tabs" id="filters" role="toolbar" aria-label="Filter locations"></div>
+      <button type="button" class="open-only" id="openOnly" aria-pressed="false">
+        <span class="switch" aria-hidden="true"><span class="switch__knob"></span></span>Open now
+      </button>
+    </div>
+
+    <div class="cards" id="cards"></div>
+
+    <p class="vh" id="noResultsLive" role="status"></p>
+    <div class="no-results" id="noResults" hidden>
+      <p>Nothing in this category is open right now.</p>
+      <button type="button" class="link-btn" id="resetFilters">Show all locations</button>
+    </div>
+  </section>
+
+  <!-- ============ NOVALIS ZA SVAKU PRILIKU ============ -->
+  <section id="prilike" class="occasions" aria-labelledby="h-prilike">
+    <div class="occasions__inner">
+      <div class="occasions__top">
+        <div class="head occasions__head">
+          <span class="eyebrow">Why Novalis</span>
+          <h2 id="h-prilike" class="h2">Novalis for every occasion</h2>
+          <p class="occasions__intro">Our businesses in Novalja work best together. Choose what you are planning and see how we can help you from start to finish.</p>
+        </div>
+        <!-- carousel controls: shown by js/occasions.js once the cards are there -->
+        <div class="occ-nav" id="occNav" hidden>
+          <div class="occ-dots" id="occDots" aria-hidden="true"></div>
+          <button type="button" class="occ-arrow" id="occPrev" aria-controls="occasions" aria-label="Previous occasion"><svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
+          <button type="button" class="occ-arrow occ-arrow--next" id="occNext" aria-controls="occasions" aria-label="Next occasion"><svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+      <div class="occ-track" id="occasions"><!-- rendered by js/occasions.js --></div>
+      <p class="vh" id="occLive" aria-live="polite"></p>
+      <!-- what every occasion has in common: four facts on white Novalis tabs -->
+      <div class="occ-why" id="occWhy">
+        <h3 class="occ-why__h">Wide choice, local approach.</h3>
+        <ul class="occ-facts" role="list">
+          <li class="occ-fact occ-fact--lead" style="--j:0">
+            <span class="occ-fact__fig occ-fact__num" aria-hidden="true"><span data-count="100000">100,000</span><span class="occ-fact__plus">+</span></span>
+            <p class="occ-fact__t">The largest selection of products</p>
+            <p class="occ-fact__d">Over 100,000 products on offer - from fresh bread to tools.</p>
+            <svg class="occ-fact__mark" viewBox="4 13 92 82" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6 20a5 5 0 0 1 5-5h8a6 6 0 0 1 6 5l1 5h60a5 5 0 0 1 5 6l-5 26a7 7 0 0 1-7 6H34l1 5h45a5 5 0 0 1 0 10H31a6 6 0 0 1-6-5L15 25h-4a5 5 0 0 1-5-5zM29 86a7 7 0 1 0 14 0a7 7 0 1 0-14 0zM67 86a7 7 0 1 0 14 0a7 7 0 1 0-14 0z"/></svg>
+          </li>
+          <li class="occ-fact" style="--j:1">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><span class="ms" aria-hidden="true">local_shipping</span></span></span>
+            <p class="occ-fact__t">Delivery to your door</p>
+            <p class="occ-fact__d">Delivery by arrangement.</p>
+            <span class="occ-fact__mark ms" aria-hidden="true">local_shipping</span>
+          </li>
+          <li class="occ-fact" style="--j:2">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><span class="ms" aria-hidden="true">directions_boat</span></span></span>
+            <p class="occ-fact__t">Our own imports</p>
+            <p class="occ-fact__d">A range imported directly from Italy.</p>
+            <span class="occ-fact__mark ms" aria-hidden="true">directions_boat</span>
+          </li>
+          <li class="occ-fact occ-fact--link" style="--j:3">
+            <span class="occ-fact__fig"><span class="occ-fact__ico"><svg class="picto" viewBox="6 14 88 80" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M8 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2zM23 56h10v10H23zM52 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H54a2 2 0 0 1-2-2zM67 56h10v10H67zM30 18a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2zM45 16h10v10H45z"/></svg></span></span>
+            <p class="occ-fact__t">Wholesale</p>
+            <p class="occ-fact__d">Extra benefits for partners.</p>
+            <a class="occ-fact__link" href="wholesale/">Become a partner<svg class="occ-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+            <svg class="occ-fact__mark" viewBox="6 14 88 80" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M8 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2zM23 56h10v10H23zM52 58a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H54a2 2 0 0 1-2-2zM67 56h10v10H67zM30 18a2 2 0 0 1 2-2h36a2 2 0 0 1 2 2v32a2 2 0 0 1-2 2H32a2 2 0 0 1-2-2zM45 16h10v10H45z"/></svg>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOKACIJE ============ -->
+  <section id="lokacije" class="section find" aria-labelledby="h-nas">
+    <div class="head" id="locHead">
+      <span class="eyebrow">Where we are</span>
+      <h2 id="h-nas" class="h2">Find us</h2>
+    </div>
+    <div class="find__bar">
+      <div class="seg" role="group" aria-label="Location view">
+        <button type="button" class="seg__btn" data-view="map" aria-pressed="true"><span class="ms ms--sm" aria-hidden="true">map</span>Map</button>
+        <button type="button" class="seg__btn" data-view="list" aria-pressed="false"><span class="ms ms--sm" aria-hidden="true">format_list_bulleted</span>List</button>
+      </div>
+      <p class="find__status"><span class="dot dot--open"></span><span id="openStatus"></span></p>
+    </div>
+    <!-- The map (js/map.js) is drawn into #mapCanvas when this section comes near; pins and the card come from js/app.js -->
+    <div class="map" id="map">
+      <div class="map__canvas" id="mapCanvas"></div>
+      <p class="map__note map__note--fail" id="mapFail" hidden>The map cannot be shown right now.
+        <button type="button" class="map__link" data-view="list">Show the list of locations</button></p>
+      <p class="map__note map__note--msg" id="mapMsg" role="status"></p>
+      <div id="mapCard"></div>
+    </div>
+    <ul class="loc-list" id="locList" hidden></ul>
+  </section>
+
+  <!-- ============ UPIT ============ -->
+  <section id="upit" class="inquiry" aria-labelledby="h-upit">
+    <div class="inquiry__inner">
+      <div class="inquiry__grid">
+        <div class="head inquiry__intro">
+          <span class="eyebrow">Contact</span>
+          <h2 id="h-upit" class="inquiry__h">Have a question?</h2>
+          <p>Send us your enquiry and we will do our best to reply as soon as possible.</p>
+        </div>
+        <div>
+          <div class="sent" id="formSent" role="status" hidden>
+            <span class="sent__h">Thank you, your enquiry has been sent.</span>
+            <span class="sent__p">We will get back to you at <span id="sentEmail">your email address</span> as soon as possible.</span>
+          </div>
+          <!-- js/app.js turns off the browser's bubbles and writes each error under its field; without JS, required still stops it -->
+          <form id="inquiryForm" class="form">
+            <div class="form__row">
+              <div class="field">
+                <label for="upit-ime">Full name</label>
+                <input id="upit-ime" required name="ime" autocomplete="name">
+                <p class="form__err" id="upit-ime-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+              <div class="field">
+                <label for="upit-email">Email</label>
+                <input id="upit-email" required type="email" name="email" autocomplete="email" spellcheck="false">
+                <p class="form__err" id="upit-email-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="upit-poruka">Your message</label>
+              <textarea id="upit-poruka" required name="poruka" rows="5"></textarea>
+              <p class="form__err" id="upit-poruka-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+            </div>
+            <div class="form__check">
+              <label class="check"><input id="upit-privola" required type="checkbox" name="privola"><span>I have read the <a href="privacy-policy/" target="_blank" rel="noopener">privacy policy<span class="vh"> (new tab)</span></a> and I understand that <span translate="no">Novalis d.o.o.</span> will use the data from this form only to reply to my enquiry.</span></label>
+              <p class="form__err" id="upit-privola-err" hidden><span class="form__mark" aria-hidden="true">!</span><span><span class="vh">Error: </span><span class="form__err-t"></span></span></p>
+            </div>
+            <div><button type="submit" class="btn btn--primary btn--lg">Send enquiry</button></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__cols">
+        <div class="footer__brand">
+          <span data-logo="novalis" data-logo-color="yellow" data-logo-h="26"></span>
+          <p>Enjoyment, passion and trust - in Novalja since 1990.</p>
+        </div>
+        <nav class="footer__col" aria-label="Locations">
+          <h2 class="footer__h">Locations</h2>
+          <div class="footer__stack" id="footerUnits"><!-- rendered by js/site.js --></div>
+        </nav>
+        <nav class="footer__col" aria-label="Information">
+          <h2 class="footer__h">Information</h2>
+          <a href="about-us/" class="footer__link">About us</a>
+          <a href="careers/" class="footer__link">Careers</a>
+          <a href="#cjenici" class="footer__link">Price lists</a>
+          <a href="privacy-policy/" class="footer__link">Privacy policy</a>
+        </nav>
+        <div class="footer__col footer__col--contact">
+          <h2 class="footer__h">Contact</h2>
+          <a href="tel:+38553662001" class="footer__link footer__link--bold">+385 53 662 001</a>
+          <span class="footer__link">Fax: +385 53 662 007</span>
+          <a href="mailto:info@novalis.com.hr" class="footer__link">info@novalis.com.hr</a>
+          <span class="footer__addr">Josipa Kunkere 8<br>53291 Novalja, Pag island</span>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© <span data-year>2026</span> Novalis d.o.o. · All rights reserved</span>
+        <div class="footer__lang" role="group" aria-label="Language">
+          <a class="lang__btn lang__btn--long" data-lang="hr" href="../" hreflang="hr" lang="hr">Hrvatski</a>
+          <span class="lang__sep" aria-hidden="true"></span>
+          <span class="lang__btn lang__btn--long" data-lang="en" aria-current="true" lang="en">English<span class="vh"> (current language)</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ MOBILE QUICK BUTTONS ============ -->
+  <nav class="quickbar" aria-label="Quick actions">
+    <a href="tel:+38553662001" class="quickbar__btn quickbar__call"><span class="ms" aria-hidden="true">call</span><span class="vh">Call</span></a>
+    <a href="#lokacije" class="quickbar__btn quickbar__map"><span class="ms" aria-hidden="true">map</span><span class="vh">Map of locations</span></a>
+  </nav>
+</div>
+
+<script src="../js/brand-paths.js?v=20261023-4"></script>
+<script src="../data/units.js?v=20261023-4"></script>
+<script src="../js/site.js?v=20261023-4"></script>
+<script src="../js/map.js?v=20261023-4"></script>
+<script src="../js/occasions.js?v=20261023-4"></script>
+<script src="../js/app.js?v=20261023-4"></script>
+</body>
+</html>
