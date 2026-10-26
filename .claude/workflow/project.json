@@ -99,7 +99,8 @@
         "robots.txt",
         "sitemap.xml",
         "vercel.json"
-      ]
+      ],
+      "generated": "tools/static-fallback.js writes marked <!-- static:… --> regions in the 22 pages and llms.txt (WEB-22)"
     }
   },
   "commands": {
@@ -114,7 +115,8 @@
     "build": null,
     "lint": null,
     "typecheck": null,
-    "unitTests": null
+    "unitTests": null,
+    "staticFallback": "node tools/static-fallback.js (writes the static regions + llms.txt from data/units.js; --check only reports drift, also run by smoke)"
   },
   "browser": {
     "automation": "playwright-skill (~/.claude/skills/playwright-skill, run scripts with its run.js or require its node_modules/playwright)",

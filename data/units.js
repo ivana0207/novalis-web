@@ -51,9 +51,12 @@
      * schema: the unit's schema.org business type for search engines (merged into its JSON-LD).
      * geo: [lat, lng] for the maps and the Upute links, from OpenStreetMap (Market Novalis matches novalis.hr's map,
      *   Pod Zvon is its Google Maps listing). Veleprodaja is an estimate until Novalis confirms (no address yet, placed
-     *   at Hiper Novalis). Units on the same spot sit side by side on the map.
+     *   at Hiper Novalis). Units on the same spot sit side by side on the map. geoEstimate: true = geo is only an estimate:
+     *   the maps use it, search engines don't get it (no geo in the JSON-LD, js/schema.js).
      * gmaps: the share link of the unit's official Google Business listing (Google Maps > Podijeli). With it, the address,
      *   the store page's map pin and Upute open that listing (the pin still sits on geo); without it, Upute routes to geo.
+     *   Search engines get it as the unit's sameAs, unless gmapsOf names the unit the listing belongs to (Veleprodaja
+     *   uses Hiper Novalis's).
      * hours: { summer, winter } weekly tables (see the top of this file), seasons from `seasons`. A day's hours come from
      *   the first of these that applies: exceptions > openPeriod > holidays (closedOnHolidays) > that season's weekly table.
      * closedOnHolidays: true = closed all day on the public holidays (`holidays`); without it the unit keeps its hours.
@@ -100,7 +103,7 @@
           mark: { logo: 'assets/brand/hiper-novalis-stacked-yellow.svg', w: 224, h: 88, badge: 'yellow' },
           label: 'Trgovine',
           title: 'Od namirnica do nautike.',
-          lead: 'Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.',
+          lead: 'Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike, mobilni i fiksni telefoni te oprema za mobitele i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.',
           photo: IMG + 'hiper-novalis.jpg', photoAlt: 'Hiper Novalis: totem s piktogramima odjela i ulaz u centar', photoPos: '0% 50%',
           // WEB-8 (design approved 2026-10-21): departments from novalis.hr (Hiper Novalis, Kontakt), floors from Novalis.
           // Drafts for Novalis to confirm: the Delikatese line, the 1. kat examples, the "svježe" claim (the import
@@ -140,7 +143,7 @@
           en: {
             label: 'Shops',
             title: 'From groceries to boating gear.',
-            lead: 'Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.',
+            lead: 'Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department, mobile and landline phones and phone accessories, and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.',
             photoAlt: 'Hiper Novalis: a sign with department pictograms and the entrance to the centre',
             offerLead: 'Two floors and ten departments: groceries, delicatessen, a restaurant, drinks and everything for the beach and garden on the ground floor, and furniture, appliances, computers, school supplies and everything else for the home upstairs. Some of the products we offer are unique in Croatia, because we source and import ourselves everything that is in demand but cannot be found in this region.',
             offer: [
@@ -267,11 +270,11 @@
           ],
           // Brendovi (WEB-11): the 35 brands on novalis.hr's Hiper Bau page, alphabetical. [name, logo file in
           // assets/img/brendovi/ (.webp), official site]: the brand's site for Croatia, else its European or international one
-          // (checked 2026-10-21). null = no confirmed site yet (Draco: no website found; Mariner: logo doesn't match
-          // mariner.it), shown without a link until Novalis confirms.
+          // (checked 2026-10-21; 3M, Draco, Ytong 2026-10-26: 3m.com.hr is a parked domain now). null = no official site
+          // found (Mariner: the logo matches neither mariner.it nor any other Mariner), shown as a logo without a link.
           brandsLead: 'U ponudi su proizvodi više od 30 proizvođača, od građevinskog materijala i keramike do alata i vrtnog programa.',
           brands: [
-            ['3M', '3m', 'https://www.3m.com.hr/3M/hr_HR/company-hr/'],
+            ['3M', '3m', 'https://www.3m.com/3M/hr_HR/p/'],
             ['Atlas Concorde', 'atlas-concorde', 'https://www.atlasconcorde.com/en'],
             ['Baumit', 'baumit', 'https://baumit.hr/'],
             ['Bekament', 'bekament', 'https://bekament.hr/'],
@@ -283,7 +286,7 @@
             ['Chromos', 'chromos', 'https://chromos.hr/'],
             ['Claber', 'claber', 'https://www.claber.com/hr/'],
             ['Del Conca', 'del-conca', 'https://www.delconca.com/en/'],
-            ['Draco', 'draco', null],
+            ['Draco', 'draco', 'https://dracopro.com/'],
             ['Ecoceramic', 'ecoceramic', 'https://www.ecoceramic.es/en/'],
             ['Einhell', 'einhell', 'https://www.einhell.hr/'],
             ['Felco', 'felco', 'https://www.felco.com/'],
@@ -305,7 +308,7 @@
             ['TKK', 'tkk', 'https://tkk-group.com/hr'],
             ['Vargon', 'vargon', 'https://www.wienerberger.hr/proizvodi/vargon.html'],
             ['Weber', 'weber', 'https://www.saint-gobain.hr/weber'],
-            ['Ytong', 'ytong', 'https://www.xella.hr/hr_HR/']
+            ['Ytong', 'ytong', 'https://www.xella.hr/hr_HR/ytong']
           ],
           gallery: [
             [null, 'Foto: ulaz u Hiper Bau i natkriveni parking'],
@@ -348,7 +351,8 @@
         id: 'veleprodaja', slug: 'veleprodaja', category: 'veleprodaja', name: 'Veleprodaja',
         desc: 'Tvrtka Novalis nudi veleprodaju široke palete proizvoda uz uslugu dostave.',
         address: 'Novalja', phone: '053 663 300', tel: '+38553663300', email: 'veleprodaja@novalis.com.hr',
-        promo: false, geo: [44.54728, 14.89527], gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', schema: { '@type': 'WholesaleStore' },
+        promo: false, geo: [44.54728, 14.89527], geoEstimate: true, gmaps: 'https://maps.app.goo.gl/kH4aykgjnz1Zgtrm6', gmapsOf: 'hiper-novalis',
+        schema: { '@type': 'WholesaleStore' },
         closedOnHolidays: true,
         hours: {
           summer: week(wk('06:00', '14:00'), wk('06:00', '12:00'), null),

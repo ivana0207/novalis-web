@@ -3,6 +3,7 @@
 // Pages come from .claude/workflow/project.json (stack.structure.pages). Per page and viewport it checks:
 // HTTP 200, console/page errors, failed same-origin requests, horizontal overflow, broken images,
 // axe WCAG 2.2 A/AA, and once per page: landmarks/skip link/h1/lang/title/description/canonical + internal links.
+// Once per run (site level): tools/static-fallback.js --check, the static fallback must match data/units.js (WEB-22).
 //
 // Usage: node .claude/workflow/smoke.js [--root <dir>] [--pages index,valis] [--widths 390,820,1440]
 //                                       [--no-axe] [--shots <dir>] [--json <file>] [--baseline <json>]
@@ -86,6 +87,15 @@ function serve(root) {
   const warn = (page, width, check, detail) => results.push({ level: 'WARN', page, width, check, detail });
   const linkCache = new Map();
   if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
+
+  // Site level, once per run: the static fallback written into the pages from data/units.js (tools/static-fallback.js,
+  // WEB-22) must match the data. Skipped in a checkout without the generator.
+  const gen = path.join(ROOT, 'tools', 'static-fallback.js');
+  if (fs.existsSync(gen)) {
+    const r = require('child_process').spawnSync(process.execPath, [gen, '--check', '--root', ROOT], { encoding: 'utf8' });
+    if (r.status === 1) fail('site', 0, 'static', (r.stdout || '').trim());   // "static fallback out of date: <files> (run: …)"
+    else if (r.status !== 0) fail('site', 0, 'static', 'static fallback check failed: ' + ((r.stderr || r.stdout || String(r.error)).trim().split('\n').find((l) => /Error/.test(l)) || 'exit ' + r.status));
+  }
 
   for (const slug of PAGES) {
     for (const [wi, width] of WIDTHS.entries()) {

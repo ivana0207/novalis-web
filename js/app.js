@@ -436,28 +436,10 @@
     hero.addEventListener('pointerleave', function () { aim(0, 0); });
   }
 
-  // Search engines: the company and its units with address and phone (each store page describes its own unit in full;
-  // opening hours are published there only, once confirmed).
+  // Search engines: the company and its units with address and phone (js/schema.js; the same graph is in the page's
+  // HTML for crawlers without JavaScript, data-ld="site")
   function addStructuredData() {
-    var C = D.company;
-    NV.addJSONLD({
-      '@context': 'https://schema.org',
-      '@graph': [
-        { '@type': 'WebSite', '@id': NV.HOME_URL + '#web', name: 'Novalis', url: NV.HOME_URL, inLanguage: NV.LANG, publisher: { '@id': NV.ORG['@id'] } },
-        Object.assign({}, NV.ORG, {
-          alternateName: 'Novalis', foundingDate: String(C.founded), telephone: C.tel, email: C.email,
-          address: NV.postalAddress(C.address),
-          subOrganization: NV.units.map(function (u) {
-            // a unit named differently in the page language keeps its Croatian name too (Wholesale: Veleprodaja; PO, WEB-21)
-            var name = NV.tx(u, 'name');
-            return Object.assign({}, u.schema, {
-              '@id': NV.unitId(u), name: name, alternateName: name !== u.name ? u.name : undefined, url: NV.absUrl(NV.unitHref(u)),
-              address: NV.postalAddress(u.address), telephone: u.tel || C.tel
-            });
-          })
-        })
-      ]
-    });
+    NV.addJSONLD(window.NV_SCHEMA.landing(D, { lang: NV.LANG, root: NV.ROOT_URL, home: NV.HOME_URL }), 'site');
   }
 
   render();

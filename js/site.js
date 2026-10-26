@@ -191,22 +191,19 @@ window.NV = (function () {
   // The site root: the company and each business have one @id on every page, whatever the page's language
   var ROOT_URL = absUrl(ROOT || './');
 
-  var ORG = { '@type': 'Organization', '@id': ROOT_URL + '#organizacija', name: D.company.name, url: ROOT_URL };
-  function postalAddress(address) {
-    var street = address.split(',')[0].trim();
-    return {
-      '@type': 'PostalAddress', streetAddress: street === D.company.town ? undefined : street,
-      addressLocality: D.company.town, postalCode: D.company.postalCode, addressCountry: 'HR'
-    };
-  }
-  // A unit's own page (or website): its JSON-LD @id, so the landing page and the store page describe the same business.
-  // Always the Croatian page's address, so the English pages name the same business.
-  function unitId(u) { return u.url ? u.url : absUrl(ROOT + u.slug + '/') + '#poslovnica'; }
-  function addJSONLD(data) {
-    var el = document.createElement('script');
-    el.type = 'application/ld+json';
-    el.textContent = JSON.stringify(data).replace(/</g, '\\u003c');
-    document.head.appendChild(el);
+  // The graphs come from js/schema.js (NV_SCHEMA), loaded by the pages that publish them. The page's HTML already
+  // holds them for crawlers without JavaScript (<script type="application/ld+json" data-ld="key">, written by
+  // tools/static-fallback.js): the script with the same key gets this page's version (dated hours included), so each
+  // graph is in the page once.
+  function addJSONLD(data, key) {
+    var el = key && document.querySelector('script[type="application/ld+json"][data-ld="' + key + '"]');
+    if (!el) {
+      el = document.createElement('script');
+      el.type = 'application/ld+json';
+      if (key) el.setAttribute('data-ld', key);
+      document.head.appendChild(el);
+    }
+    el.textContent = window.NV_SCHEMA.json(data);
   }
 
   /* ---------------- Opening hours (Europe/Zagreb) ---------------- */
@@ -746,7 +743,7 @@ window.NV = (function () {
     $: $, $$: $$, esc: esc, setHTML: setHTML, headerOffset: headerOffset,
     goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, tileSVG: tileSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
-    absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ORG: ORG, postalAddress: postalAddress, unitId: unitId, addJSONLD: addJSONLD,
+    absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ROOT_URL: ROOT_URL, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays
   };
 })();

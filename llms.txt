@@ -1,0 +1,68 @@
+# Novalis d.o.o. - Novalja, otok Pag
+
+> Novalis je obiteljska tvrtka iz Novalje na otoku Pagu: trgovine, shopping centar HIPER NOVALIS, građevinski materijal, veleprodaja, slastičarna, bistro, konoba i smještaj.
+> Novalis is a family company in Novalja on the island of Pag, Croatia: shops, the HIPER NOVALIS shopping centre, building materials, wholesale, a pastry shop, a bistro, a konoba and accommodation.
+
+Opening hours are shown on each page; most are provisional until Novalis confirms them.
+
+## Trgovine / Shops
+
+### Hiper Novalis
+- [Hiper Novalis](https://novalis-web.vercel.app/hiper-novalis/) (hr): Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike, mobilni i fiksni telefoni te oprema za mobitele i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.
+- [Hiper Novalis](https://novalis-web.vercel.app/en/hiper-novalis/) (en): Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department, mobile and landline phones and phone accessories, and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.
+- Adresa / Address: Čiponjac III/2, Novalja
+- Telefon / Phone: 053 663 300 (+38553663300)
+- E-mail: hiper.novalis@novalis.com.hr
+
+### Market Novalis
+- [Market Novalis](https://novalis-web.vercel.app/market-novalis/) (hr): Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje na 600 m², u zgradi robne kuće Novalis.
+- [Market Novalis](https://novalis-web.vercel.app/en/market-novalis/) (en): A 600 m² shop for food and everyday goods, in the Novalis department store building.
+- Adresa / Address: Josipa Kunkere 8, Novalja
+- Telefon / Phone: 098 441 149 (+38598441149)
+- E-mail: robnakucanovalis@gmail.com
+
+### Hiper Bau
+- [Hiper Bau](https://novalis-web.vercel.app/hiper-bau/) (hr): Otvoren 2019. u gospodarskoj zoni: 15.000 m², s 8.000 m² zatvorenog prostora i natkrivenim parkingom. Građevinski materijal, krovni sustavi, suha gradnja, salon keramike, alati i nautika.
+- [Hiper Bau](https://novalis-web.vercel.app/en/hiper-bau/) (en): Opened in 2019 in the business zone: 15,000 m², with 8,000 m² of indoor space and a covered car park. Building materials, roofing systems, drywall, a ceramics showroom, tools and boating gear.
+- Adresa / Address: Čiponjac III/3, Novalja
+- Telefon / Phone: 099 5476 792 (+385995476792)
+- E-mail: hiperbau@novalis.hr
+
+## Smještaj / Accommodation
+
+### B&B Novalis
+- [B&B Novalis](https://novalis-web.vercel.app/hotel-novalis/) (hr): Uređen pomno i s ljubavlju, u samom centru Novalje. Odmorite se u udobnim sobama s king size krevetima ili u hidromasažnoj kadi na krovnoj terasi, uz pogled na more ili novaljske krovove i zvonike.
+- [B&B Novalis](https://novalis-web.vercel.app/en/hotel-novalis/) (en): Decorated with care and love, in the very centre of Novalja. Relax in comfortable rooms with king-size beds or in a hydromassage tub on the roof terrace, with a view of the sea or of Novalja's rooftops and bell towers.
+- Adresa / Address: Josipa Kunkere 8, Novalja
+- Telefon / Phone: 053 662 222 (+38553662222)
+- E-mail: hotel@novalis.hr
+
+## Gastro / Food & drink
+
+### Bistro i slastičarna Valis / Valis Bistro & Pastry Shop
+- [Bistro i slastičarna Valis](https://novalis-web.vercel.app/valis/) (hr): Naš sladoled iz vlastite proizvodnje nadaleko je poznat. Uživajte u njemu na velikoj terasi caffea, a za vrhunsku kavu i vino svratite u kavanu na prvom katu.
+- [Valis Bistro & Pastry Shop](https://novalis-web.vercel.app/en/valis/) (en): Our home-made ice cream is known far and wide. Enjoy it on the café's large terrace, and for excellent coffee and wine, drop in to the coffee house on the first floor.
+- Adresa / Address: Trg Bazilike 3, Novalja
+- Telefon / Phone: 053 663 546 (+38553663546)
+- E-mail: valis@novalis.hr
+
+### Bistro Pod Zvon
+- [Bistro Pod Zvon](https://novalis-web.vercel.app/pod-zvon/) (hr): Konoba i pizzerija u samom centru Novalje, za najizbirljivije goste. Svratite na dalmatinska jela s kaminskog ložišta, pizzu iz krušne peći ili čašu vina.
+- [Bistro Pod Zvon](https://novalis-web.vercel.app/en/pod-zvon/) (en): A konoba and pizzeria in the very centre of Novalja, for the most discerning guests. Drop in for Dalmatian dishes from the open hearth, pizza from the bread oven or a glass of wine.
+- Adresa / Address: Ulica kralja Zvonimira 1a, Novalja
+- Telefon / Phone: 053 679 555 (+38553679555)
+- E-mail: zvon@novalis.com.hr
+
+## Veleprodaja / Wholesale
+
+### Veleprodaja / Wholesale
+- [Veleprodaja](https://novalis-web.vercel.app/veleprodaja/) (hr): Na jednom mjestu nabavite sve što vam je potrebno za poslovanje, od voća, povrća i namirnica za ugostiteljstvo do opreme, pića i kave.
+- [Wholesale](https://novalis-web.vercel.app/en/wholesale/) (en): Get everything your business needs in one place, from fruit, vegetables and food for the hospitality trade to equipment, drinks and coffee.
+- Adresa / Address: Novalja
+- Telefon / Phone: 053 663 300 (+38553663300)
+- E-mail: veleprodaja@novalis.com.hr
+
+## O nama / About
+
+- [O nama](https://novalis-web.vercel.app/o-nama/) (hr), [About us](https://novalis-web.vercel.app/en/about-us/) (en)
+- [Zaposli se](https://novalis-web.vercel.app/zaposli-se/) (hr), [Careers](https://novalis-web.vercel.app/en/careers/) (en)

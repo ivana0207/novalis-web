@@ -480,60 +480,16 @@
   }
 
   /* ---------------- Search engines ---------------- */
-  // Only confirmed opening hours are published to search engines; placeholders would show wrong hours on Google.
-  var DOW = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  // The dated hours below are for this year in Novalja (not in the visitor's time zone, which may already be in the next)
-  var YEAR = NV.zagrebNow().y;
-  function isoDay(md, shift) {
-    var dt = new Date(Date.UTC(YEAR, +md.slice(0, 2) - 1, +md.slice(3) + (shift || 0)));
-    return dt.toISOString().slice(0, 10);
-  }
-  function hoursSpec(hrs, from, through) {
-    var specs = [];
-    hrs.forEach(function (t, d) {
-      if (!t) return;
-      var closes = t[1] === '24:00' ? '23:59' : t[1];
-      var spec = specs.find(function (x) { return x.opens === t[0] && x.closes === closes; });
-      if (spec) spec.dayOfWeek.push(DOW[d]);
-      else specs.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: [DOW[d]], opens: t[0], closes: closes, validFrom: from, validThrough: through });
-    });
-    return specs;
-  }
-  function openingHours() {
-    if (!u.hoursConfirmed) return undefined;
-    if (allYear) return hoursSpec(u.hours.summer);
-    return hoursSpec(u.hours.winter, isoDay('01-01'), isoDay(S.start, -1))
-      .concat(hoursSpec(u.hours.summer, isoDay(S.start), isoDay(S.end)))
-      .concat(hoursSpec(u.hours.winter, isoDay(S.end, 1), isoDay('12-31')));
-  }
-  // This year's days with hours of their own (public holidays the unit closes on, dated exceptions); closed all day is
-  // 00:00 - 00:00.
-  function specialHours() {
-    if (!u.hoursConfirmed) return undefined;
-    var specs = NV.specialDays(u, YEAR).map(function (s) {
-      var t = s.t || ['00:00', '00:00'];
-      return { '@type': 'OpeningHoursSpecification', opens: t[0], closes: t[1] === '24:00' ? '23:59' : t[1], validFrom: s.iso, validThrough: s.iso };
-    });
-    return specs.length ? specs : undefined;
-  }
-
-  // In the page language; a unit named differently there keeps its Croatian name too (as on the home page)
+  // The business and its breadcrumb trail (js/schema.js). The page's HTML holds the same graphs for crawlers without
+  // JavaScript (data-ld="business", "crumbs"); here they also get the hours that need this year's dates, in Novalja
+  // (not in the visitor's time zone, which may already be in the next). Only confirmed hours are published.
   function addStructuredData() {
-    var business = Object.assign({ '@context': 'https://schema.org' }, u.schema, {
-      '@id': NV.unitId(u), name: NAME, alternateName: NAME !== u.name ? u.name : undefined, description: p.lead, url: NV.PAGE_URL,
-      image: [p.photo].concat(p.gallery.map(function (g) { return g[0]; })).filter(Boolean).map(function (src) { return NV.absUrl(asset(src)); }),
-      telephone: u.tel || D.company.tel, email: u.email, address: NV.postalAddress(u.address), hasMap: mapsHref,
-      openingHoursSpecification: openingHours(), specialOpeningHoursSpecification: specialHours(), parentOrganization: NV.ORG
+    var ld = window.NV_SCHEMA.store(D, u, {
+      lang: NV.LANG, root: NV.ROOT_URL, home: NV.HOME_URL, page: NV.PAGE_URL, homeLabel: T.home,
+      year: NV.zagrebNow().y, specialDays: NV.specialDays
     });
-    var crumbs = {
-      '@context': 'https://schema.org', '@type': 'BreadcrumbList',
-      // "Poslovnice" is a section of the home page, not a page of its own, so the trail is two pages long
-      itemListElement: [[T.home, NV.HOME_URL], [NAME, NV.PAGE_URL]].map(function (c, i) {
-        return { '@type': 'ListItem', position: i + 1, name: c[0], item: c[1] };
-      })
-    };
-    NV.addJSONLD(business);
-    NV.addJSONLD(crumbs);
+    NV.addJSONLD(ld.business, 'business');
+    NV.addJSONLD(ld.crumbs, 'crumbs');
   }
 
   /* ---------------- Render ---------------- */

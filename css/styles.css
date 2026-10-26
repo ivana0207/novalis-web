@@ -281,6 +281,11 @@ button { font: inherit; }
 .head { display: flex; flex-direction: column; gap: 12px; }
 .eyebrow { font: 700 13px/1 var(--font-primary); letter-spacing: .12em; text-transform: uppercase; color: var(--nv-red); }
 .h2 { margin: 0; font: 700 clamp(34px, 3.6vw, 52px)/1.05 var(--font-display); letter-spacing: -.025em; color: var(--ink); }
+/* Static fallback (WEB-22): a store page's facts and the landing's unit list, written into the HTML from data/units.js
+   by tools/static-fallback.js for crawlers that don't run JavaScript. With JavaScript it never shows (a <head> script
+   puts class "js" on <html> before the first paint) and the page scripts replace it; without, it is plain text. */
+.js .static { display: none; }
+.cards > .static { grid-column: 1 / -1; }
 
 /* ---------- Hero ---------- */
 /* fills the first screen: the Paški most photo under an even white veil, the copy centred on it (label, headline,
@@ -934,8 +939,9 @@ html[lang="en"] .occ-card__h { hyphens: auto; }
   position: relative; margin-top: 24px; height: 480px; border-radius: var(--shape-tab); overflow: hidden; background: #EFEBE5;
 }
 /* store pages: poslovnica.js fills <main> after load; until then it holds a screen so the footer is not painted up
-   top and pushed down (CLS) */
-main#store:empty { min-height: 100vh; }
+   top and pushed down (CLS). With JS the static fallback in it is hidden (WEB-22), so <main> holds the screen until
+   poslovnica.js has marked the page (.store, in the same step as it fills <main>) */
+main#store:empty, .js .page:not(.store) > main#store { min-height: 100vh; }
 .map__canvas, .store-map__canvas { position: absolute; inset: 0; }
 .map__note {
   position: absolute; z-index: 3; left: 16px; bottom: 16px; max-width: calc(100% - 32px); margin: 0; padding: 10px 14px;

@@ -75,9 +75,19 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
 - **SEO:** public address for now is https://novalis-web.vercel.app/ (user's choice, 2026-10-10). It is written in each page's `<head>`
   (canonical + Open Graph), `robots.txt` and `sitemap.xml`; JSON-LD URLs follow the canonical link. Page `<head>` tags (title, description,
   og:image) are per page — keep them in sync with `data/units.js`. Business info for Google (schema.org JSON-LD) is built from the data
-  (`schema`, address, phone); only hours with `hoursConfirmed: true` are published. `vercel.json` adds trailing slashes and redirects.
-- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 22 pages (11 Croatian, 11 English), `robots.txt`,
-  `sitemap.xml` and `PAGE` in `api/_lib/mail.mjs` (plus `ALLOWED_ORIGINS` if the function is reached from another host); add 301s in `vercel.json` for old WordPress URLs (`/bistro-i-slasticarna-valis/` → `/valis/`, `/about/` → `/o-nama/`,
+  (`schema`, address, phone) by one builder, `js/schema.js` (`NV_SCHEMA`, loaded by the landing and store pages), used by the pages and by the generator below;
+  only hours with `hoursConfirmed: true` are published, and year-dated (seasonal) hours only by the browser. Units get `geo` and `sameAs` (their Google listing)
+  unless `geoEstimate` / `gmapsOf` say the value is borrowed (Veleprodaja); units whose offer lines have details get `hasOfferCatalog`. `vercel.json` adds trailing slashes and redirects.
+  WEB-22 (2026-10-24) audit, query map, paid options, GEO plan, monthly measurement routine and the off-site checklist for Novalis: `.jira-work/WEB-22/`.
+- **Static fallback (WEB-22):** AI crawlers don't run JavaScript, so `tools/static-fallback.js` writes from `data/units.js` into marked regions
+  (`<!-- static:name … -->`, never edit them by hand): footer unit links on every page, each store page's facts in `<main id="store">`, the landing's
+  unit list in `#cards`, their JSON-LD in `<head>` (`data-ld` keys; `NV.addJSONLD(data, key)` replaces it), and `llms.txt`. After changing `data/units.js`,
+  `js/schema.js`, the hr/en tables in site.js/poslovnica.js, the footer markup or a canonical, run `node tools/static-fallback.js` (`--check` only reports;
+  smoke fails "static fallback out of date"). With JS a `<head>` script sets `html.js`, CSS hides `.static`, the page scripts replace it, and
+  `<main id="store">` keeps its screen-high min-height until poslovnica.js marks `.store`. `tools/` is not deployed (`.vercelignore`).
+- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 22 pages (11 Croatian, 11 English), `o-nama.html`, `robots.txt`,
+  `sitemap.xml`, `llms.txt`, `seo.canonicalBase` in `.claude/workflow/project.json` and `PAGE` in `api/_lib/mail.mjs` (plus `ALLOWED_ORIGINS` if the function is reached from another host),
+  then run `node tools/static-fallback.js --check`; verify the domain in Google Search Console and Bing Webmaster Tools and submit the sitemap; add 301s in `vercel.json` for old WordPress URLs (`/bistro-i-slasticarna-valis/` → `/valis/`, `/about/` → `/o-nama/`,
   `/kontakt/` → `/#upit`, old news posts → `/`; `/hotel-novalis/` is now a page here too). Blockers: the daily price-list CSVs
   (`/info-o-cijenama/`, legally required for supermarkets) need a home. The jobs page keeps its address (`/zaposli-se/`).
 - Shapes: the Novalis "tab" — three rounded corners, bottom-left square: `border-radius: R R R 0`; panels, cards and photos use `var(--shape-tab)` (20px). No soft shadows.

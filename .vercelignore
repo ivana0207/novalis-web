@@ -1,3 +1,5 @@
 # Keep Claude Code workflow files out of the deployed site
 .claude
 .jira-work
+# Repo tools (static fallback generator, WEB-22): run before committing, never served
+tools
