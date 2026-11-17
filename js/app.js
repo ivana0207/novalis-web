@@ -547,6 +547,7 @@
       hero.classList.add('hero--xmas');
       $('.hero__bg', hero).insertAdjacentHTML('afterbegin', '<div class="hero__ph hero__ph--xmas">' + NV.snowHTML(110, 'snow--hero') + '</div>');
       $('.hero__slides', hero).insertAdjacentHTML('afterbegin', seasonSlideHTML(xm));
+      NV.garlandTop();   // its garland over the header's lower edge, like the catalogue page's (css: only on this slide)
     }
     $('.hero__bg', hero).insertAdjacentHTML('beforeend', data.map(function () { return '<div class="hero__ph hero__ph--local"></div>'; }).join(''));
     $('.hero__slides', hero).insertAdjacentHTML('beforeend', data.map(function (s, k) { return slideHTML(s, k + 1 + lead); }).join(''));

@@ -289,7 +289,10 @@ button { font: inherit; }
 
 /* ---------- Hero ---------- */
 /* fills the first screen: the Paški most photo under an even white veil, the copy centred on it (label, headline,
-   lead, two buttons), fading into the page at the bottom. The brand's petal light warms the veil */
+   lead, two buttons), fading into the page at the bottom. The brand's petal light warms the veil.
+   --hero-h: the first screen's height under the header (72px and its hairline). On screens of little height (laptops)
+   the paddings and headlines shrink with it, so every slide and the arrows fit it; where there is room nothing changes */
+:root { --hero-h: calc(100vh - 73px); }
 .hero {
   --ring: var(--nv-gray-850); /* focus ring on the light veil */
   position: relative; isolation: isolate; display: flex; flex-direction: column; overflow: hidden; overflow: clip;
@@ -318,7 +321,7 @@ button { font: inherit; }
 }
 .hero__inner {
   flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-  padding-top: clamp(40px, 5vw, 80px); padding-bottom: clamp(64px, 8vw, 128px);
+  padding-top: clamp(40px, min(5vw, calc(var(--hero-h) * .1)), 80px); padding-bottom: clamp(64px, 8vw, 128px);
 }
 /* the slides share one grid cell: the hero is as tall as the tallest, so nothing below moves when they change.
    .hero__copy is the text block (hovering it holds the slides) */
@@ -332,7 +335,7 @@ button { font: inherit; }
 
 /* headline: two lines at every size; each word is its own box so it can come into focus on its own */
 .hero__title {
-  margin: clamp(22px, 2.4vw, 32px) 0 0; font: 700 clamp(46px, 8vw, 120px)/.95 var(--font-display);
+  margin: clamp(22px, 2.4vw, 32px) 0 0; font: 700 clamp(46px, min(8vw, calc(var(--hero-h) * .16)), 120px)/.95 var(--font-display);
   letter-spacing: -.045em; color: var(--ink);
 }
 .hero__line { display: block; }
@@ -472,7 +475,7 @@ button { font: inherit; }
 .hero__title--h2 { max-width: 8.4em; text-wrap: balance; }
 @media (min-width: 700px) {
   /* room for the arrows under the copy, so the copy's buttons never meet them */
-  .hero--slider .hero__inner { padding-bottom: max(clamp(64px, 8vw, 128px), 104px); }
+  .hero--slider .hero__inner { padding-bottom: max(min(8vw, calc(var(--hero-h) * .16), 128px), 104px); }
 }
 @media (max-width: 699px) {
   .hero__ph--local::after { background: radial-gradient(ellipse 100% 58% at 50% 48%, rgba(255,255,255,.92) 0 62%, rgba(255,255,255,.4) 100%); }
@@ -2573,8 +2576,26 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 
 /* the landing hero's first slide while a catalogue runs (js/app.js): red under the garland, snow falling, the copy
    left and the shop display with two priced products right. The written hero comes second (its petal glow with it) */
-.hero__ph--xmas { background: var(--grad-red); }
-.hero__ph--xmas::after { background: url(../assets/img/blagdani/girlanda.svg?v=2) center -40px / auto 280px repeat-x; }
+.hero__ph--xmas { background: linear-gradient(var(--nv-red), transparent 300px), var(--grad-red); }
+/* the slide and its arrows fit the first screen (user, 2026-11-17: on a laptop the arrows were below it; --hero-h,
+   the height the header leaves). --xm-g: the garland's height, 280 like the catalogue cover's where there is room,
+   less on screens of little height, and with it the room under it, the script line, the headline and the gaps (below) */
+body:has(.hero--xmas) { --xm-g: clamp(200px, calc(var(--hero-h) * .36), 280px); }
+.hero__ph--xmas::after { background: url(../assets/img/blagdani/girlanda.svg?v=2) center calc(var(--xm-g) * -24 / 280) / auto var(--xm-g) repeat-x; }
+/* like the catalogue's cover, its garland hangs over the header's lower edge at the top of the page (the header's
+   strip, below at .xm-cover), but only while this slide shows: on the other slides the header has its hairline and
+   no garland. Here the strip is always there and only its opacity changes, so it fades with the slides' crossfade and
+   comes up with the hero's entrance (the white light clearing, held by hero-wait); a scroll still drops it at once */
+body:has(.hero--xmas) .site-header::after { opacity: 0; }
+body.xm-top:has(.hero--xmas[data-cur="0"]) .site-header::after { opacity: 1; }
+body.xm-top:has(.hero--xmas:not([data-cur="0"])) .site-header { border-bottom-color: rgba(255,255,255,.2); }
+@media (prefers-reduced-motion: no-preference) {
+  body.xm-top:has(.hero--xmas) .site-header { transition: border-bottom-color 700ms cubic-bezier(.45, 0, .55, 1); }
+  body.xm-top:has(.hero--xmas) .site-header::after { transition: opacity 700ms cubic-bezier(.45, 0, .55, 1); }
+  body:has(.hero--xmas:not(.is-changed)) .site-header::after { animation: xm-strip-in 1800ms var(--ease-out) 120ms backwards; }
+  .hero-wait .site-header::after { animation-play-state: paused; }
+}
+@keyframes xm-strip-in { from { opacity: 0; } }
 .hero__ph--xmas::before {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .16;
   background: url(../assets/img/blagdani/pahulja.svg) no-repeat 2% 92% / 120px, url(../assets/img/blagdani/pahulja.svg) no-repeat 46% 44% / 64px,
@@ -2583,18 +2604,33 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 .hero--xmas[data-cur="0"] { --ring: #fff; }
 .hero--xmas[data-cur="0"] .hero__glow { opacity: 0; }
 .hero--xmas[data-cur="1"] .hero__glow { opacity: 1; }
-.hero__slide--xmas.hero__inner { justify-content: flex-start; align-items: stretch; text-align: left; padding-top: 200px; }
-.xm-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 4vw, 56px); align-items: start; }
+.hero__slide--xmas.hero__inner {
+  --xm-pb: clamp(32px, calc(var(--hero-h) * .06), 56px);   /* its bottom padding beside the photos (from 1024) */
+  justify-content: flex-start; align-items: stretch; text-align: left; padding-top: calc(var(--xm-g) * 216 / 280);
+}
+@media (min-width: 1024px) { .hero--slider .hero__slide--xmas.hero__inner { padding-bottom: var(--xm-pb); } }
+.xm-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 4vw, 56px); align-items: stretch; }
 .xm-hero__copy { align-items: flex-start; }
 .hero__slide--xmas .hero__eyebrow { color: #fff; }
-.hero__slide--xmas .xm-script { margin: 22px 0 6px; }
-.hero__slide--xmas .hero__title { margin-top: 0; color: #fff; font-size: clamp(46px, 6vw, 86px); letter-spacing: -.035em; }
-.hero__slide--xmas .hero__lead { color: #fff; max-width: 32rem; text-wrap: pretty; }
-.hero__slide--xmas .hero__actions { justify-content: flex-start; }
+.hero__slide--xmas .xm-script {
+  margin: clamp(12px, calc(var(--hero-h) * .032), 22px) 0 6px; font-size: clamp(36px, min(3.6vw, calc(var(--hero-h) * .07)), 52px);
+}
+.hero__slide--xmas .hero__title {
+  margin-top: 0; color: #fff; font-size: clamp(46px, min(6vw, calc(var(--hero-h) * .125)), 86px); letter-spacing: -.035em;
+}
+.hero__slide--xmas .hero__lead {
+  margin-top: clamp(16px, min(2vw, calc(var(--hero-h) * .04)), 28px); color: #fff; max-width: 32rem; text-wrap: pretty;
+}
+.hero__slide--xmas .hero__actions { justify-content: flex-start; margin-top: clamp(24px, min(3vw, calc(var(--hero-h) * .05)), 40px); }
 .xm-cta, .xm-cta:hover { background: var(--nv-yellow); color: var(--nv-red-dark); }
 .xm-cta:hover { background: #fff; }
 .xm-cta .hero__btn-icon, .xm-cta:hover .hero__btn-icon { background: rgba(158,11,15,.12); }
-.xm-tiles { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: clamp(300px, 29vw, 410px); gap: 18px; margin-top: 6px; }
+/* the photos are as tall as the copy beside them, less the room the arrows need under them (their bottom offset,
+   48px and a 16px gap, less the slide's bottom padding) */
+.xm-tiles {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 18px;
+  margin: 6px 0 max(0px, calc(clamp(20px, 2.6vw, 36px) + 64px - var(--xm-pb)));
+}
 .xm-tiles__col { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; min-height: 0; }
 .xm-tile { position: relative; min-height: 0; overflow: hidden; border: 4px solid #fff; border-radius: var(--shape-tab); background: var(--nv-red-dark); }
 .xm-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -2612,7 +2648,7 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 }
 @media (max-width: 1023px) {
   .xm-hero { grid-template-columns: 1fr; gap: 22px; }
-  .xm-tiles { grid-template-columns: 1fr 1fr; grid-template-rows: 160px; }
+  .xm-tiles { grid-template-columns: 1fr 1fr; grid-template-rows: 160px; margin-bottom: 0; }
   .xm-tiles .xm-tile--big { display: none; }
   .xm-tiles__col { grid-column: 1 / -1; grid-template-rows: none; grid-template-columns: 1fr 1fr; }
 }
@@ -2653,16 +2689,16 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
   position: relative; isolation: isolate; overflow: hidden; color: #fff; padding: 230px 0 clamp(64px, 7vw, 96px);
   background: linear-gradient(var(--nv-red), transparent 300px), var(--grad-red);
 }
-/* the garland hangs over the header's lower edge while the page is at its top (js/katalog.js sets body.xm-top): the
+/* the garland hangs over the header's lower edge while the page is at its top (NV.garlandTop sets body.xm-top): the
    header draws the garland's top strip, behind its logo and buttons, has no hairline, and the cover starts in the
    header's red (above). Once the page scrolls or a menu opens, the garland goes under the header like everything else */
 body.xm-top .site-header { border-bottom-color: transparent; }
-body.xm-top .site-header::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 24px; z-index: -1; pointer-events: none;
-  background: url(../assets/img/blagdani/girlanda.svg?v=2) center top / auto 280px repeat-x;
+body.xm-top .site-header::after, body:has(.hero--xmas) .site-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: calc(var(--xm-g, 280px) * 24 / 280); z-index: -1; pointer-events: none;
+  background: url(../assets/img/blagdani/girlanda.svg?v=2) center top / auto var(--xm-g, 280px) repeat-x;
 }
-body.xm-top .site-header:has([aria-expanded="true"])::after { display: none; }
-@media (forced-colors: active) { body.xm-top .site-header::after { display: none; } }
+.site-header:has([aria-expanded="true"])::after { display: none; }
+@media (forced-colors: active) { .site-header::after { display: none; } }
 .xm-cover::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .16;
   background: url(../assets/img/blagdani/pahulja.svg) no-repeat 3% 94% / 130px, url(../assets/img/blagdani/pahulja.svg) no-repeat 98% 90% / 96px;
@@ -2801,7 +2837,7 @@ body.xm-top .site-header:has([aria-expanded="true"])::after { display: none; }
 }
 @media (max-width: 699px) {
   .xm-garland { top: -14px; height: 190px; background-size: auto 190px; }
-  body.xm-top .site-header::after { height: 14px; background-size: auto 190px; }
+  body.xm-top .site-header::after, body:has(.hero--xmas) .site-header::after { height: 14px; background-size: auto 190px; }
   .xm-cover { padding-top: 165px; }
   .xm-chip { font-size: 15px; padding: 9px 14px; }
   .xm-gift { margin-top: 36px; padding: 18px 28px 20px 26px; border-radius: 22px 22px 22px 0; }

@@ -495,6 +495,18 @@ window.NV = (function () {
   function snowHTML(n, cls) {
     return '<div class="snow ' + cls + '" aria-hidden="true">' + new Array(n + 1).join('<i></i>') + '</div>';
   }
+  // At the top of the page a catalogue's garland reaches up over the header's lower edge (css: body.xm-top); from the
+  // first pixel scrolled it slides under the header with the rest of the page. The catalogue page's cover and the
+  // landing hero's season slide (there css also asks for that slide to be the current one)
+  function garlandTop() {
+    var atTop = null;
+    function topState() {
+      var t = window.scrollY < 1;
+      if (t !== atTop) { atTop = t; document.body.classList.toggle('xm-top', t); }
+    }
+    window.addEventListener('scroll', topState, { passive: true });
+    topState();
+  }
   // While a catalogue runs, every footer links to it, above Cjenici (marked on the catalogue page itself)
   function footerCatalogue() {
     var cj = $('.footer a[href$="#cjenici"]');
@@ -805,6 +817,6 @@ window.NV = (function () {
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ROOT_URL: ROOT_URL, addJSONLD: addJSONLD,
     zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays,
     dayOf: dayOf, dayHours: dayHours, is24h: is24h, T: T,
-    catalogue: catalogue, pageHref: pageHref, productMeta: productMeta, priceHTML: priceHTML, productHTML: productHTML, snowHTML: snowHTML
+    catalogue: catalogue, pageHref: pageHref, productMeta: productMeta, priceHTML: priceHTML, productHTML: productHTML, snowHTML: snowHTML, garlandTop: garlandTop
   };
 })();

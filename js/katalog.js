@@ -170,14 +170,5 @@
   main.classList.add('is-ready');
   hoursBar();
   document.body.insertAdjacentHTML('beforeend', NV.snowHTML(140, 'snow--screen'));
-
-  // At the top of the page the cover's garland reaches up over the header's lower edge (css: body.xm-top); from the
-  // first pixel scrolled it slides under the header with the rest of the page.
-  var atTop = null;
-  function topState() {
-    var t = window.scrollY < 1;
-    if (t !== atTop) { atTop = t; document.body.classList.toggle('xm-top', t); }
-  }
-  window.addEventListener('scroll', topState, { passive: true });
-  topState();
+  NV.garlandTop();   // the cover's garland over the header's lower edge while the page is at its top
 })();
