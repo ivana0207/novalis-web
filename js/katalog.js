@@ -12,14 +12,14 @@
 
   var TEXTS = {
     hr: {
-      crumbs: 'Putanja', home: 'Početna', here: 'Katalog', jump: 'U katalogu', browse: 'Pogledajte katalog', unit: 'Poslovnica', closed: 'Zatvoreno',
+      jump: 'U katalogu', browse: 'Pogledajte katalog', unit: 'Poslovnica', closed: 'Zatvoreno',
       noneEyebrow: 'Katalog', none: 'Novi katalog stiže uskoro', noneLead: 'Trenutno nema aktualnog kataloga. Do tada vas čekamo u našim poslovnicama.',
       toHome: 'Na početnu',
       wd: ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'],
       date: function (d, m) { return d + '. ' + m + '.'; }
     },
     en: {
-      crumbs: 'Breadcrumb', home: 'Home', here: 'Catalogue', jump: 'In this catalogue', browse: 'See the catalogue', unit: 'Shop', closed: 'Closed',
+      jump: 'In this catalogue', browse: 'See the catalogue', unit: 'Shop', closed: 'Closed',
       noneEyebrow: 'Catalogue', none: 'A new catalogue is coming soon', noneLead: 'There is no current catalogue right now. Until then, we look forward to seeing you in our shops.',
       toHome: 'Go to the home page',
       wd: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -31,14 +31,9 @@
   var CLOCK = '<svg class="xm-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
   var STAR = '<svg class="xm-star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1.5l3 6.6 7.2.7-5.4 4.8 1.6 7.1L12 17l-6.4 3.7 1.6-7.1L1.8 8.8 9 8.1z"/></svg>';
 
-  function crumbsHTML() {
-    return '<nav class="xm-crumbs" aria-label="' + T.crumbs + '"><a href="' + esc(NV.pageHref('')) + '">' + T.home + '</a>' +
-      '<span aria-hidden="true">/</span><span aria-current="page">' + T.here + '</span></nav>';
-  }
-
   /* ---------------- No catalogue running ---------------- */
   if (!c) {
-    main.innerHTML = '<section class="xm-none" aria-labelledby="h-katalog"><div class="xm-wrap xm-none__inner">' + crumbsHTML() +
+    main.innerHTML = '<section class="xm-none" aria-labelledby="h-katalog"><div class="xm-wrap xm-none__inner">' +
       '<p class="eyebrow">' + T.noneEyebrow + '</p><h1 class="legal__h1" id="h-katalog">' + T.none + '</h1>' +
       '<p class="xm-none__lead">' + T.noneLead + '</p>' +
       '<a class="btn btn--primary" href="' + esc(NV.pageHref('')) + '">' + T.toHome + '</a></div></section>';
@@ -57,7 +52,7 @@
     var cv = c.cover;
     return '<section class="xm-cover" aria-labelledby="h-katalog"><div class="xm-garland" aria-hidden="true"></div>' +
       '<div class="xm-wrap xm-cover__inner">' +
-        '<div class="xm-cover__copy">' + crumbsHTML() +
+        '<div class="xm-cover__copy">' +
           '<p class="xm-chip">' + esc(tx(cv, 'chip')) + '</p>' +
           '<h1 class="xm-gift' + (tx(cv, 'title').length > 7 ? ' xm-gift--long' : '') + '" id="h-katalog"><span class="xm-gift__s">' + esc(tx(cv, 'script')) + '</span> <span class="xm-gift__b">' + esc(tx(cv, 'title')) + '</span></h1>' +
           '<p class="xm-cover__lead">' + esc(tx(cv, 'lead')) + '</p>' +

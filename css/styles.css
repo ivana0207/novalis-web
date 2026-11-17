@@ -2682,9 +2682,6 @@ body.xm-top:has(.hero--xmas:not([data-cur="0"])) .site-header { border-bottom-co
 /* ---- the catalogue page ---- */
 .xm-main { min-height: 100vh; }
 .xm-main.is-ready { min-height: 0; }
-.xm-crumbs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; font: 400 14px/1.3 var(--font-primary); }
-.xm-crumbs a { color: inherit; opacity: .85; }
-.xm-crumbs [aria-current] { font-weight: 700; }
 .xm-cover {
   position: relative; isolation: isolate; overflow: hidden; color: #fff; padding: 230px 0 clamp(64px, 7vw, 96px);
   background: linear-gradient(var(--nv-red), transparent 300px), var(--grad-red);
