@@ -66,3 +66,4 @@ Opening hours are shown on each page; most are provisional until Novalis confirm
 
 - [O nama](https://novalis-web.vercel.app/o-nama/) (hr), [About us](https://novalis-web.vercel.app/en/about-us/) (en)
 - [Zaposli se](https://novalis-web.vercel.app/zaposli-se/) (hr), [Careers](https://novalis-web.vercel.app/en/careers/) (en)
+- [Katalog](https://novalis-web.vercel.app/katalog/) (hr), [Catalogue](https://novalis-web.vercel.app/en/catalogue/) (en)

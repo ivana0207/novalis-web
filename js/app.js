@@ -20,7 +20,11 @@
       emailMissing: 'Upišite adresu e-pošte.',
       emailInvalid: 'Upišite ispravnu adresu e-pošte, primjerice ime@domena.hr.',
       messageMissing: 'Upišite poruku.',
-      consentMissing: 'Potvrdite da ste upoznati s Pravilima o privatnosti kako biste poslali upit.'
+      consentMissing: 'Potvrdite da ste upoznati s Pravilima o privatnosti kako biste poslali upit.',
+      // the hero's slides (WEB-47)
+      carousel: 'vrtuljak', slide: 'slajd',
+      slideOf: function (n, all) { return 'Slajd ' + n + ' od ' + all; },
+      prev: 'Prethodni slajd', next: 'Sljedeći slajd'
     },
     en: {
       all: 'All', map: 'Map of Novalis locations in Novalja', outside: 'Your location is outside the area of this map.',
@@ -33,7 +37,10 @@
       emailMissing: 'Enter your email address.',
       emailInvalid: 'Enter a valid email address, for example name@example.com.',
       messageMissing: 'Enter your message.',
-      consentMissing: 'Please confirm that you have read the privacy policy to send your enquiry.'
+      consentMissing: 'Please confirm that you have read the privacy policy to send your enquiry.',
+      carousel: 'carousel', slide: 'slide',
+      slideOf: function (n, all) { return 'Slide ' + n + ' of ' + all; },
+      prev: 'Previous slide', next: 'Next slide'
     }
   };
   var T = TEXTS[NV.LANG] || TEXTS.hr;
@@ -420,20 +427,306 @@
     });
   }
 
-  // hero: the petal light leans toward the pointer and eases back when it leaves (mouse only, motion allowed).
-  // One transform on one layer per frame, and only while it is still moving
-  function heroLight() {
-    var hero = $('.hero'), glow = $('.hero__glow');
-    if (!hero || !glow || NV.reduceMotion || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-    var tx = 0, ty = 0, x = 0, y = 0, raf = 0;
-    function step() {
-      x += (tx - x) * 0.06; y += (ty - y) * 0.06;
-      glow.style.transform = 'translate3d(' + (x * 7).toFixed(2) + '%, ' + (y * 7).toFixed(2) + '%, 0)';
-      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(step) : 0;
+  /* ---------------- Hero slides (WEB-47) ---------------- */
+  // The hero's first slide is written in the page (the h1 and the first photo, also without JavaScript). The others
+  // come from data/units.js heroSlides, those dated for today in Novalja, and are added after it with two round
+  // arrows, Previous and Next, and nothing else: no Pause, no dots (user, 2026-11-16; one slide left: the hero stays
+  // as written). Each slide stays 6 s, then the next one comes once its photo is there. The clock waits while
+  // something holds the slides: the pointer on the copy or the arrows, keyboard focus in the hero, the hero off
+  // screen, a hidden tab, a drag, the page getting ready (hero-wait). With reduced motion they move only by the
+  // arrows or a swipe. The photos of slides 2-4 are asked for after the page has loaded. Nothing goes into the address.
+  var tx = NV.tx;
+  var HERO_DWELL = 6000;
+  var HERO_ICON = {
+    prev: '<path d="M20 12H5M11 6l-6 6 6 6"/>', next: '<path d="M4 12h15M13 6l6 6-6 6"/>'   // the occasions' arrows
+  };
+  function heroIcon(name) {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + HERO_ICON[name] + '</svg>';
+  }
+  // unit names in a slide's text stay as they are when a browser translates the page (Croatian endings included)
+  var UNIT_NAME = new RegExp('(' + D.units.reduce(function (all, u) { return all.concat(u.name, (u.en && u.en.name) || []); }, [])
+    .sort(function (a, b) { return b.length - a.length; })
+    .map(function (n) { return esc(n).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')[a-zčćđšž]*', 'g');
+  function namesHTML(text) {
+    return esc(text).replace(UNIT_NAME, '<span translate="no">$&</span>');
+  }
+  // a slide's link: a unit's store page (its English one on /en/), a part of this page (#id), or a page of the site
+  function slideHref(s) {
+    if (s.unit) return NV.unitHref(NV.byId[s.unit]);
+    return s.href.charAt(0) === '#' ? s.href : NV.asset(s.href);
+  }
+  // a slide needs a unit, or an href that is '#id', a relative path or http(s); anything else (javascript:, data: ...) is skipped
+  function slideLinkOk(s) {
+    if (s.unit) return !!NV.byId[s.unit];
+    return typeof s.href === 'string' && /^(#[\w-]+|(?![a-z][a-z0-9+.-]*:|\/\/)[^\s]+|https?:\/\/[^\s]+)$/i.test(s.href);
+  }
+  // slides 2-4 (k from 1): label, headline (word by word, for its first entrance), line, one button. The button's
+  // label is one span, so the button's gap never splits it
+  function slideHTML(s, k) {
+    var href = slideHref(s), here = href.charAt(0) === '#';
+    var words = tx(s, 'title').split(' ').map(function (w, i) { return '<span class="hero__w" style="--i:' + i + '">' + esc(w) + '</span>'; });
+    return '<div class="section hero__inner hero__slide" data-i="' + k + '">' +
+      '<div class="hero__copy">' +
+        (tx(s, 'eyebrow') ? '<span class="eyebrow hero__eyebrow">' + namesHTML(tx(s, 'eyebrow')) + '</span>' : '') +
+        '<h2 class="hero__title hero__title--h2">' + words.join(' ') + '</h2>' +
+        (tx(s, 'line') ? '<p class="hero__lead">' + namesHTML(tx(s, 'line')) + '</p>' : '') +
+        '<div class="hero__actions"><a class="btn btn--primary btn--lg hero__cta" href="' + esc(href) + '">' +
+          '<span class="hero__cta-label">' + namesHTML(tx(s, 'cta')) + '</span>' +
+          '<span class="hero__btn-icon" aria-hidden="true"><span class="ms' + (here ? '' : ' hero__arrow-x') + '">' +
+          (here ? 'arrow_downward' : 'arrow_forward') + '</span></span></a></div>' +
+      '</div></div>';
+  }
+  // a slide's photo in the site's photo slot: the loading look until it has come, its note (or the striped
+  // placeholder) if it has none or it fails (js/site.js)
+  function slidePhotoHTML(s) {
+    var p = s.photo, note = tx(s, 'photoNote') || '';
+    if (!p || !p.src) return NV.slotHTML(null, note);
+    return '<div class="slot slot--photo" data-placeholder="' + esc(note) + '"><img src="' + esc(NV.asset(p.src)) + '" alt=""' +
+      (+p.w && +p.h ? ' width="' + (+p.w) + '" height="' + (+p.h) + '"' : '') + ' decoding="async" style="--focus:' + esc(p.focus || '50% 50%') +
+      ';--focus-phone:' + esc(p.focusPhone || p.focus || '50% 50%') + '"></div>';
+  }
+  // The seasonal catalogue's slide (WEB-48, data/units.js catalogues): while a catalogue runs it comes first, before the
+  // hero written in the page. Red under a fir garland, snow falling through it (both on its photo layer, css), the copy
+  // on the left (the script line in Pristina's stand-in), the shop display and two products with their prices beside
+  // it; its one button opens the catalogue page. Its headline is an h2: the page's h1 stays the written hero's.
+  function seasonSlideHTML(c) {
+    var s = c.slide, n = 0;
+    var title = tx(s, 'title').map(function (line) {
+      return '<span class="hero__line">' + line.split(' ').map(function (w) {
+        return '<span class="hero__w" style="--i:' + (n++) + '">' + esc(w) + '</span>';
+      }).join(' ') + '</span>';
+    }).join(' ');
+    var picks = s.picks.map(function (id) {
+      var p = c.products[id];
+      return '<div class="xm-tile"><img src="' + esc(NV.asset(p.photo)) + '" alt="" decoding="async">' +
+        '<span class="xm-tile__name">' + esc(tx(p, 'name')) + '</span>' + NV.priceHTML(p, 'xm-tile__price') + '</div>';
+    }).join('');
+    return '<div class="section hero__inner hero__slide hero__slide--xmas" data-i="0">' +
+      '<div class="xm-hero">' +
+        '<div class="hero__copy xm-hero__copy">' +
+          '<span class="eyebrow hero__eyebrow">' + esc(tx(s, 'eyebrow')) + '</span>' +
+          '<p class="xm-script">' + esc(tx(s, 'script')) + '</p>' +
+          '<h2 class="hero__title">' + title + '</h2>' +
+          '<p class="hero__lead">' + esc(tx(s, 'line')) + '</p>' +
+          '<div class="hero__actions"><a class="btn btn--lg hero__cta xm-cta" href="' + esc(NV.pageHref('katalog/')) + '">' +
+            '<span class="hero__cta-label">' + esc(tx(s, 'cta')) + '</span>' +
+            '<span class="hero__btn-icon" aria-hidden="true"><span class="ms hero__arrow-x">arrow_forward</span></span></a></div>' +
+        '</div>' +
+        '<div class="xm-tiles">' +
+          '<div class="xm-tile xm-tile--big"><img src="' + esc(NV.asset(s.photo)) + '" alt="" decoding="async">' +
+            '<span class="xm-tag">' + esc(tx(s, 'photoTag')) + '</span></div>' +
+          '<div class="xm-tiles__col">' + picks + '</div>' +
+        '</div>' +
+      '</div></div>';
+  }
+
+  function heroControlsHTML() {
+    return '<div class="hero__controls">' +
+      '<button type="button" class="hero__ctl hero__ctl--prev" data-go="prev" aria-label="' + esc(T.prev) + '">' + heroIcon('prev') + '</button>' +
+      '<button type="button" class="hero__ctl hero__ctl--next" data-go="next" aria-label="' + esc(T.next) + '">' + heroIcon('next') + '</button>' +
+    '</div><p class="vh hero__live" aria-live="polite" aria-atomic="true"></p>';
+  }
+
+  function heroSlider() {
+    var hero = $('.hero'), first = hero && $('.hero__slide', hero);
+    if (!first || !D.heroSlides) return;
+    var today = NV.zagrebNow().iso;
+    var data = D.heroSlides.filter(function (s) {
+      if (s.html || (s.from && today < s.from) || (s.to && today > s.to)) return false;
+      if (!slideLinkOk(s)) { console.warn('hero: "' + s.id + '" has no usable unit or link, skipped'); return false; }
+      return true;
+    });
+    // xm: the running catalogue, whose slide comes first (lead: 1); the written hero is then slide 2
+    var xm = NV.catalogue(), lead = xm ? 1 : 0;
+    if (!data.length && !xm) return;
+    var titles = (xm ? [tx(xm.slide, 'title').join(' ').replace(/\.$/, '')] : [])
+      .concat($('.hero__title', first).textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, ''))
+      .concat(data.map(function (s) { return tx(s, 'title'); }));
+    var n = titles.length;
+    if (xm) {
+      hero.classList.add('hero--xmas');
+      $('.hero__bg', hero).insertAdjacentHTML('afterbegin', '<div class="hero__ph hero__ph--xmas">' + NV.snowHTML(110, 'snow--hero') + '</div>');
+      $('.hero__slides', hero).insertAdjacentHTML('afterbegin', seasonSlideHTML(xm));
     }
-    function aim(nx, ny) { tx = nx; ty = ny; if (!raf) raf = requestAnimationFrame(step); }
-    hero.addEventListener('pointermove', function (e) { aim(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5); });
-    hero.addEventListener('pointerleave', function () { aim(0, 0); });
+    $('.hero__bg', hero).insertAdjacentHTML('beforeend', data.map(function () { return '<div class="hero__ph hero__ph--local"></div>'; }).join(''));
+    $('.hero__slides', hero).insertAdjacentHTML('beforeend', data.map(function (s, k) { return slideHTML(s, k + 1 + lead); }).join(''));
+    hero.insertAdjacentHTML('beforeend', heroControlsHTML());
+    hero.setAttribute('aria-roledescription', T.carousel);
+    var phs = $$('.hero__ph', hero), slides = $$('.hero__slide', hero), live = $('.hero__live', hero);
+    slides.forEach(function (el, k) {
+      el.setAttribute('role', 'group');
+      el.setAttribute('aria-roledescription', T.slide);
+      el.setAttribute('aria-label', T.slideOf(k + 1, n));
+    });
+
+    // cur: the current slide · auto: moving on by itself (not with reduced motion) · holds: why the clock waits
+    // (pointer, keyboard focus, off screen, hidden tab, a drag, the page getting ready) · left: the current slide's
+    // time still to run, counted from since while the clock runs
+    var cur = 0, auto = !NV.reduceMotion, holds = {}, seen = { 0: true }, timers = [], waitT = 0;
+    var clock = 0, left = HERO_DWELL, since = 0;
+    hero.classList.add('hero--slider');
+
+    function paint() {
+      hero.dataset.cur = cur;
+      phs.forEach(function (p, k) { p.classList.toggle('is-current', k === cur); });
+      slides.forEach(function (el, k) { el.classList.toggle('is-current', k === cur); el.toggleAttribute('inert', k !== cur); });
+    }
+    function held() { return Object.keys(holds).length > 0; }
+    // the clock: runs the current slide's time while nothing holds it, then moves on
+    function tick() {
+      clearTimeout(clock);
+      if (since) { left -= Date.now() - since; since = 0; }
+      if (!auto || held()) return;
+      since = Date.now();
+      clock = setTimeout(function () { since = 0; left = 0; advance(); }, Math.max(0, left));
+    }
+    // slide k's photo is asked for now if it has not been yet; ready once it has come (or shows its placeholder). The
+    // season's slide and the written hero have theirs from the start
+    function want(k) {
+      var s = data[k - 1 - lead];
+      if (!s || phs[k]._asked) return;
+      phs[k]._asked = true;
+      phs[k].innerHTML = slidePhotoHTML(s);
+    }
+    function ready(k) { return !data[k - 1 - lead] || (phs[k]._asked && !$('.slot--photo:not(.is-loaded)', phs[k])); }
+    function restart(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+
+    // o.direct: the visitor asked (dot, arrow, swipe): quicker, and announced · o.dir: 1 forward, -1 back
+    function go(to, o) {
+      o = o || {};
+      to = (to + n) % n;
+      if (to === cur) return;
+      var from = cur, k = o.direct ? .6 : 1, out = slides[from], inn = slides[to];
+      timers.forEach(clearTimeout);
+      clearTimeout(waitT);
+      want(to);
+      hero.classList.add('is-changed');
+      hero.style.setProperty('--dir', o.dir || (to > from ? 1 : -1));
+      hero.classList.toggle('is-direct', !!o.direct);
+      phs.forEach(function (p) { p.classList.remove('is-prev', 'is-in'); });
+      slides.forEach(function (el) { el.classList.remove('is-out', 'is-in'); el.style.transform = el.style.opacity = ''; });
+      phs[from].classList.add('is-prev');
+      if (o.drag && !NV.reduceMotion) { out.style.transform = 'translateX(' + o.drag + 'px)'; out.style.opacity = o.dragO; }
+      cur = to;
+      paint();
+      out.classList.add('is-out');
+      inn.classList.toggle('was-seen', !!seen[to]);
+      seen[to] = true;
+      restart(phs[to], 'is-in');
+      restart(inn, 'is-in');
+      timers = [
+        setTimeout(function () { phs[from].classList.remove('is-prev'); }, 1000 * k + 50),
+        setTimeout(function () { out.classList.remove('is-out'); out.style.transform = out.style.opacity = ''; }, 400 * k)
+      ];
+      if (o.direct) live.textContent = T.slideOf(to + 1, n) + ': ' + titles[to];
+      left = HERO_DWELL;   // the new slide gets its full time
+      since = 0;
+      tick();
+    }
+    // the slide's time is up: on to the next one once its photo is there (a hold: the clock calls again when it ends)
+    function advance() {
+      var to = (cur + 1) % n;
+      want(to);
+      clearTimeout(waitT);
+      if (!auto || held()) return;
+      if (ready(to)) go(to, { dir: 1 });
+      else waitT = setTimeout(advance, 300);
+    }
+    function hold(why, on) {
+      if (!on === !holds[why]) return;
+      if (on) holds[why] = true; else delete holds[why];
+      tick();
+    }
+    paint();
+
+    hero.addEventListener('click', function (e) {
+      if (dragged && e.target.closest('a')) { e.preventDefault(); return; }   // a swipe never opens the button's link
+      var b = e.target.closest('.hero__ctl');
+      if (!b) return;
+      var dir = b.dataset.go === 'prev' ? -1 : 1;
+      go(cur + dir, { direct: true, dir: dir });
+    });
+    // a mouse resting on the copy or the arrows holds the slide (a tap leaves no hover behind)
+    hero.addEventListener('pointerover', function (e) {
+      if (e.pointerType === 'mouse') hold('hover', !!e.target.closest('.hero__slide.is-current .hero__copy, .hero__controls'));
+    });
+    hero.addEventListener('pointerleave', function () { hold('hover', false); });
+    // keyboard focus in the hero holds the slides while it stays there, so the focused button never slides away
+    // (a mouse click does not)
+    hero.addEventListener('focusin', function (e) {
+      var kb = false;
+      try { kb = e.target.matches(':focus-visible'); } catch (err) { /* older browsers: no hold */ }
+      hold('focus', kb);
+    });
+    hero.addEventListener('focusout', function (e) {
+      if (!(e.relatedTarget && hero.contains(e.relatedTarget))) hold('focus', false);
+    });
+    // slide 1's time starts once the page has let the hero's entrance run (index.html <head>: hero-wait)
+    var root = document.documentElement;
+    if (root.classList.contains('hero-wait')) {
+      hold('wait', true);
+      new MutationObserver(function (m, obs) {
+        if (root.classList.contains('hero-wait')) return;
+        obs.disconnect();
+        hold('wait', false);
+      }).observe(root, { attributes: true, attributeFilter: ['class'] });
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        hold('offscreen', entries[entries.length - 1].intersectionRatio < .5);
+      }, { threshold: [0, .5, 1] }).observe(hero);
+    }
+    document.addEventListener('visibilitychange', function () { hold('hidden', document.hidden); });
+
+    // swipe (touch and pen anywhere but the controls; a mouse only from the photo, so the text stays selectable): the
+    // copy follows at a third of the travel and the slide changes past 48 px or a quick flick, else it springs back
+    var sw = null, dragged = false;
+    hero.addEventListener('pointerdown', function (e) {
+      if (e.button || e.target.closest('.hero__controls') || (e.pointerType === 'mouse' && e.target.closest('.hero__copy'))) return;
+      sw = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId, on: false, dx: 0 };
+      dragged = false;
+    });
+    hero.addEventListener('pointermove', function (e) {
+      if (!sw || e.pointerId !== sw.id) return;
+      var dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+      if (!sw.on) {
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.2) { if (Math.abs(dy) > 12) sw = null; return; }
+        sw.on = dragged = true;
+        try { hero.setPointerCapture(e.pointerId); } catch (err) { /* the swipe works without it */ }
+        hero.classList.remove('is-settling');
+        hero.classList.add('is-dragging');
+        hold('drag', true);
+      }
+      sw.dx = dx;
+      hero.style.setProperty('--drag', (dx / 3).toFixed(1) + 'px');
+      hero.style.setProperty('--drag-o', (1 - Math.min(Math.abs(dx) / 900, .35)).toFixed(3));
+    });
+    function swipeEnd(e) {
+      if (!sw || e.pointerId !== sw.id) return;
+      var s = sw;
+      sw = null;
+      if (!s.on) return;
+      hero.classList.remove('is-dragging');
+      hold('drag', false);
+      if (e.type === 'pointerup' && (Math.abs(s.dx) > 48 || (Math.abs(s.dx) > 24 && Math.abs(s.dx) / Math.max(1, e.timeStamp - s.t) > .35))) {
+        var dir = s.dx < 0 ? 1 : -1;
+        go(cur + dir, { direct: true, dir: dir, drag: (s.dx / 3).toFixed(1), dragO: hero.style.getPropertyValue('--drag-o') });
+      } else {
+        hero.classList.add('is-settling');
+        setTimeout(function () { hero.classList.remove('is-settling'); }, 320);
+      }
+      hero.style.removeProperty('--drag');
+      hero.style.removeProperty('--drag-o');
+      setTimeout(function () { dragged = false; });
+    }
+    hero.addEventListener('pointerup', swipeEnd);
+    hero.addEventListener('pointercancel', swipeEnd);
+
+    // slides 2-4's photos once the page has loaded (and the browser is idle, at most 1 s later)
+    function askAll() { for (var k = 1; k < n; k++) want(k); }
+    function whenIdle() { if (window.requestIdleCallback) requestIdleCallback(askAll, { timeout: 1000 }); else setTimeout(askAll, 1000); }
+    if (document.readyState === 'complete') whenIdle(); else window.addEventListener('load', whenIdle);
+    tick();
   }
 
   // Search engines: the company and its units with address and phone (js/schema.js; the same graph is in the page's
@@ -446,7 +739,7 @@
   addStructuredData();
   bind();
   initMap();
-  heroLight();
+  heroSlider();
   NV.holdQuickbar($('.hero__actions'));
   // O nama's "Svi kontakti" lands here as ?prikaz=popis#lokacije: open the list, where every unit's contacts are
   if (params.get('prikaz') === 'popis') setView('list');

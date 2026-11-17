@@ -50,7 +50,7 @@ window.NV = (function () {
   // that version's. A page added here gets the language switch of both versions and the other language's links to it
   // (unitHref) pointed at it. English: every page (WEB-21: the home page; the rest 2026-10-23), the general pages with
   // English addresses, the store pages under their own slug (en.slug where the unit has one: Veleprodaja → wholesale).
-  var TWINS = { en: { '': 'en/', 'o-nama/': 'en/about-us/', 'zaposli-se/': 'en/careers/', 'pravila-o-privatnosti/': 'en/privacy-policy/' } };
+  var TWINS = { en: { '': 'en/', 'o-nama/': 'en/about-us/', 'zaposli-se/': 'en/careers/', 'pravila-o-privatnosti/': 'en/privacy-policy/', 'katalog/': 'en/catalogue/' } };
   D.units.forEach(function (u) { TWINS.en[u.slug + '/'] = 'en/' + ((u.en && u.en.slug) || u.slug) + '/'; });
 
   // The shared texts in each language; the opening-hours lines are whole sentences of their own (unitStatus).
@@ -61,6 +61,8 @@ window.NV = (function () {
   var TEXTS = {
     hr: {
       newTab: ' (nova kartica)', place: 'Otvori na Google kartama', promo: 'Akcija', more: 'Više',
+      // the seasonal catalogue (WEB-48): footer link, a product's tags and a price not known yet
+      katalog: 'Katalog', top: 'Top hit!', novo: 'Novo', novoSub: 'u ponudi', priceShop: 'Cijena u trgovini',
       date: function (d, m) { return d + '. ' + (m + 1) + '.'; },                         // "15. 5."
       reception: 'Recepcija 0 - 24 h', open24: 'Otvoreno 0 - 24 h', now: 'Otvoreno sada', closed: 'Zatvoreno',
       until: function (close) { return 'Otvoreno do ' + close; },
@@ -75,6 +77,7 @@ window.NV = (function () {
     },
     en: {
       newTab: ' (new tab)', place: 'Open in Google Maps', promo: 'Special offer', more: 'More',
+      katalog: 'Catalogue', top: 'Top hit!', novo: 'New', novoSub: 'in store', priceShop: 'Price in store',
       date: function (d, m) { return d + ' ' + MONTHS_EN[m]; },                           // "15 May"
       reception: 'Reception open 24 hours', open24: 'Open 24 hours', now: 'Open now', closed: 'Closed',
       until: function (close) { return 'Open until ' + close; },
@@ -445,6 +448,61 @@ window.NV = (function () {
     }
   }, true);
 
+  /* ---------------- Seasonal catalogue (WEB-48) ---------------- */
+  // The catalogue whose dates hold today in Novalja (data/units.js catalogues: the first that does), or null.
+  function catalogue() {
+    var today = zagrebNow().iso;
+    return (D.catalogues || []).filter(function (c) { return c.from <= today && today <= c.to; })[0] || null;
+  }
+  // A page of the site (its folder from the root, 'katalog/'), from this page and in its language once it has a twin
+  function pageHref(p) {
+    var t = TWINS[LANG];
+    return (ROOT + (LANG !== 'hr' && t && has(t, p) ? t[p] : p)) || './';
+  }
+  // "16,50 €/kg" / "€16.50/kg" for a product sold by weight (g)
+  function perKg(p) {
+    if (typeof p.price !== 'number' || !p.g) return '';
+    var v = (p.price / p.g * 1000).toFixed(2);
+    return LANG === 'hr' ? v.replace('.', ',') + ' €/kg' : '€' + v + '/kg';
+  }
+  // A product's line under its name: what it is, its weight and its price per kilo
+  function productMeta(p) {
+    return [tx(p, 'desc'), p.g ? p.g + ' g' : '', perKg(p)].filter(Boolean).join(' · ');
+  }
+  // A price as the leaflet sets it: whole euros big, the cents small and raised with € under them ("3,⁴⁹€"); read out
+  // whole ("3,49 €" / "€3.49"). cls: the element's class. While the price isn't known: "Cijena u trgovini".
+  function priceHTML(p, cls) {
+    if (typeof p.price !== 'number') return '<p class="' + cls + ' ' + cls + '--none">' + T.priceShop + '</p>';
+    var s = p.price.toFixed(2).split('.'), sep = LANG === 'hr' ? ',' : '.';
+    return '<p class="' + cls + '"><span class="vh">' + (LANG === 'hr' ? s[0] + ',' + s[1] + ' €' : '€' + s[0] + '.' + s[1]) + '</span>' +
+      '<span class="price" aria-hidden="true">' + s[0] + sep + '<span class="price__c"><span>' + s[1] + '</span><span class="price__e">€</span></span></span></p>';
+  }
+  // A catalogue product's tile: the photo with its tag (Top hit! or the round Novo sticker), name, line and price.
+  // big: the double-size tile of a catalogue page. Where it sits decides its look (css: on the red page the price is
+  // yellow, elsewhere a red box).
+  function productHTML(p, big) {
+    var meta = productMeta(p);
+    var tag = p.tag === 'top' ? '<span class="xm-stamp">' + T.top + '</span>'
+      : p.tag === 'new' ? '<span class="xm-novo">' + T.novo + '<small>' + T.novoSub + '</small></span>' : '';
+    return '<article class="xm-p' + (big ? ' xm-p--big' : '') + '">' +
+      '<div class="xm-p__ph"><img src="' + esc(asset(p.photo)) + '" alt="" loading="lazy" decoding="async">' + tag + '</div>' +
+      '<div class="xm-p__info"><div class="xm-p__txt"><h3 class="xm-p__n">' + esc(tx(p, 'name')) + '</h3>' +
+        (meta ? '<p class="xm-p__d">' + esc(meta) + '</p>' : '') + '</div>' + priceHTML(p, 'xm-p__price') + '</div>' +
+    '</article>';
+  }
+  // Falling snow, decorative: n flakes, every sixth a snowflake; css places, sizes and times them (.snow i:nth-child)
+  // and shows none with reduced motion. cls: where it falls (.snow--hero, .snow--screen)
+  function snowHTML(n, cls) {
+    return '<div class="snow ' + cls + '" aria-hidden="true">' + new Array(n + 1).join('<i></i>') + '</div>';
+  }
+  // While a catalogue runs, every footer links to it, above Cjenici (marked on the catalogue page itself)
+  function footerCatalogue() {
+    var cj = $('.footer a[href$="#cjenici"]');
+    if (!cj || !catalogue()) return;
+    cj.insertAdjacentHTML('beforebegin', '<a href="' + esc(pageHref('katalog/')) + '" class="footer__link"' +
+      (document.body.dataset.page === 'katalog' ? ' aria-current="page"' : '') + '>' + T.katalog + '</a>');
+  }
+
   /* ---------------- Header nav + footer ---------------- */
   // Every link to a unit goes to its store page, or to its own website in a new tab.
   var NEW_TAB = '<span class="vh">' + T.newTab + '</span>';
@@ -736,6 +794,7 @@ window.NV = (function () {
   renderBrand();
   initStaticSlots();
   renderNav();
+  footerCatalogue();
   bind();
 
   return {
@@ -744,6 +803,8 @@ window.NV = (function () {
     goTo: goTo, asset: asset, unitHref: unitHref, mapsHref: mapsHref, placeHref: placeHref, addrHTML: addrHTML, telHref: telHref, telLabel: telLabel, dayMonth: dayMonth,
     NEW_TAB: NEW_TAB, PLACE_TITLE: PLACE_TITLE, logoSVG: logoSVG, tileSVG: tileSVG, slotHTML: slotHTML, cardData: cardData, cardHTML: cardHTML, cardGrid: cardGrid, holdQuickbar: holdQuickbar,
     absUrl: absUrl, PAGE_URL: PAGE_URL, HOME_URL: HOME_URL, ROOT_URL: ROOT_URL, addJSONLD: addJSONLD,
-    zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays
+    zagrebNow: zagrebNow, currentSeason: currentSeason, holidays: holidays, unitStatus: unitStatus, specialDays: specialDays,
+    dayOf: dayOf, dayHours: dayHours, is24h: is24h, T: T,
+    catalogue: catalogue, pageHref: pageHref, productMeta: productMeta, priceHTML: priceHTML, productHTML: productHTML, snowHTML: snowHTML
   };
 })();

@@ -110,4 +110,14 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/privacy-policy/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/pravila-o-privatnosti/"/>
   </url>
+  <url><loc>https://novalis-web.vercel.app/katalog/</loc><lastmod>2026-11-17</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/katalog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/catalogue/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/katalog/"/>
+  </url>
+  <url><loc>https://novalis-web.vercel.app/en/catalogue/</loc><lastmod>2026-11-17</lastmod>
+    <xhtml:link rel="alternate" hreflang="hr" href="https://novalis-web.vercel.app/katalog/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://novalis-web.vercel.app/en/catalogue/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://novalis-web.vercel.app/katalog/"/>
+  </url>
 </urlset>

@@ -604,10 +604,29 @@
     sync();
   }
 
+  // The running catalogue's block (WEB-48), under the hero of the stores it names (data/units.js catalogues: units):
+  // a few of its products with their prices and a link to the catalogue page. Outside its dates there is none.
+  var XM = NV.catalogue();
+  function seasonBlockHTML() {
+    if (!XM || XM.units.indexOf(u.id) < 0) return '';
+    var b = XM.block, tx = NV.tx;
+    return '<section class="store-sec" aria-labelledby="h-xm"><div class="xm-block">' +
+      '<div class="xm-block__text">' +
+        '<p class="xm-block__label">' + esc(tx(b, 'label')) + '</p>' +
+        '<p class="xm-script xm-block__script">' + esc(tx(b, 'script')) + '</p>' +
+        '<h2 class="xm-block__h" id="h-xm">' + esc(tx(b, 'title')) + '</h2>' +
+        '<p class="xm-block__p">' + esc(tx(b, 'text')) + '</p>' +
+        '<a class="btn btn--lg btn--primary xm-block__cta" href="' + esc(NV.pageHref('katalog/')) + '">' + esc(tx(b, 'cta')) +
+          '<span class="ms" aria-hidden="true">arrow_forward</span></a>' +
+      '</div>' +
+      '<ul class="xm-block__list" role="list">' + b.picks.map(function (id) { return '<li>' + NV.productHTML(XM.products[id]) + '</li>'; }).join('') + '</ul>' +
+    '</div></section>';
+  }
+
   $('.page').classList.add('store', 'store--' + p.theme);
   if (V2) $('.page').classList.add('store--v2');
   $('#store').innerHTML = V2
-    ? heroHTML() + visitHTML() + offerHTML() + (p.brands ? brandsHTML() : '') + (p.rooms ? roomsHTML() : '') + galleryHTML() + relatedHTML()
+    ? heroHTML() + seasonBlockHTML() + visitHTML() + offerHTML() + (p.brands ? brandsHTML() : '') + (p.rooms ? roomsHTML() : '') + galleryHTML() + relatedHTML()
     : heroHTML() + factsHTML() + offerHTML() + galleryHTML() + visitHTML() + relatedHTML();
   // the related cards rise in like the landing page's the first time they come into view (NV.cardGrid)
   var related = NV.cardGrid($('#related'));

@@ -23,9 +23,9 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#D6191F">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../css/fonts.css?v=20261026">
-  <link rel="stylesheet" href="../css/ds.css?v=20261026">
-  <link rel="stylesheet" href="../css/styles.css?v=20261026">
+  <link rel="stylesheet" href="../css/fonts.css?v=20261117-2">
+  <link rel="stylesheet" href="../css/ds.css?v=20261117-2">
+  <link rel="stylesheet" href="../css/styles.css?v=20261117-2">
   <!-- The hero entrance (css/styles.css) holds its first frame until the headline fonts, the icons and the photo are
        ready and the page scripts have run, at most 1.2 s. Otherwise, on a first visit it plays over an empty photo,
        swaps fonts halfway through and stutters while the scripts run. Asking for the fonts here also starts their
@@ -97,56 +97,26 @@
 
   <main id="main">
   <!-- ============ HERO ============ -->
+  <!-- slide 1 of the hero's slides (WEB-47): written here, so it shows without JavaScript and its photo is the page's
+       first; js/app.js adds the other slides (data/units.js heroSlides) and their controls after it -->
   <section class="hero" aria-label="Introduction">
-    <div class="hero__bg" aria-hidden="true"><img src="../assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div>
+    <div class="hero__bg" aria-hidden="true"><div class="hero__ph is-current"><img src="../assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div></div>
     <div class="hero__glow" aria-hidden="true"></div>
-    <div class="section hero__inner">
-      <span class="eyebrow hero__eyebrow">A trusted local brand</span>
-      <h1 class="hero__title">
-        <span class="hero__line"><span class="hero__w" style="--i:0">Everything</span> <span class="hero__w" style="--i:1">for</span> <span class="hero__w" style="--i:2">life</span></span>
-        <span class="hero__line"><span class="hero__w" style="--i:3">on</span> <span class="hero__w" style="--i:4">Pag.</span></span>
-      </h1>
-      <p class="hero__lead">From everyday shopping to building and home improvement, from accommodation to a good meal. Novalis brings together everything we offer for your home, your leisure and your business&nbsp;- all on the island.</p>
-      <div class="hero__actions">
-        <a class="btn btn--primary btn--lg hero__cta" href="#poslovnice">Find a location<span class="hero__btn-icon" aria-hidden="true"><span class="ms">arrow_downward</span></span></a>
-        <a class="btn btn--lg hero__call" href="tel:+38553662001"><span class="hero__call-label">Call us</span><span class="hero__btn-icon" aria-hidden="true"><span class="ms ms--sm">call</span></span></a>
+    <div class="hero__slides">
+      <div class="section hero__inner hero__slide is-current">
+        <div class="hero__copy">
+          <span class="eyebrow hero__eyebrow">A trusted local brand</span>
+          <h1 class="hero__title">
+            <span class="hero__line"><span class="hero__w" style="--i:0">Everything</span> <span class="hero__w" style="--i:1">for</span> <span class="hero__w" style="--i:2">life</span></span>
+            <span class="hero__line"><span class="hero__w" style="--i:3">on</span> <span class="hero__w" style="--i:4">Pag.</span></span>
+          </h1>
+          <p class="hero__lead">From everyday shopping to building and home improvement, from accommodation to a good meal. Novalis brings together everything we offer for your home, your leisure and your business&nbsp;- all on the island.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg hero__cta" href="#poslovnice">Find a location<span class="hero__btn-icon" aria-hidden="true"><span class="ms">arrow_downward</span></span></a>
+            <a class="btn btn--lg hero__call" href="tel:+38553662001"><span class="hero__call-label">Call us</span><span class="hero__btn-icon" aria-hidden="true"><span class="ms ms--sm">call</span></span></a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ POSLOVNICE ============ -->
-  <section id="poslovnice" class="section units" aria-labelledby="h-poslovnice">
-    <div class="units__head">
-      <div class="head">
-        <span class="eyebrow">Locations</span>
-        <h2 id="h-poslovnice" class="h2">Our locations</h2>
-      </div>
-      <span class="season"><span class="ms ms--xs" id="seasonIcon" aria-hidden="true">sunny</span><span id="seasonLabel"></span></span>
-    </div>
-
-    <div class="filters">
-      <div class="filters__tabs" id="filters" role="toolbar" aria-label="Filter locations"></div>
-      <button type="button" class="open-only" id="openOnly" aria-pressed="false">
-        <span class="switch" aria-hidden="true"><span class="switch__knob"></span></span>Open now
-      </button>
-    </div>
-
-    <div class="cards" id="cards"><!-- static:units - generated from data/units.js by tools/static-fallback.js; do not edit here: change the data and run node tools/static-fallback.js -->
-<ul class="static">
-<li><h3><a href="../en/hiper-novalis/"><span translate="no">Hiper Novalis</span></a></h3><p>Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department, mobile and landline phones and phone accessories, and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.</p><p translate="no">Čiponjac III/2, Novalja</p><p><a href="tel:+38553663300">Call: <span translate="no">053 663 300</span></a></p><p><a href="mailto:hiper.novalis@novalis.com.hr">Email: <span translate="no">hiper.novalis@novalis.com.hr</span></a></p></li>
-<li><h3><a href="../en/market-novalis/"><span translate="no">Market Novalis</span></a></h3><p>A 600 m² shop for food and everyday goods, in the Novalis department store building.</p><p translate="no">Josipa Kunkere 8, Novalja</p><p><a href="tel:+38598441149">Call: <span translate="no">098 441 149</span></a></p><p><a href="mailto:robnakucanovalis@gmail.com">Email: <span translate="no">robnakucanovalis@gmail.com</span></a></p></li>
-<li><h3><a href="../en/hiper-bau/"><span translate="no">Hiper Bau</span></a></h3><p>Opened in 2019 in the business zone: 15,000 m², with 8,000 m² of indoor space and a covered car park. Building materials, roofing systems, drywall, a ceramics showroom, tools and boating gear.</p><p translate="no">Čiponjac III/3, Novalja</p><p><a href="tel:+385995476792">Call: <span translate="no">099 5476 792</span></a></p><p><a href="mailto:hiperbau@novalis.hr">Email: <span translate="no">hiperbau@novalis.hr</span></a></p></li>
-<li><h3><a href="../en/hotel-novalis/"><span translate="no">B&amp;B Novalis</span></a></h3><p>Decorated with care and love, in the very centre of Novalja. Relax in comfortable rooms with king-size beds or in a hydromassage tub on the roof terrace, with a view of the sea or of Novalja&#39;s rooftops and bell towers.</p><p translate="no">Josipa Kunkere 8, Novalja</p><p><a href="tel:+38553662222">Call: <span translate="no">053 662 222</span></a></p><p><a href="mailto:hotel@novalis.hr">Email: <span translate="no">hotel@novalis.hr</span></a></p></li>
-<li><h3><a href="../en/valis/"><span translate="no">Valis Bistro &amp; Pastry Shop</span></a></h3><p>Our home-made ice cream is known far and wide. Enjoy it on the café&#39;s large terrace, and for excellent coffee and wine, drop in to the coffee house on the first floor.</p><p translate="no">Trg Bazilike 3, Novalja</p><p><a href="tel:+38553663546">Call: <span translate="no">053 663 546</span></a></p><p><a href="mailto:valis@novalis.hr">Email: <span translate="no">valis@novalis.hr</span></a></p></li>
-<li><h3><a href="../en/pod-zvon/"><span translate="no">Bistro Pod Zvon</span></a></h3><p>A konoba and pizzeria in the very centre of Novalja, for the most discerning guests. Drop in for Dalmatian dishes from the open hearth, pizza from the bread oven or a glass of wine.</p><p translate="no">Ulica kralja Zvonimira 1a, Novalja</p><p><a href="tel:+38553679555">Call: <span translate="no">053 679 555</span></a></p><p><a href="mailto:zvon@novalis.com.hr">Email: <span translate="no">zvon@novalis.com.hr</span></a></p></li>
-<li><h3><a href="../en/wholesale/"><span translate="no">Wholesale</span></a></h3><p>Get everything your business needs in one place, from fruit, vegetables and food for the hospitality trade to equipment, drinks and coffee.</p><p translate="no">Novalja</p><p><a href="tel:+38553663300">Call: <span translate="no">053 663 300</span></a></p><p><a href="mailto:veleprodaja@novalis.com.hr">Email: <span translate="no">veleprodaja@novalis.com.hr</span></a></p></li>
-</ul>
-<!-- /static:units --></div>
-
-    <p class="vh" id="noResultsLive" role="status"></p>
-    <div class="no-results" id="noResults" hidden>
-      <p>Nothing in this category is open right now.</p>
-      <button type="button" class="link-btn" id="resetFilters">Show all locations</button>
     </div>
   </section>
 
@@ -199,6 +169,42 @@
           </li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ POSLOVNICE ============ -->
+  <section id="poslovnice" class="section units" aria-labelledby="h-poslovnice">
+    <div class="units__head">
+      <div class="head">
+        <span class="eyebrow">Locations</span>
+        <h2 id="h-poslovnice" class="h2">Our locations</h2>
+      </div>
+      <span class="season"><span class="ms ms--xs" id="seasonIcon" aria-hidden="true">sunny</span><span id="seasonLabel"></span></span>
+    </div>
+
+    <div class="filters">
+      <div class="filters__tabs" id="filters" role="toolbar" aria-label="Filter locations"></div>
+      <button type="button" class="open-only" id="openOnly" aria-pressed="false">
+        <span class="switch" aria-hidden="true"><span class="switch__knob"></span></span>Open now
+      </button>
+    </div>
+
+    <div class="cards" id="cards"><!-- static:units - generated from data/units.js by tools/static-fallback.js; do not edit here: change the data and run node tools/static-fallback.js -->
+<ul class="static">
+<li><h3><a href="../en/hiper-novalis/"><span translate="no">Hiper Novalis</span></a></h3><p>Across 14,000 m² you will find a supermarket, drinks wholesale, a furniture showroom, an appliances department, mobile and landline phones and phone accessories, and much more. Shop in 7,000 m² of indoor space on two floors, with a large covered car park.</p><p translate="no">Čiponjac III/2, Novalja</p><p><a href="tel:+38553663300">Call: <span translate="no">053 663 300</span></a></p><p><a href="mailto:hiper.novalis@novalis.com.hr">Email: <span translate="no">hiper.novalis@novalis.com.hr</span></a></p></li>
+<li><h3><a href="../en/market-novalis/"><span translate="no">Market Novalis</span></a></h3><p>A 600 m² shop for food and everyday goods, in the Novalis department store building.</p><p translate="no">Josipa Kunkere 8, Novalja</p><p><a href="tel:+38598441149">Call: <span translate="no">098 441 149</span></a></p><p><a href="mailto:robnakucanovalis@gmail.com">Email: <span translate="no">robnakucanovalis@gmail.com</span></a></p></li>
+<li><h3><a href="../en/hiper-bau/"><span translate="no">Hiper Bau</span></a></h3><p>Opened in 2019 in the business zone: 15,000 m², with 8,000 m² of indoor space and a covered car park. Building materials, roofing systems, drywall, a ceramics showroom, tools and boating gear.</p><p translate="no">Čiponjac III/3, Novalja</p><p><a href="tel:+385995476792">Call: <span translate="no">099 5476 792</span></a></p><p><a href="mailto:hiperbau@novalis.hr">Email: <span translate="no">hiperbau@novalis.hr</span></a></p></li>
+<li><h3><a href="../en/hotel-novalis/"><span translate="no">B&amp;B Novalis</span></a></h3><p>Decorated with care and love, in the very centre of Novalja. Relax in comfortable rooms with king-size beds or in a hydromassage tub on the roof terrace, with a view of the sea or of Novalja&#39;s rooftops and bell towers.</p><p translate="no">Josipa Kunkere 8, Novalja</p><p><a href="tel:+38553662222">Call: <span translate="no">053 662 222</span></a></p><p><a href="mailto:hotel@novalis.hr">Email: <span translate="no">hotel@novalis.hr</span></a></p></li>
+<li><h3><a href="../en/valis/"><span translate="no">Valis Bistro &amp; Pastry Shop</span></a></h3><p>Our home-made ice cream is known far and wide. Enjoy it on the café&#39;s large terrace, and for excellent coffee and wine, drop in to the coffee house on the first floor.</p><p translate="no">Trg Bazilike 3, Novalja</p><p><a href="tel:+38553663546">Call: <span translate="no">053 663 546</span></a></p><p><a href="mailto:valis@novalis.hr">Email: <span translate="no">valis@novalis.hr</span></a></p></li>
+<li><h3><a href="../en/pod-zvon/"><span translate="no">Bistro Pod Zvon</span></a></h3><p>A konoba and pizzeria in the very centre of Novalja, for the most discerning guests. Drop in for Dalmatian dishes from the open hearth, pizza from the bread oven or a glass of wine.</p><p translate="no">Ulica kralja Zvonimira 1a, Novalja</p><p><a href="tel:+38553679555">Call: <span translate="no">053 679 555</span></a></p><p><a href="mailto:zvon@novalis.com.hr">Email: <span translate="no">zvon@novalis.com.hr</span></a></p></li>
+<li><h3><a href="../en/wholesale/"><span translate="no">Wholesale</span></a></h3><p>Get everything your business needs in one place, from fruit, vegetables and food for the hospitality trade to equipment, drinks and coffee.</p><p translate="no">Novalja</p><p><a href="tel:+38553663300">Call: <span translate="no">053 663 300</span></a></p><p><a href="mailto:veleprodaja@novalis.com.hr">Email: <span translate="no">veleprodaja@novalis.com.hr</span></a></p></li>
+</ul>
+<!-- /static:units --></div>
+
+    <p class="vh" id="noResultsLive" role="status"></p>
+    <div class="no-results" id="noResults" hidden>
+      <p>Nothing in this category is open right now.</p>
+      <button type="button" class="link-btn" id="resetFilters">Show all locations</button>
     </div>
   </section>
 
@@ -316,12 +322,12 @@
   </nav>
 </div>
 
-<script src="../js/brand-paths.js?v=20261026"></script>
-<script src="../data/units.js?v=20261026"></script>
-<script src="../js/schema.js?v=20261026"></script>
-<script src="../js/site.js?v=20261026"></script>
-<script src="../js/map.js?v=20261026"></script>
-<script src="../js/occasions.js?v=20261026"></script>
-<script src="../js/app.js?v=20261026"></script>
+<script src="../js/brand-paths.js?v=20261117-2"></script>
+<script src="../data/units.js?v=20261117-2"></script>
+<script src="../js/schema.js?v=20261117-2"></script>
+<script src="../js/site.js?v=20261117-2"></script>
+<script src="../js/map.js?v=20261117-2"></script>
+<script src="../js/occasions.js?v=20261117-2"></script>
+<script src="../js/app.js?v=20261117-2"></script>
 </body>
 </html>

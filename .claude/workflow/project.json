@@ -76,7 +76,9 @@
         "en/wholesale/index.html",
         "en/valis/index.html",
         "en/pod-zvon/index.html",
-        "en/hotel-novalis/index.html"
+        "en/hotel-novalis/index.html",
+        "katalog/index.html",
+        "en/catalogue/index.html"
       ],
       "redirectStubs": [
         "o-nama.html"
@@ -92,7 +94,8 @@
       "pageScripts": {
         "index.html": "js/occasions.js + js/app.js",
         "o-nama/index.html": "js/occasions.js",
-        "store pages": "js/poslovnica.js"
+        "store pages": "js/poslovnica.js",
+        "katalog/index.html": "js/katalog.js"
       },
       "data": "data/units.js (units, categories, hours, occasions, store-page content)",
       "seoFiles": [
@@ -100,7 +103,7 @@
         "sitemap.xml",
         "vercel.json"
       ],
-      "generated": "tools/static-fallback.js writes marked <!-- static:… --> regions in the 22 pages and llms.txt (WEB-22)"
+      "generated": "tools/static-fallback.js writes marked <!-- static:… --> regions in the 24 pages and llms.txt (WEB-22)"
     }
   },
   "commands": {

@@ -211,7 +211,7 @@ button { font: inherit; }
 }
 .dd-item:hover { background: #F7F7F7; color: var(--nv-red); }
 .dd-item[aria-current="page"] { color: var(--nv-red); }
-/* arrow after each unit name (desktop panels and mobile menu), drawn like the .occ-step__go arrow */
+/* arrow after each unit name (desktop panels and mobile menu), drawn like the "+" and arrows of the occasion cards */
 .nav-go {
   flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.25;
   stroke-linecap: round; stroke-linejoin: round; transition: transform var(--dur-fast) var(--ease-out);
@@ -296,18 +296,20 @@ button { font: inherit; }
   min-height: calc(100vh - 73px); min-height: min(calc(100svh - 73px), 1080px);
 }
 .hero__bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; background: #8fb7cf; }
-.hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
-/* ::after is the veil. ::before is a white sheet that clears on load, so the island comes up out of the light */
-.hero__bg::before, .hero__bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-.hero__bg::before { z-index: 1; background: #fff; opacity: 0; }
-.hero__bg::after { background: rgba(255,255,255,.82); }
+/* one photo layer per slide (.hero__ph), each under its own veil (::after); a slide's photo sets its own focus point.
+   .hero__bg::before is a white sheet that clears on load, so the island comes up out of the light */
+.hero__ph { position: absolute; inset: 0; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; object-position: var(--focus, 50% 45%); }
+.hero__bg::before, .hero__ph::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.hero__bg::before { z-index: 3; background: #fff; opacity: 0; }
+.hero__ph::after { background: rgba(255,255,255,.82); }
 /* the photo fades into the page at the bottom */
 .hero::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: clamp(64px, 11%, 120px); z-index: -1; pointer-events: none;
   background: linear-gradient(0deg, #fff, rgba(255,255,255,0));
 }
 /* the petal light: a yellow glow up left of the headline and an orange one down right of the buttons (BRAND.md §4).
-   It leans toward the pointer (js/app.js) */
+   Still; with slides it belongs to the first and fades with it */
 .hero__glow {
   position: absolute; inset: -8%; z-index: -1; pointer-events: none;
   background:
@@ -318,6 +320,11 @@ button { font: inherit; }
   flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   padding-top: clamp(40px, 5vw, 80px); padding-bottom: clamp(64px, 8vw, 128px);
 }
+/* the slides share one grid cell: the hero is as tall as the tallest, so nothing below moves when they change.
+   .hero__copy is the text block (hovering it holds the slides) */
+.hero__slides { flex: 1; display: grid; }
+.hero__slide { grid-area: 1 / 1; }
+.hero__copy { display: flex; flex-direction: column; align-items: center; max-width: 100%; }
 
 /* label: the site's section eyebrow (red caps), as on Lokacije. In the brand's dark red here: the bright red is
    5:1 on white but only about 4.2:1 on the veiled photo */
@@ -365,7 +372,7 @@ button { font: inherit; }
    label stays for screen readers). At 16px the label is white, as yellow on red needs 19px; the hover's yellow is on
    the dark red, 5.5:1 */
 @media (max-width: 699px) {
-  .hero__bg img { object-position: 40% 50%; }
+  .hero__bg img { object-position: var(--focus-phone, 40% 50%); }
   .hero__inner { padding-top: 32px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
   .hero__title { font-size: clamp(46px, 13vw, 84px); }
   .hero__actions { flex-wrap: nowrap; gap: 8px; margin-top: 28px; }
@@ -388,34 +395,34 @@ button { font: inherit; }
 
 /* entrance: the photo comes up out of white light and settles, then the label, the headline word by word, the lead
    and the buttons come into focus in reading order. Transform, opacity and a short blur only; without JS it plays at
-   once. "backwards" fill, so once it has run the buttons' own hover and press transforms work again */
+   once. "backwards" fill, so once it has run the buttons' own hover and press transforms work again. It belongs to
+   the first slide until the slides first change (js/app.js: is-changed; :where keeps these rules as weak as the
+   hero-wait hold below) */
 @media (prefers-reduced-motion: no-preference) {
-  .hero__bg img { animation: hero-zoom 2600ms var(--occ-ease) backwards; }
-  .hero__bg::before { animation: hero-clear 1800ms var(--ease-out) 120ms backwards; }
-  .hero__eyebrow { animation: hero-in 900ms var(--occ-ease) 180ms backwards; }
-  .hero__w { animation: hero-word 1000ms var(--occ-ease) calc(300ms + var(--i, 0) * 70ms) backwards; }
-  .hero__lead { animation: hero-in 900ms var(--occ-ease) 660ms backwards; }
-  .hero__actions > * { animation: hero-in 900ms var(--occ-ease) 780ms backwards; }
-  .hero__actions > * + * { animation-delay: 860ms; }
-  /* held at its first frame while the page gets ready (index.html <head>, at most 1.2 s); the photo's scroll drift
-     (below) keeps running */
+  :where(.hero:not(.is-changed) .hero__ph:first-child) img { animation: hero-zoom 2600ms var(--occ-ease) backwards; }
+  :where(.hero:not(.is-changed)) .hero__bg::before { animation: hero-clear 1800ms var(--ease-out) 120ms backwards; }
+  :where(.hero:not(.is-changed) .hero__slide:first-child) .hero__eyebrow { animation: hero-in 900ms var(--occ-ease) 180ms backwards; }
+  :where(.hero:not(.is-changed) .hero__slide:first-child) .hero__w { animation: hero-word 1000ms var(--occ-ease) calc(300ms + var(--i, 0) * 70ms) backwards; }
+  :where(.hero:not(.is-changed) .hero__slide:first-child) .hero__lead { animation: hero-in 900ms var(--occ-ease) 660ms backwards; }
+  :where(.hero:not(.is-changed) .hero__slide:first-child) .hero__actions > * { animation: hero-in 900ms var(--occ-ease) 780ms backwards; }
+  :where(.hero:not(.is-changed) .hero__slide:first-child) .hero__actions > * + * { animation-delay: 860ms; }
+  /* held at its first frame while the page gets ready (index.html <head>, at most 1.2 s), and so is the first
+     slide's time (js/app.js); the photos' scroll drift (below) keeps running */
   .hero-wait .hero__bg img, .hero-wait .hero__bg::before, .hero-wait .hero__eyebrow, .hero-wait .hero__w,
-  .hero-wait .hero__lead, .hero-wait .hero__actions > * { animation-play-state: paused, running; }
+  .hero-wait .hero__lead, .hero-wait .hero__actions > * { animation-play-state: paused; }
   @media (hover: hover) {
     .hero__cta:hover .hero__btn-icon .ms { animation: hero-arrow 560ms var(--occ-ease); }
+    .hero__cta:hover .hero__btn-icon .ms.hero__arrow-x { animation-name: hero-arrow-x; }
     .hero__call:hover .hero__btn-icon .ms { animation: hero-ring 640ms ease-in-out; }
   }
 }
-/* scrolling away (browsers with scroll-driven animations only): the photo drifts down slower than the page; from
+/* scrolling away (browsers with scroll-driven animations only): the photos drift down slower than the page; from
    900 px the copy lifts off. The veil keeps its strength until the hero has left the screen.
    The timeline is the hero's own: view() on the photo would track .hero__bg, whose overflow makes it a scroll container */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .hero { view-timeline: --hero block; }
-    .hero__bg img {
-      animation: hero-zoom 2600ms var(--occ-ease) backwards, hero-drift linear both;
-      animation-timeline: auto, --hero; animation-range: normal, exit;
-    }
+    .hero__bg { animation: hero-drift linear both; animation-timeline: --hero; animation-range: exit; }
   }
   @media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
     .hero__inner { animation: hero-lift linear both; animation-timeline: --hero; animation-range: exit 5% exit 60%; }
@@ -428,7 +435,120 @@ button { font: inherit; }
 @keyframes hero-drift { to { translate: 0 16%; } }
 @keyframes hero-lift { to { opacity: 0; translate: 0 -10%; } }
 @keyframes hero-arrow { 45% { transform: translateY(110%); } 46% { transform: translateY(-110%); } }
+@keyframes hero-arrow-x { 45% { transform: translateX(110%); } 46% { transform: translateX(-110%); } }
 @keyframes hero-ring { 20% { rotate: -14deg; } 40% { rotate: 12deg; } 60% { rotate: -8deg; } 80% { rotate: 4deg; } }
+
+/* ---------- Hero slides (WEB-47) ---------- */
+/* js/app.js turns the hero into slides (.hero--slider) when data/units.js has more than one for today: slide 1 is the
+   hero above, slides 2-4 come after it, each with its photo under a veil, centred copy and one button. Each slide
+   stays 6 s (js/app.js holds it while the pointer rests on the copy or the arrows, keyboard focus is in the hero,
+   it is off screen, the tab is hidden or a drag is on). Two round arrows only, no Pause, no dots (user, 2026-11-16).
+   Two tempos: --k 1 when the slides move on by themselves, .6 when the visitor asked (an arrow, a swipe).
+   --dir: 1 forward, -1 back. Hidden slides stay in the layout (visibility, inert), never display: none */
+.hero--slider {
+  --k: 1; --dir: 1;
+  --ease-exit: cubic-bezier(.5, 0, .75, 0);     /* leaves quickly, no landing: the outgoing copy */
+  --ease-xfade: cubic-bezier(.45, 0, .55, 1);   /* photo crossfade, symmetric */
+  --ease-settle: cubic-bezier(.33, 0, .2, 1);   /* the incoming photo's slow settle */
+  touch-action: pan-y pinch-zoom;               /* a horizontal swipe changes the slide; scrolling and zoom stay the browser's */
+}
+.hero--slider.is-direct { --k: .6; }
+.hero--slider.is-dragging { -webkit-user-select: none; user-select: none; }
+.hero--slider .hero__ph { visibility: hidden; }
+.hero--slider .hero__ph:is(.is-current, .is-prev) { visibility: visible; }
+.hero--slider .hero__ph.is-prev { z-index: 1; }
+.hero--slider .hero__ph.is-current { z-index: 2; }
+/* slides 2-4: the veil is strong behind the copy and thins toward the edges, so the room, the shelves and the tiles
+   show around the text */
+.hero__ph--local::after { background: radial-gradient(ellipse 62% 70% at 50% 50%, rgba(255,255,255,.92) 0 54%, rgba(255,255,255,.4) 100%); }
+/* a photo still missing: the striped slot with its note, low, clear of the copy (a photo on its way: the loading look) */
+.hero__ph .slot:not(.slot--photo) { align-items: flex-end; padding-bottom: clamp(120px, 16%, 180px); }
+.hero--slider .hero__glow { transition: opacity calc(900ms * var(--k)) var(--ease-xfade); }
+.hero--slider:not([data-cur="0"]) .hero__glow { opacity: 0; }
+.hero--slider .hero__slide { visibility: hidden; }
+.hero--slider .hero__slide:is(.is-current, .is-out) { visibility: visible; }
+.hero--slider .hero__slide.is-out { pointer-events: none; }
+/* slides 2-4's headlines: two balanced lines like slide 1's (8.4em: "home improvement" is 8.2em wide) */
+.hero__title--h2 { max-width: 8.4em; text-wrap: balance; }
+@media (min-width: 700px) {
+  /* room for the arrows under the copy, so the copy's buttons never meet them */
+  .hero--slider .hero__inner { padding-bottom: max(clamp(64px, 8vw, 128px), 104px); }
+}
+@media (max-width: 699px) {
+  .hero__ph--local::after { background: radial-gradient(ellipse 100% 58% at 50% 48%, rgba(255,255,255,.92) 0 62%, rgba(255,255,255,.4) 100%); }
+}
+
+/* a change: the new photo fades in over the old one and settles from a slight zoom, drifting against the direction;
+   the old copy leaves first, the new one comes into focus in reading order with the entrance's keyframes (headline
+   word by word the first time, whole on later rounds). Only transform, opacity and filter move */
+@media (prefers-reduced-motion: no-preference) {
+  .hero--slider .hero__ph.is-in { animation: ph-in calc(1000ms * var(--k)) var(--ease-xfade) backwards; }
+  .hero--slider .hero__ph.is-in img { animation: ph-settle calc(8000ms * var(--k)) var(--ease-settle) backwards; }
+  .hero--slider .hero__slide.is-out { animation: copy-out calc(360ms * var(--k)) var(--ease-exit) both; animation-timeline: auto; }
+  .hero--slider .hero__slide.is-in .hero__eyebrow { animation: hero-in calc(700ms * var(--k)) var(--occ-ease) calc(280ms * var(--k)) backwards; }
+  .hero--slider .hero__slide.is-in .hero__w { animation: hero-word calc(900ms * var(--k)) var(--occ-ease) calc((360ms + var(--i, 0) * 70ms) * var(--k)) backwards; }
+  .hero--slider .hero__slide.is-in .hero__lead { animation: hero-in calc(700ms * var(--k)) var(--occ-ease) calc(560ms * var(--k)) backwards; }
+  .hero--slider .hero__slide.is-in .hero__actions > * { animation: hero-in calc(700ms * var(--k)) var(--occ-ease) calc(640ms * var(--k)) backwards; }
+  .hero--slider .hero__slide.is-in .hero__actions > * + * { animation-delay: calc(720ms * var(--k)); }
+  .hero--slider .hero__slide.is-in.was-seen .hero__w { animation: none; }
+  .hero--slider .hero__slide.is-in.was-seen .hero__title { animation: hero-in calc(700ms * var(--k)) var(--occ-ease) calc(320ms * var(--k)) backwards; }
+  /* a swipe: the copy follows the finger at a third of its travel, then goes or springs back */
+  .hero--slider.is-dragging .hero__slide.is-current { transform: translateX(var(--drag, 0px)); opacity: var(--drag-o, 1); }
+  .hero--slider.is-settling .hero__slide.is-current { transition: transform 300ms var(--occ-ease), opacity 300ms var(--occ-ease); }
+}
+/* reduced motion: the slides never move on by themselves (Play starts them); a change is a short plain crossfade */
+@media (prefers-reduced-motion: reduce) {
+  .hero--slider .hero__ph.is-in, .hero--slider .hero__slide.is-in { animation: ph-in 200ms linear backwards; }
+  .hero--slider .hero__slide.is-out { animation: copy-fade 120ms linear both; }
+}
+@keyframes ph-in { from { opacity: 0; } }
+@keyframes ph-settle { from { transform: translateX(calc(var(--dir) * 1.5%)) scale(1.08); } }
+@keyframes copy-out { to { opacity: 0; transform: translateX(calc(var(--dir) * -24px)); filter: blur(6px); } }
+@keyframes copy-fade { to { opacity: 0; } }
+
+/* the arrows (js/app.js): Previous and Next, round frosted buttons with an ink icon, as the occasions' arrows
+   (.occ-arrow); no panel behind them. From 700 in the hero's bottom right corner, on the content's right edge;
+   on phones centred under the copy */
+.hero__controls {
+  position: absolute; z-index: 1; bottom: clamp(20px, 2.6vw, 36px);
+  right: max(var(--gut), calc((100% - 1408px) / 2 + var(--gut)));
+  display: flex; align-items: center; gap: 12px;
+}
+.hero__ctl {
+  width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; flex: none; padding: 0;
+  border: 1px solid rgba(38,38,38,.12); border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.72); color: var(--nv-gray-850);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3); backdrop-filter: blur(12px) saturate(1.3);
+  transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.hero__ctl svg {
+  width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.25; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.hero__ctl:active { transform: scale(.94); }
+.hero__controls :focus-visible { outline-offset: 3px; }
+@media (hover: hover) {
+  .hero__ctl:hover { border-color: var(--nv-gray-850); background: var(--nv-gray-850); color: var(--nv-white); }
+  .hero__ctl--prev:hover svg { transform: translateX(-2px); }
+  .hero__ctl--next:hover svg { transform: translateX(2px); }
+}
+@media (max-width: 699px) {
+  .hero__controls { right: auto; left: 50%; translate: -50% 0; bottom: calc(20px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 399.98px) {
+  .hero__ctl { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__ctl:active, .hero__ctl:hover svg { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .hero__ctl { background: var(--nv-white); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+/* Windows high contrast drops backgrounds: the buttons keep an edge */
+@media (forced-colors: active) {
+  .hero__ctl { border-color: ButtonText; color: ButtonText; }
+}
 
 /* ---------- Units (cards) ---------- */
 .units__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
@@ -650,7 +770,7 @@ button { font: inherit; }
   width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center;
   border-radius: 14px 14px 14px 0; background: var(--nv-yellow); color: var(--nv-red-dark);
 }
-.occ-card__icon .occ-ico { width: 32px; height: 32px; stroke-width: 1.75; }
+.occ-card__icon .occ-card__pic { width: 32px; height: 32px; }
 .occ-card__h {
   margin: 0; font: 700 clamp(22px, 2vw, 28px)/1.15 var(--font-primary); letter-spacing: -.015em; color: var(--nv-white);
   text-wrap: balance;
@@ -660,37 +780,31 @@ button { font: inherit; }
 html[lang="en"] .occ-card__h { hyphens: auto; }
 .occ-card__more { display: grid; grid-template-rows: 1fr; width: 100%; }
 .occ-card__more-in { min-height: 0; }
-.occ-card__desc { margin: var(--space-3) 0 0; font: 400 16px/1.5 var(--font-primary); color: var(--nv-white); text-wrap: pretty; }
+/* subtitle: one short line under the title, aligned with the title text (the title block sits beside the icon) */
+.occ-card__desc { margin: 6px 0 0; font: 300 15px/1.4 var(--font-primary); color: var(--nv-white); text-wrap: pretty; }
 
-/* the units in order, numbered and joined by a thin rail */
-.occ-steps {
-  list-style: none; margin: var(--space-4) 0 0; padding: var(--space-3) 0 0;
-  border-top: 1px solid color-mix(in srgb, var(--nv-white) 30%, transparent);
+/* the units as a path of stops: a dark-red Novalis tab with a white pictogram, then one sentence whose store name is the
+   link; a dotted line runs through the tabs, and a tab turns yellow when its row is hovered or has focus */
+.occ-steps { list-style: none; margin: 36px 0 0; padding: 0; position: relative; display: grid; gap: 22px; align-content: start; }
+.occ-steps::before {
+  content: ""; position: absolute; left: 20px; top: 21px; bottom: 21px; border-left: 2px dotted color-mix(in srgb, var(--nv-white) 45%, transparent);
+  transform-origin: top;
 }
-.occ-step { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: var(--space-3); padding-bottom: var(--space-2); }
-.occ-step:last-child { padding-bottom: 0; }
-/* rail: from 4px under this number to 4px above the next one (number = 28px) */
-.occ-step:not(:last-child)::before {
-  content: ""; position: absolute; left: 13px; top: 32px; bottom: 4px; width: 2px; border-radius: 1px;
-  background: color-mix(in srgb, var(--nv-white) 35%, transparent); transform-origin: top;
+.occ-step { display: grid; grid-template-columns: 42px minmax(0, 1fr); column-gap: 18px; align-items: center; }
+.occ-step__tab {
+  position: relative; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  border-radius: 12px 12px 12px 0; background: var(--nv-red-dark); color: var(--nv-white);
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
 }
-.occ-step__n {
-  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid color-mix(in srgb, var(--nv-white) 65%, transparent); border-radius: 8px 8px 8px 0;
-  font: 700 14px/1 var(--font-primary); font-variant-numeric: tabular-nums; color: var(--nv-white);
-}
-.occ-step__body { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
-/* what you need is the main line (its first line centred on the number); the unit that has it sits under it as the
-   link: white on the red panel, with an arrow (or new-tab icon) after it */
-.occ-step__need { margin: 0; padding-top: 3px; font: 700 17px/1.3 var(--font-primary); color: var(--nv-white); text-wrap: pretty; }
+.occ-step__ico { width: 26px; height: 26px; }
+.occ-step:hover .occ-step__tab, .occ-step:focus-within .occ-step__tab { background: var(--nv-yellow); color: var(--nv-red-dark); }
+.occ-step__text { margin: 0; max-width: 50ch; font: 400 16px/24px var(--font-primary); color: var(--nv-white); }
+.occ-step__keep { white-space: nowrap; }
 .occ-step__link {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 28px;
-  font: 400 15px/1.2 var(--font-primary); color: var(--nv-white);
+  color: var(--nv-white); font-weight: 700; white-space: nowrap;
+  text-decoration: underline; text-decoration-color: var(--nv-yellow); text-decoration-thickness: 1.5px; text-underline-offset: 4px;
 }
 .occ-step__link:hover { color: var(--nv-white); }
-.occ-step__link:hover .occ-step__name { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
-.occ-step__go { width: 16px; height: 16px; transition: transform var(--dur-fast) var(--ease-out); }
-.occ-step__link:hover .occ-step__go--in { transform: translateX(3px); }
 
 /* "Veliki izbor, domaći pristup.": the company's strengths as four white Novalis tabs on the grey panel (static in index.html).
    The article count leads with its figure (red "+"); the three icon facts carry the open card's yellow icon tile. Every tab
@@ -804,18 +918,23 @@ html[lang="en"] .occ-card__h { hyphens: auto; }
     margin-inline: calc(-1 * var(--gut)); padding: 0 var(--gut); scroll-padding-inline: var(--gut);
   }
   .occ-track::-webkit-scrollbar { display: none; }
-  .occ-card { flex: 0 0 min(86%, 360px); scroll-snap-align: start; }
+  .occ-card { flex: 0 0 min(94%, 400px); scroll-snap-align: start; }
   .occ-card__media { height: clamp(132px, 36vw, 176px); }
   .occ-card__body {
     flex: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: center; align-content: start;
     column-gap: var(--space-3);
   }
   .occ-card__icon { width: 44px; height: 44px; border-radius: 12px 12px 12px 0; }
-  .occ-card__icon .occ-ico { width: 28px; height: 28px; }
+  .occ-card__icon .occ-card__pic { width: 28px; height: 28px; }
   .occ-card__more { grid-column: 1 / -1; }
-  .occ-card__desc { font-size: 15px; }
-  .occ-steps { margin-top: var(--space-4); padding-top: var(--space-2); }
-  .occ-step__need { padding-top: 4px; font-size: 16px; }
+  .occ-card__desc { padding-left: 56px; }  /* under the title text: icon 44px + gap 12px */
+  .occ-card__body { padding: 20px 8px 24px 12px; }  /* room for two-line facts */
+  .occ-step { grid-template-columns: 36px minmax(0, 1fr); column-gap: 10px; }
+  .occ-step__tab { width: 36px; height: 36px; }
+  .occ-step__ico { width: 22px; height: 22px; }
+  .occ-steps::before { left: 17px; top: 18px; bottom: 18px; }
+  .occ-step__text { font-size: 15px; line-height: 22px; }  /* the sentences run to three lines in the narrow card */
+  .occ-steps { margin-top: 32px; }
 }
 @media (min-width: 700px) and (max-width: 1023.98px) {
   .occ-card { flex-basis: min(58%, 440px); }
@@ -826,8 +945,7 @@ html[lang="en"] .occ-card__h { hyphens: auto; }
 @media (min-width: 1024px) {
   .occ-dots { display: none; }
   /* as tall as the screen allows under the sticky header (72px + border), with room around it, up to 600px; never
-     shorter than the tallest open card (Proslave, 5 units) needs at any desktop width, so switching cards never
-     moves the page */
+     shorter than the tallest open card (5 two-line units) needs at any desktop width, so switching cards never moves the page */
   .occ-track { min-height: clamp(560px, calc(100svh - 73px - 48px), 600px); }
   .occ-card { flex: 1 1 0; background: var(--nv-gray-700); cursor: pointer; transition: flex-grow 750ms var(--occ-ease); }
   .occ-card.is-active { flex-grow: 2.5; cursor: auto; }
@@ -866,6 +984,7 @@ html[lang="en"] .occ-card__h { hyphens: auto; }
       opacity 500ms var(--occ-ease) 250ms, transform 700ms var(--occ-ease) 250ms;
   }
   .occ-card__h { font-size: clamp(24px, 2.1vw, 30px); }
+  .occ-card__desc { padding-left: 68px; }  /* under the title text: icon 52px + gap 16px */
   /* the text under the title opens with the card (0fr -> 1fr) and fades in once the card is nearly wide */
   .occ-card__more { grid-template-rows: 0fr; transition: grid-template-rows 750ms var(--occ-ease); }
   .occ-card.is-active .occ-card__more { grid-template-rows: 1fr; }
@@ -876,9 +995,7 @@ html[lang="en"] .occ-card__h { hyphens: auto; }
   .occ-card.is-active .occ-step { animation: occ-rise 700ms var(--occ-ease) both; }
   .occ-card.is-active .occ-card__desc { animation-delay: 220ms; }
   .occ-card.is-active .occ-step { animation-delay: calc(300ms + var(--k) * 70ms); }
-  .occ-card.is-active .occ-step:not(:last-child)::before {
-    animation: occ-draw 600ms var(--occ-ease) both; animation-delay: calc(420ms + var(--k) * 70ms);
-  }
+  .occ-card.is-active .occ-steps::before { animation: occ-draw 900ms var(--occ-ease) 400ms both; }
 }
 @media (min-width: 1024px) and (hover: hover) {
   .occ-card:not(.is-active):hover .occ-card__media .slot { transform: scale(1.06); }
@@ -2323,4 +2440,387 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
   .jobs__send { border: 2px solid ButtonText; }
   .jobs__send.is-sending::before { display: none; }
   .jobs__type, .jobs__done-mark { forced-color-adjust: none; }
+}
+
+/* ---------- Seasonal catalogue (WEB-48) ---------- */
+/* The running catalogue (data/units.js catalogues) as the landing hero's first slide, its page katalog/ (en/catalogue/)
+   and a block on the store pages it names. Christmas 2026: Novalis red under a fir garland (assets/img/blagdani/
+   girlanda.svg, drawn for the site: fir, glitter gold and silver baubles, berries, stars, ribbon), white snow falling
+   (NV.snowHTML), gold stars, the cover's headline on a gift tag, prices set like a printed leaflet: whole euros big,
+   the cents small and raised with € under them (NV.priceHTML). One script line per block in Pristina's stand-in. */
+.xm-wrap { max-width: 1408px; margin: 0 auto; padding: 0 var(--gut); }
+.xm-script { margin: 0; font: 600 clamp(36px, 3.6vw, 52px)/1 var(--font-script); color: var(--nv-yellow); }
+/* the garland along the top of a red or green surface, repeated across wide screens */
+.xm-garland {
+  position: absolute; left: 0; right: 0; top: -24px; height: 280px; z-index: 0; pointer-events: none;
+  background: url(../assets/img/blagdani/girlanda.svg?v=2) center top / auto 280px repeat-x;
+}
+/* falling snow: each flake an <i>; nth-child rules spread them over left, size, opacity, speed and start, every sixth
+   a snowflake. On the hero (.snow--hero) they fall from its top through it; on the catalogue page (.snow--screen) a
+   fixed layer over the whole screen, each flake fading in at its own height and out after a stretch of its fall. Never
+   takes a click; nothing falls with reduced motion. */
+.snow { position: absolute; inset: 0; overflow: hidden; pointer-events: none; --h: 1000px; }
+.snow i { position: absolute; top: -30px; left: 50%; width: 5px; height: 5px; border-radius: 50%; background: #fff; opacity: .85; animation: snow-fall 11s linear -4s infinite; }
+.snow i:nth-child(31n+1) { left: 1.3%; }
+.snow i:nth-child(31n+2) { left: 43.2%; }
+.snow i:nth-child(31n+3) { left: 85.2%; }
+.snow i:nth-child(31n+4) { left: 27.1%; }
+.snow i:nth-child(31n+5) { left: 69.0%; }
+.snow i:nth-child(31n+6) { left: 11.0%; }
+.snow i:nth-child(31n+7) { left: 52.9%; }
+.snow i:nth-child(31n+8) { left: 94.8%; }
+.snow i:nth-child(31n+9) { left: 36.8%; }
+.snow i:nth-child(31n+10) { left: 78.7%; }
+.snow i:nth-child(31n+11) { left: 20.7%; }
+.snow i:nth-child(31n+12) { left: 62.6%; }
+.snow i:nth-child(31n+13) { left: 4.5%; }
+.snow i:nth-child(31n+14) { left: 46.5%; }
+.snow i:nth-child(31n+15) { left: 88.4%; }
+.snow i:nth-child(31n+16) { left: 30.3%; }
+.snow i:nth-child(31n+17) { left: 72.3%; }
+.snow i:nth-child(31n+18) { left: 14.2%; }
+.snow i:nth-child(31n+19) { left: 56.1%; }
+.snow i:nth-child(31n+20) { left: 98.1%; }
+.snow i:nth-child(31n+21) { left: 40.0%; }
+.snow i:nth-child(31n+22) { left: 81.9%; }
+.snow i:nth-child(31n+23) { left: 23.9%; }
+.snow i:nth-child(31n+24) { left: 65.8%; }
+.snow i:nth-child(31n+25) { left: 7.8%; }
+.snow i:nth-child(31n+26) { left: 49.7%; }
+.snow i:nth-child(31n+27) { left: 91.6%; }
+.snow i:nth-child(31n+28) { left: 33.6%; }
+.snow i:nth-child(31n+29) { left: 75.5%; }
+.snow i:nth-child(31n+30) { left: 17.4%; }
+.snow i:nth-child(31n+31) { left: 59.4%; }
+.snow i:nth-child(5n+1) { width: 3px; height: 3px; }
+.snow i:nth-child(5n+2) { width: 4px; height: 4px; }
+.snow i:nth-child(5n+3) { width: 5px; height: 5px; }
+.snow i:nth-child(5n+4) { width: 6px; height: 6px; }
+.snow i:nth-child(5n+5) { width: 7.5px; height: 7.5px; }
+.snow i:nth-child(4n+1) { opacity: 0.65; }
+.snow i:nth-child(4n+2) { opacity: 0.8; }
+.snow i:nth-child(4n+3) { opacity: 0.9; }
+.snow i:nth-child(4n+4) { opacity: 1; }
+.snow i:nth-child(7n+1) { animation-duration: 7s; }
+.snow i:nth-child(7n+2) { animation-duration: 8.5s; }
+.snow i:nth-child(7n+3) { animation-duration: 10s; }
+.snow i:nth-child(7n+4) { animation-duration: 11.5s; }
+.snow i:nth-child(7n+5) { animation-duration: 13s; }
+.snow i:nth-child(7n+6) { animation-duration: 14.5s; }
+.snow i:nth-child(7n+7) { animation-duration: 16s; }
+.snow i:nth-child(11n+1) { animation-delay: -0.0s; }
+.snow i:nth-child(11n+2) { animation-delay: -1.4s; }
+.snow i:nth-child(11n+3) { animation-delay: -2.9s; }
+.snow i:nth-child(11n+4) { animation-delay: -4.3s; }
+.snow i:nth-child(11n+5) { animation-delay: -5.8s; }
+.snow i:nth-child(11n+6) { animation-delay: -7.2s; }
+.snow i:nth-child(11n+7) { animation-delay: -8.7s; }
+.snow i:nth-child(11n+8) { animation-delay: -10.2s; }
+.snow i:nth-child(11n+9) { animation-delay: -11.6s; }
+.snow i:nth-child(11n+10) { animation-delay: -13.0s; }
+.snow i:nth-child(11n+11) { animation-delay: -14.5s; }
+.snow i:nth-child(3n+2) { animation-name: snow-fall2; }
+.snow i:nth-child(3n) { animation-name: snow-fall3; }
+.snow i:nth-child(6n+4) { width: 16px; height: 16px; border-radius: 0; background: url(../assets/img/blagdani/pahulja.svg) center / contain no-repeat; opacity: .95; }
+.snow i:nth-child(12n+4) { width: 22px; height: 22px; }
+.snow--screen { position: fixed; z-index: 60; }
+.snow--screen i:nth-child(13n+1) { top: -4.0%; }
+.snow--screen i:nth-child(13n+2) { top: 45.5%; }
+.snow--screen i:nth-child(13n+3) { top: 3.1%; }
+.snow--screen i:nth-child(13n+4) { top: 52.6%; }
+.snow--screen i:nth-child(13n+5) { top: 10.2%; }
+.snow--screen i:nth-child(13n+6) { top: 59.7%; }
+.snow--screen i:nth-child(13n+7) { top: 17.2%; }
+.snow--screen i:nth-child(13n+8) { top: 66.8%; }
+.snow--screen i:nth-child(13n+9) { top: 24.3%; }
+.snow--screen i:nth-child(13n+10) { top: 73.8%; }
+.snow--screen i:nth-child(13n+11) { top: 31.4%; }
+.snow--screen i:nth-child(13n+12) { top: 80.9%; }
+.snow--screen i:nth-child(13n+13) { top: 38.5%; }
+.snow.snow--screen i:nth-child(n) { animation-name: snow-drift; }
+.snow.snow--screen i:nth-child(3n+2) { animation-name: snow-drift2; }
+.snow.snow--screen i:nth-child(3n) { animation-name: snow-drift3; }
+@keyframes snow-fall { to { transform: translate3d(26px, var(--h), 0) rotate(220deg); } }
+@keyframes snow-fall2 { to { transform: translate3d(-32px, var(--h), 0) rotate(-200deg); } }
+@keyframes snow-fall3 { to { transform: translate3d(8px, var(--h), 0) rotate(160deg); } }
+@keyframes snow-drift { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 12%, 80% { opacity: .95; } 100% { transform: translate3d(30px, 720px, 0) rotate(220deg); opacity: 0; } }
+@keyframes snow-drift2 { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 12%, 80% { opacity: .9; } 100% { transform: translate3d(-34px, 700px, 0) rotate(-200deg); opacity: 0; } }
+@keyframes snow-drift3 { 0% { transform: translate3d(0, 0, 0); opacity: 0; } 12%, 80% { opacity: .85; } 100% { transform: translate3d(8px, 740px, 0) rotate(160deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .snow { display: none; } }
+@media (forced-colors: active) { .snow, .xm-garland, .hero__ph--xmas::after, .hero__ph--xmas::before { display: none; } }
+
+/* prices (NV.priceHTML): whole euros, then the cents small and raised over a small € */
+.price { display: inline-flex; align-items: flex-start; font: 800 1em/.86 var(--font-display); letter-spacing: -.03em; }
+.price__c { display: flex; flex-direction: column; margin-left: .04em; font-size: .46em; line-height: 1; }
+.price__e { font: 700 .64em/1.25 var(--font-primary); letter-spacing: 0; }
+/* tags: Top hit! (a yellow promo tab, half round at its end) and the round Novo sticker */
+.xm-stamp {
+  position: absolute; left: -4px; top: 14px; z-index: 1; padding: 9px 16px 9px 12px; border-radius: 0 999px 999px 0;
+  background: var(--nv-yellow); color: var(--nv-red-dark); font: 800 15px/1 var(--font-display); letter-spacing: .04em; text-transform: uppercase;
+  transform: rotate(-4deg);
+}
+.xm-novo {
+  position: absolute; right: 12px; top: 12px; z-index: 1; width: 74px; height: 74px; border-radius: 50%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; background: var(--nv-yellow); color: var(--nv-red-dark);
+  font: 800 18px/1 var(--font-display); text-transform: uppercase; transform: rotate(-10deg);
+}
+.xm-novo small { font: 700 11px/1.15 var(--font-primary); text-transform: none; }
+.xm-tag {
+  position: absolute; left: -4px; top: 14px; z-index: 1; padding: 9px 16px 9px 12px; border-radius: 0 999px 999px 0;
+  background: var(--nv-yellow); color: var(--nv-red-dark); font: 800 15px/1 var(--font-display); letter-spacing: .04em; text-transform: uppercase;
+  transform: rotate(-4deg);
+}
+
+/* the landing hero's first slide while a catalogue runs (js/app.js): red under the garland, snow falling, the copy
+   left and the shop display with two priced products right. The written hero comes second (its petal glow with it) */
+.hero__ph--xmas { background: var(--grad-red); }
+.hero__ph--xmas::after { background: url(../assets/img/blagdani/girlanda.svg?v=2) center -40px / auto 280px repeat-x; }
+.hero__ph--xmas::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .16;
+  background: url(../assets/img/blagdani/pahulja.svg) no-repeat 2% 92% / 120px, url(../assets/img/blagdani/pahulja.svg) no-repeat 46% 44% / 64px,
+    url(../assets/img/blagdani/pahulja.svg) no-repeat 98% 50% / 90px;
+}
+.hero--xmas[data-cur="0"] { --ring: #fff; }
+.hero--xmas[data-cur="0"] .hero__glow { opacity: 0; }
+.hero--xmas[data-cur="1"] .hero__glow { opacity: 1; }
+.hero__slide--xmas.hero__inner { justify-content: flex-start; align-items: stretch; text-align: left; padding-top: 200px; }
+.xm-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(32px, 4vw, 56px); align-items: start; }
+.xm-hero__copy { align-items: flex-start; }
+.hero__slide--xmas .hero__eyebrow { color: #fff; }
+.hero__slide--xmas .xm-script { margin: 22px 0 6px; }
+.hero__slide--xmas .hero__title { margin-top: 0; color: #fff; font-size: clamp(46px, 6vw, 86px); letter-spacing: -.035em; }
+.hero__slide--xmas .hero__lead { color: #fff; max-width: 32rem; text-wrap: pretty; }
+.hero__slide--xmas .hero__actions { justify-content: flex-start; }
+.xm-cta, .xm-cta:hover { background: var(--nv-yellow); color: var(--nv-red-dark); }
+.xm-cta:hover { background: #fff; }
+.xm-cta .hero__btn-icon, .xm-cta:hover .hero__btn-icon { background: rgba(158,11,15,.12); }
+.xm-tiles { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: clamp(300px, 29vw, 410px); gap: 18px; margin-top: 6px; }
+.xm-tiles__col { display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; min-height: 0; }
+.xm-tile { position: relative; min-height: 0; overflow: hidden; border: 4px solid #fff; border-radius: var(--shape-tab); background: var(--nv-red-dark); }
+.xm-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.xm-tile__name {
+  position: absolute; left: 10px; top: 10px; max-width: calc(100% - 20px); padding: 6px 10px; border-radius: 10px 10px 10px 0;
+  background: #fff; color: var(--ink); font: 700 13px/1.2 var(--font-primary);
+}
+.xm-tile__price {
+  position: absolute; right: 10px; bottom: 10px; margin: 0; padding: 9px 14px 9px 16px; border-radius: 14px 14px 14px 0;
+  background: var(--nv-yellow); color: var(--nv-red-dark); font-size: 30px;
+}
+.xm-tile__price::before, .xm-p__price::before {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 12px; height: 12px;
+  background: linear-gradient(45deg, var(--nv-red) 50%, transparent 50%);
+}
+@media (max-width: 1023px) {
+  .xm-hero { grid-template-columns: 1fr; gap: 22px; }
+  .xm-tiles { grid-template-columns: 1fr 1fr; grid-template-rows: 160px; }
+  .xm-tiles .xm-tile--big { display: none; }
+  .xm-tiles__col { grid-column: 1 / -1; grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 699px) {
+  .hero__ph--xmas::after { background-position: center -14px; background-size: auto 190px; }
+  .hero__slide--xmas.hero__inner { padding-top: 160px; }
+  .hero__slide--xmas .xm-script { margin-top: 16px; font-size: 40px; }
+  .hero__slide--xmas .hero__actions .hero__cta { flex: 1; justify-content: space-between; }
+  .xm-tile__price { font-size: 22px; padding: 7px 10px 7px 12px; }
+  .xm-tile__name { font-size: 11px; }
+}
+
+/* a catalogue product (NV.productHTML): photo with its tag, name, line, price. Light surfaces: a red price box beside
+   the name; on the red page (below) the price is big and yellow under it */
+.xm-p { position: relative; display: flex; flex-direction: column; width: 100%; }
+.xm-p__ph { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: var(--shape-tab); background: var(--nv-gray-50); }
+.xm-p__ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.xm-p__info { margin-top: 14px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.xm-p__n { margin: 0 0 4px; font: 700 15px/1.25 var(--font-primary); letter-spacing: .03em; text-transform: uppercase; color: var(--ink); }
+.xm-p__d { margin: 0; font: 400 14px/1.45 var(--font-primary); color: var(--nv-gray-700); }
+.xm-p__price {
+  position: relative; flex: none; margin: 0; padding: 9px 13px 9px 15px; border-radius: 14px 14px 14px 0;
+  background: var(--nv-red); color: #fff; font-size: 40px;
+}
+.xm-p__price::before { background: linear-gradient(45deg, var(--nv-yellow) 50%, transparent 50%); }
+.xm-p__price--none { padding: 9px 12px; background: var(--nv-gray-50); color: var(--ink); font: 700 13px/1.2 var(--font-primary); }
+/* without a price the note goes under the name, so a long name keeps its line */
+.xm-p__info:has(.xm-p__price--none) { flex-direction: column; align-items: flex-start; gap: 10px; }
+.xm-p__price--none::before { content: none; }
+
+/* ---- the catalogue page ---- */
+.xm-main { min-height: 100vh; }
+.xm-main.is-ready { min-height: 0; }
+.xm-crumbs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; font: 400 14px/1.3 var(--font-primary); }
+.xm-crumbs a { color: inherit; opacity: .85; }
+.xm-crumbs [aria-current] { font-weight: 700; }
+.xm-cover { position: relative; isolation: isolate; overflow: hidden; background: var(--grad-red); color: #fff; padding: 230px 0 clamp(64px, 7vw, 96px); }
+.xm-cover::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .16;
+  background: url(../assets/img/blagdani/pahulja.svg) no-repeat 3% 94% / 130px, url(../assets/img/blagdani/pahulja.svg) no-repeat 98% 90% / 96px;
+}
+.xm-cover__inner { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 4vw, 56px); align-items: center; }
+.xm-chip { display: inline-block; margin: 0; padding: 11px 18px; border-radius: 14px 14px 14px 0; background: var(--nv-yellow); color: var(--nv-red-dark); font: 800 18px/1.1 var(--font-display); }
+/* the cover's headline on a gift tag, hung from the chip on a gold string */
+.xm-gift {
+  position: relative; display: flex; flex-direction: column; width: fit-content; margin: 46px 0 0 6px; padding: 26px 44px 30px 40px;
+  border-radius: 28px 28px 28px 0; background: #fff; color: var(--nv-red); transform: rotate(-5deg);
+}
+.xm-gift::before { content: ""; position: absolute; left: 30px; top: 22px; width: 14px; height: 14px; border-radius: 50%; background: var(--nv-red-dark); box-shadow: inset 0 0 0 3px var(--nv-yellow); }
+.xm-gift::after { content: ""; position: absolute; left: 36px; top: -60px; width: 2px; height: 84px; background: var(--nv-yellow); }
+.xm-gift__s { padding-left: 30px; font: 600 clamp(40px, 4vw, 58px)/1 var(--font-script); color: var(--nv-red-dark); }
+.xm-gift__b { font: 800 clamp(56px, 8vw, 118px)/.9 var(--font-display); letter-spacing: -.03em; text-transform: uppercase; }
+/* a longer word (Christmas!) a size smaller, so it stays on the tag */
+.xm-gift--long .xm-gift__b { font-size: clamp(40px, 10.5vw, 84px); }
+.xm-cover__lead { margin: 36px 0 30px; max-width: 32rem; font: 400 clamp(17px, 1.4vw, 20px)/1.55 var(--font-primary); }
+.xm-jump { display: flex; flex-wrap: wrap; gap: 10px; }
+.xm-jump a {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 46px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid rgba(255,255,255,.7);
+  border-radius: 14px 14px 14px 0; color: #fff; font: 700 15px/1.2 var(--font-primary); text-decoration: none;
+}
+.xm-jump a:hover { background: rgba(255,255,255,.14); }
+.xm-jump .xm-jump__y { border-color: var(--nv-yellow); background: var(--nv-yellow); color: var(--nv-red-dark); }
+.xm-jump .xm-jump__y:hover { background: #fff; border-color: #fff; }
+.xm-ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.xm-cover :focus-visible, .xm-page--red :focus-visible { outline-color: #fff; }
+.xm-collage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.xm-collage .xm-tile { aspect-ratio: 1 / .92; }
+.xm-collage .xm-tile:nth-child(2n) { margin-top: 44px; }
+
+.xm-body { padding-bottom: clamp(64px, 7vw, 96px); }
+.xm-sec { margin-top: clamp(64px, 7vw, 96px); scroll-margin-top: 96px; }
+.xm-page { position: relative; overflow: hidden; border-radius: 28px 28px 28px 0; }
+.xm-page__tab {
+  position: absolute; top: 0; left: 50%; z-index: 2; transform: translateX(-50%); margin: 0; padding: 15px 30px; border-radius: 0 0 18px 18px;
+  background: var(--nv-yellow); color: var(--nv-red-dark); font: 800 21px/1 var(--font-display); white-space: nowrap;
+}
+.xm-page__head { position: relative; z-index: 1; text-align: center; }
+.xm-page__h { margin: 6px 0 10px; font: 800 clamp(36px, 5vw, 72px)/1 var(--font-display); letter-spacing: -.03em; }
+.xm-page__line { margin: 0; font: 700 19px/1.4 var(--font-primary); }
+.xm-grid { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 44px 28px; }
+.xm-grid > li { display: flex; min-width: 0; }
+.xm-grid__big, .xm-grid__photo { grid-column: span 2; grid-row: span 2; }
+.xm-photo { position: relative; width: 100%; margin: 0; min-height: 300px; overflow: hidden; border-radius: var(--shape-tab); }
+.xm-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.xm-photo--strip { height: 300px; margin: 36px 0 44px; border: 4px solid #fff; }
+.xm-photo--strip img { object-position: 50% 40%; }
+.xm-fine { margin: 22px 0 0; font: 400 13px/1.5 var(--font-primary); color: var(--nv-gray-700); }
+.xm-star { position: absolute; z-index: 0; fill: var(--nv-yellow); pointer-events: none; }
+.xm-star--1 { width: 34px; left: 15%; top: 110px; }
+.xm-star--2 { width: 20px; left: 22%; top: 190px; }
+.xm-star--3 { width: 28px; right: 16%; top: 90px; }
+
+/* the red page: products on Novalis red, the photos framed white, prices big in yellow */
+.xm-page--red { padding: 96px 48px 52px; background: linear-gradient(160deg, var(--nv-red), var(--nv-red-dark)); color: #fff; }
+.xm-page--red::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .16;
+  background: url(../assets/img/blagdani/pahulja.svg) no-repeat -2% 40px / 170px, url(../assets/img/blagdani/pahulja.svg) no-repeat 97% 130px / 120px;
+}
+.xm-page--red .xm-p__ph { border: 4px solid #fff; background: #fff; }
+.xm-page--red .xm-p__info { display: block; }
+.xm-page--red .xm-p__n { color: #fff; font-size: 16px; }
+.xm-page--red .xm-p__d { color: #ffe9ea; }
+.xm-page--red .xm-p__price { margin-top: 12px; padding: 0; background: none; color: var(--nv-yellow); font-size: 70px; }
+.xm-page--red .xm-p__price::before { content: none; }
+.xm-page--red .xm-p__price--none { padding: 8px 12px; background: rgba(255,255,255,.14); color: #fff; font-size: 14px; }
+.xm-page--red .xm-p--big .xm-p__ph { aspect-ratio: auto; flex: 1; min-height: 420px; }
+.xm-page--red .xm-p--big .xm-p__info { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.xm-page--red .xm-p--big .xm-p__n { font-size: 22px; }
+.xm-page--red .xm-p--big .xm-p__d { font-size: 16px; }
+.xm-page--red .xm-p--big .xm-p__price { margin: 0; font-size: 132px; }
+.xm-page--red .xm-fine { position: relative; z-index: 1; margin-top: 40px; color: #ffe9ea; }
+.xm-promo {
+  display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box; padding: 28px 24px;
+  border-radius: var(--shape-tab); background: var(--grad-yellow); color: var(--nv-red-dark);
+}
+.xm-promo__big { margin: 0; font: 800 80px/.88 var(--font-display); letter-spacing: -.04em; color: var(--nv-red); }
+.xm-promo__t { margin: 18px 0 0; font: 800 26px/1.05 var(--font-display); }
+.xm-promo__p { margin: 10px 0 0; font: 400 16px/1.5 var(--font-primary); }
+
+/* the light page: the garland across a green band with the headline, then the products on white */
+.xm-page--light { border: 1px solid var(--nv-gray-150); background: #fff; }
+.xm-page__band { position: relative; overflow: hidden; padding: 250px 40px 52px; background: var(--nv-olive); color: #fff; }
+.xm-page--light .xm-page__script { color: #fff; }
+.xm-page--light .xm-grid { padding: 48px; }
+.xm-page--light .xm-photo { height: 100%; }
+
+/* the holiday opening hours: a table that scrolls sideways on narrow screens */
+.xm-hours__lead { margin: 12px 0 0; max-width: 40rem; font: 400 18px/1.55 var(--font-primary); color: var(--nv-gray-700); }
+.xm-hours__wrap { margin-top: 32px; overflow-x: auto; border: 1px solid var(--nv-gray-150); border-radius: var(--shape-tab); }
+.xm-hours__t { width: 100%; border-collapse: collapse; font: 400 16px/1.4 var(--font-primary); color: var(--ink); }
+.xm-hours__t th, .xm-hours__t td { padding: 16px 20px; text-align: left; white-space: nowrap; }
+.xm-hours__t thead th { vertical-align: bottom; background: var(--nv-gray-50); }
+.xm-hours__d { display: block; font-weight: 700; }
+.xm-hours__n { display: block; font-size: 13px; color: var(--nv-gray-700); font-weight: 400; }
+.xm-hours__t tbody tr { border-top: 1px solid var(--nv-gray-150); }
+.xm-hours__t tbody th { font-weight: 700; }
+.xm-hours__t tbody th a { color: inherit; text-decoration: none; }
+.xm-hours__t tbody th a:hover { color: var(--nv-red); text-decoration: underline; }
+.xm-hours__t .is-closed { color: var(--nv-red); font-weight: 700; }
+
+/* no catalogue running */
+.xm-none { padding: clamp(48px, 6vw, 96px) 0 clamp(64px, 8vw, 120px); }
+.xm-none__inner { max-width: 1408px; }
+.xm-none__lead { margin: 16px 0 28px; max-width: 36rem; font: 400 18px/1.55 var(--font-primary); color: var(--nv-gray-700); }
+
+@media (max-width: 1100px) {
+  .xm-cover__inner { grid-template-columns: 1fr; }
+  .xm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xm-grid__big, .xm-grid__photo, .xm-grid__promo { grid-column: 1 / -1; grid-row: auto; }
+  .xm-page--red .xm-p--big .xm-p__ph { aspect-ratio: 1; min-height: 0; }
+  .xm-page--light .xm-photo { aspect-ratio: 1 / .95; height: auto; }
+}
+@media (max-width: 699px) {
+  .xm-garland { top: -14px; height: 190px; background-size: auto 190px; }
+  .xm-cover { padding-top: 165px; }
+  .xm-chip { font-size: 15px; padding: 9px 14px; }
+  .xm-gift { margin-top: 36px; padding: 18px 28px 20px 26px; border-radius: 22px 22px 22px 0; }
+  .xm-gift::before { left: 20px; top: 16px; width: 11px; height: 11px; }
+  .xm-gift::after { left: 25px; top: -46px; height: 64px; }
+  .xm-gift__s { padding-left: 22px; }
+  .xm-jump { flex-wrap: nowrap; overflow-x: auto; margin-right: calc(-1 * var(--gut)); padding-right: var(--gut); scrollbar-width: none; }
+  .xm-jump a { flex: none; }
+  .xm-collage .xm-tile { aspect-ratio: auto; height: 160px; }
+  .xm-collage .xm-tile:nth-child(2n) { margin-top: 0; }
+  .xm-collage .xm-tile:nth-child(n+3) { display: none; }
+  .xm-page--red { padding: 76px 16px 28px; }
+  .xm-page__tab { padding: 11px 20px; font-size: 16px; }
+  .xm-page--red .xm-page__script, .xm-page--light .xm-page__script { font-size: 34px; }
+  .xm-photo--strip { height: 170px; margin: 24px 0 28px; }
+  .xm-grid { gap: 28px 12px; }
+  .xm-page--light .xm-grid { padding: 16px; }
+  .xm-page__band { padding: 165px 18px 30px; }
+  .xm-p__n { font-size: 13px; }
+  .xm-p__d { font-size: 12px; }
+  .xm-p__info { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .xm-p__price { font-size: 30px; }
+  .xm-page--red .xm-p__n { font-size: 13px; }
+  .xm-page--red .xm-p__price { font-size: 50px; }
+  .xm-page--red .xm-p--big .xm-p__price { font-size: 88px; }
+  .xm-page--red .xm-p--big .xm-p__n { font-size: 16px; }
+  .xm-novo { width: 56px; height: 56px; font-size: 14px; right: 8px; top: 8px; }
+  .xm-novo small { font-size: 9px; }
+  .xm-stamp, .xm-tag { font-size: 12px; padding: 7px 12px 7px 10px; top: 10px; }
+  .xm-promo { flex-direction: row; align-items: center; gap: 18px; padding: 22px; }
+  .xm-promo__big { font-size: 60px; }
+  .xm-promo__t { margin-top: 0; font-size: 22px; }
+  .xm-star--2 { display: none; }
+}
+
+/* the store pages' block (js/poslovnica.js): under the hero, the catalogue's picks on a grey tab panel */
+.xm-block {
+  display: grid; grid-template-columns: minmax(260px, 330px) minmax(0, 1fr); gap: 40px; align-items: center;
+  padding: 40px; border-radius: 24px 24px 24px 0; background: var(--nv-gray-50);
+}
+.store-sec:has(> .xm-block) { padding-top: clamp(32px, 4vw, 48px); }
+.xm-block__label { margin: 0; font: 700 13px/1.2 var(--font-primary); letter-spacing: .12em; text-transform: uppercase; color: var(--nv-red-dark); }
+.xm-block__script { margin: 16px 0 4px; font-size: 36px; color: var(--nv-red); }
+.xm-block__h { margin: 0; font: 700 clamp(30px, 3vw, 38px)/1.06 var(--font-display); letter-spacing: -.02em; color: var(--ink); }
+.xm-block__p { margin: 14px 0 26px; font: 400 17px/1.55 var(--font-primary); color: var(--nv-gray-700); }
+.xm-block__cta { gap: 12px; }
+.xm-block__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.xm-block__list > li { display: flex; min-width: 0; }
+.xm-block .xm-p__ph { background: #fff; }
+@media (max-width: 1023px) {
+  .xm-block { grid-template-columns: 1fr; padding: 28px; }
+}
+@media (max-width: 699px) {
+  .xm-block { padding: 20px 16px; gap: 24px; }
+  .xm-block__list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+  .xm-block__list > li:nth-child(n+3) { display: none; }
 }

@@ -7,6 +7,7 @@
      - each store page (<body data-unit>): its JSON-LD in <head> and, in <main id="store">, the unit's name (h1), lead,
        address, phone, e-mail, hours (confirmed ones only), its offer lines and links to the other units;
      - the landing pages (#cards): their JSON-LD and every unit's name, lead, address and phone with a link to its page;
+     - the catalogue pages (<main id="katalog">): the first catalogue's sections with their products and prices;
      - llms.txt at the site root: the units with their pages in both languages.
 
    The JSON-LD comes from js/schema.js, the same builder the pages run, so the two can't drift; the page scripts replace
@@ -180,6 +181,28 @@ function unitsHTML(pg) {
   }).join('') + '\n</ul>\n';
 }
 
+// The catalogue page's offer (in <main id="katalog">, where js/katalog.js renders it): the first catalogue of
+// data/units.js whatever its dates (the output never depends on the clock), with each section's products and prices
+function catalogueHTML(pg) {
+  const c = (D.catalogues || [])[0];
+  if (!c) return '';
+  const tx = (o, k) => S.tx(o, k, pg.lang), hr = pg.lang === 'hr';
+  const eur = (v) => hr ? v.toFixed(2).replace('.', ',') + ' €' : '€' + v.toFixed(2);
+  const meta = (p) => [tx(p, 'desc'), p.g ? p.g + ' g' : '',
+    typeof p.price === 'number' && p.g ? (hr ? eur(p.price / p.g * 1000) + '/kg' : eur(p.price / p.g * 1000) + '/kg') : ''].filter(Boolean).join(' · ');
+  const item = (id) => {
+    const p = c.products[id], m = meta(p);
+    return '<li>' + esc(tx(p, 'name')) + ': ' + esc(typeof p.price === 'number' ? eur(p.price) : siteT(pg.lang).priceShop) + (m ? ' (' + esc(m) + ')' : '') + '</li>';
+  };
+  return '\n<div class="xm-wrap static">' +
+    '\n<h1>' + esc(tx(c.cover, 'script') + ' ' + tx(c.cover, 'title')) + '</h1>' +
+    '\n<p>' + esc(tx(c.cover, 'chip')) + '</p>' +
+    '\n<p>' + esc(tx(c.cover, 'lead')) + '</p>' +
+    c.sections.map((s) => '\n<h2>' + esc(tx(s, 'title')) + '</h2>' + '\n<p>' + esc(tx(s, 'line')) + '</p>' +
+      '\n<ul>' + (s.big ? [s.big] : []).concat(s.items).map(item).join('') + '</ul>' + '\n<p>' + esc(tx(s, 'fine')) + '</p>').join('') +
+    '\n</div>\n';
+}
+
 // <head>: the class that hides the fallback once JavaScript runs, and the page's JSON-LD (js/schema.js)
 function headHTML(pg, graphs) {
   return "\n  <script>document.documentElement.classList.add('js')</script>" +
@@ -200,7 +223,8 @@ const ANCHORS = {
   head: /(\n)()(<\/head>)/,
   store: /(<main id="store">)((?:<!--[\s\S]*?-->|\s)*)(<\/main>)/,
   units: /(<div class="cards" id="cards">)((?:<!--[\s\S]*?-->|\s)*)(<\/div>)/,
-  footer: /(<div class="footer__stack" id="footerUnits">)((?:<!--[\s\S]*?-->|\s)*)(<\/div>)/
+  footer: /(<div class="footer__stack" id="footerUnits">)((?:<!--[\s\S]*?-->|\s)*)(<\/div>)/,
+  katalog: /(<main id="katalog" class="xm-main">)((?:<!--[\s\S]*?-->|\s)*)(<\/main>)/
 };
 function put(file, html, name, body) {
   const re = new RegExp('[ ]*<!-- static:' + name + ' [\\s\\S]*?<!-- /static:' + name + ' -->');
@@ -219,6 +243,7 @@ function render(file, html) {
   if (pg.unit || landing) out = put(file, out, 'head', headHTML(pg, graphsOf(pg)));
   if (pg.unit) out = put(file, out, 'store', storeHTML(pg));
   if (landing) out = put(file, out, 'units', unitsHTML(pg));
+  if (/<main id="katalog"/.test(html)) out = put(file, out, 'katalog', catalogueHTML(pg));
   if (/id="footerUnits"/.test(html)) out = put(file, out, 'footer', footerHTML(pg));
   return out;
 }
@@ -235,7 +260,7 @@ const LLMS = {
   ],
   note: 'Opening hours are shown on each page; most are provisional until Novalis confirms them.',
   address: 'Adresa / Address', phone: 'Telefon / Phone', email: 'E-mail', about: 'O nama / About',
-  pages: [['o-nama/', 'O nama', 'About us'], ['zaposli-se/', 'Zaposli se', 'Careers']]
+  pages: [['o-nama/', 'O nama', 'About us'], ['zaposli-se/', 'Zaposli se', 'Careers'], ['katalog/', 'Katalog', 'Catalogue']]
 };
 function llms(base) {
   const md = (s) => String(s).replace(/([\\[\]])/g, '\\$1');

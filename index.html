@@ -23,9 +23,9 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#D6191F">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/fonts.css?v=20261026">
-  <link rel="stylesheet" href="css/ds.css?v=20261026">
-  <link rel="stylesheet" href="css/styles.css?v=20261026">
+  <link rel="stylesheet" href="css/fonts.css?v=20261117-2">
+  <link rel="stylesheet" href="css/ds.css?v=20261117-2">
+  <link rel="stylesheet" href="css/styles.css?v=20261117-2">
   <!-- The hero entrance (css/styles.css) holds its first frame until the headline fonts, the icons and the photo are
        ready and the page scripts have run, at most 1.2 s. Otherwise, on a first visit it plays over an empty photo,
        swaps fonts halfway through and stutters while the scripts run. Asking for the fonts here also starts their
@@ -94,56 +94,26 @@
 
   <main id="main">
   <!-- ============ HERO ============ -->
+  <!-- slide 1 of the hero's slides (WEB-47): written here, so it shows without JavaScript and its photo is the page's
+       first; js/app.js adds the other slides (data/units.js heroSlides) and their controls after it -->
   <section class="hero" aria-label="Uvod">
-    <div class="hero__bg" aria-hidden="true"><img src="assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div>
+    <div class="hero__bg" aria-hidden="true"><div class="hero__ph is-current"><img src="assets/img/hero-pag.avif" alt="" width="1200" height="799" fetchpriority="high"></div></div>
     <div class="hero__glow" aria-hidden="true"></div>
-    <div class="section hero__inner">
-      <span class="eyebrow hero__eyebrow">Lokalni brend od povjerenja</span>
-      <h1 class="hero__title">
-        <span class="hero__line"><span class="hero__w" style="--i:0">Sve</span> <span class="hero__w" style="--i:1">za</span> <span class="hero__w" style="--i:2">život</span></span>
-        <span class="hero__line"><span class="hero__w" style="--i:3">na</span> <span class="hero__w" style="--i:4">Pagu.</span></span>
-      </h1>
-      <p class="hero__lead">Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka. Novalis povezuje ponudu za vaš dom, odmor i poslovanje&nbsp;- sve na otoku.</p>
-      <div class="hero__actions">
-        <a class="btn btn--primary btn--lg hero__cta" href="#poslovnice">Pronađi poslovnicu<span class="hero__btn-icon" aria-hidden="true"><span class="ms">arrow_downward</span></span></a>
-        <a class="btn btn--lg hero__call" href="tel:+38553662001"><span class="hero__call-label">Nazovi nas</span><span class="hero__btn-icon" aria-hidden="true"><span class="ms ms--sm">call</span></span></a>
+    <div class="hero__slides">
+      <div class="section hero__inner hero__slide is-current">
+        <div class="hero__copy">
+          <span class="eyebrow hero__eyebrow">Lokalni brend od povjerenja</span>
+          <h1 class="hero__title">
+            <span class="hero__line"><span class="hero__w" style="--i:0">Sve</span> <span class="hero__w" style="--i:1">za</span> <span class="hero__w" style="--i:2">život</span></span>
+            <span class="hero__line"><span class="hero__w" style="--i:3">na</span> <span class="hero__w" style="--i:4">Pagu.</span></span>
+          </h1>
+          <p class="hero__lead">Od svakodnevne kupnje do gradnje i uređenja doma, od smještaja do dobrog obroka. Novalis povezuje ponudu za vaš dom, odmor i poslovanje&nbsp;- sve na otoku.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg hero__cta" href="#poslovnice">Pronađi poslovnicu<span class="hero__btn-icon" aria-hidden="true"><span class="ms">arrow_downward</span></span></a>
+            <a class="btn btn--lg hero__call" href="tel:+38553662001"><span class="hero__call-label">Nazovi nas</span><span class="hero__btn-icon" aria-hidden="true"><span class="ms ms--sm">call</span></span></a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ POSLOVNICE ============ -->
-  <section id="poslovnice" class="section units" aria-labelledby="h-poslovnice">
-    <div class="units__head">
-      <div class="head">
-        <span class="eyebrow">Poslovnice</span>
-        <h2 id="h-poslovnice" class="h2">Naše poslovnice</h2>
-      </div>
-      <span class="season"><span class="ms ms--xs" id="seasonIcon" aria-hidden="true">sunny</span><span id="seasonLabel"></span></span>
-    </div>
-
-    <div class="filters">
-      <div class="filters__tabs" id="filters" role="toolbar" aria-label="Filtriraj poslovnice"></div>
-      <button type="button" class="open-only" id="openOnly" aria-pressed="false">
-        <span class="switch" aria-hidden="true"><span class="switch__knob"></span></span>Otvoreno sada
-      </button>
-    </div>
-
-    <div class="cards" id="cards"><!-- static:units - generated from data/units.js by tools/static-fallback.js; do not edit here: change the data and run node tools/static-fallback.js -->
-<ul class="static">
-<li><h3><a href="hiper-novalis/"><span translate="no">Hiper Novalis</span></a></h3><p>Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike, mobilni i fiksni telefoni te oprema za mobitele i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.</p><p>Čiponjac III/2, Novalja</p><p><a href="tel:+38553663300">Nazovi: <span translate="no">053 663 300</span></a></p><p><a href="mailto:hiper.novalis@novalis.com.hr">Pošalji e-poruku: <span translate="no">hiper.novalis@novalis.com.hr</span></a></p></li>
-<li><h3><a href="market-novalis/"><span translate="no">Market Novalis</span></a></h3><p>Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje na 600 m², u zgradi robne kuće Novalis.</p><p>Josipa Kunkere 8, Novalja</p><p><a href="tel:+38598441149">Nazovi: <span translate="no">098 441 149</span></a></p><p><a href="mailto:robnakucanovalis@gmail.com">Pošalji e-poruku: <span translate="no">robnakucanovalis@gmail.com</span></a></p></li>
-<li><h3><a href="hiper-bau/"><span translate="no">Hiper Bau</span></a></h3><p>Otvoren 2019. u gospodarskoj zoni: 15.000 m², s 8.000 m² zatvorenog prostora i natkrivenim parkingom. Građevinski materijal, krovni sustavi, suha gradnja, salon keramike, alati i nautika.</p><p>Čiponjac III/3, Novalja</p><p><a href="tel:+385995476792">Nazovi: <span translate="no">099 5476 792</span></a></p><p><a href="mailto:hiperbau@novalis.hr">Pošalji e-poruku: <span translate="no">hiperbau@novalis.hr</span></a></p></li>
-<li><h3><a href="hotel-novalis/"><span translate="no">B&amp;B Novalis</span></a></h3><p>Uređen pomno i s ljubavlju, u samom centru Novalje. Odmorite se u udobnim sobama s king size krevetima ili u hidromasažnoj kadi na krovnoj terasi, uz pogled na more ili novaljske krovove i zvonike.</p><p>Josipa Kunkere 8, Novalja</p><p><a href="tel:+38553662222">Nazovi: <span translate="no">053 662 222</span></a></p><p><a href="mailto:hotel@novalis.hr">Pošalji e-poruku: <span translate="no">hotel@novalis.hr</span></a></p></li>
-<li><h3><a href="valis/"><span translate="no">Bistro i slastičarna Valis</span></a></h3><p>Naš sladoled iz vlastite proizvodnje nadaleko je poznat. Uživajte u njemu na velikoj terasi caffea, a za vrhunsku kavu i vino svratite u kavanu na prvom katu.</p><p>Trg Bazilike 3, Novalja</p><p><a href="tel:+38553663546">Nazovi: <span translate="no">053 663 546</span></a></p><p><a href="mailto:valis@novalis.hr">Pošalji e-poruku: <span translate="no">valis@novalis.hr</span></a></p></li>
-<li><h3><a href="pod-zvon/"><span translate="no">Bistro Pod Zvon</span></a></h3><p>Konoba i pizzerija u samom centru Novalje, za najizbirljivije goste. Svratite na dalmatinska jela s kaminskog ložišta, pizzu iz krušne peći ili čašu vina.</p><p>Ulica kralja Zvonimira 1a, Novalja</p><p><a href="tel:+38553679555">Nazovi: <span translate="no">053 679 555</span></a></p><p><a href="mailto:zvon@novalis.com.hr">Pošalji e-poruku: <span translate="no">zvon@novalis.com.hr</span></a></p></li>
-<li><h3><a href="veleprodaja/"><span translate="no">Veleprodaja</span></a></h3><p>Na jednom mjestu nabavite sve što vam je potrebno za poslovanje, od voća, povrća i namirnica za ugostiteljstvo do opreme, pića i kave.</p><p>Novalja</p><p><a href="tel:+38553663300">Nazovi: <span translate="no">053 663 300</span></a></p><p><a href="mailto:veleprodaja@novalis.com.hr">Pošalji e-poruku: <span translate="no">veleprodaja@novalis.com.hr</span></a></p></li>
-</ul>
-<!-- /static:units --></div>
-
-    <p class="vh" id="noResultsLive" role="status"></p>
-    <div class="no-results" id="noResults" hidden>
-      <p>U ovoj kategoriji trenutno ništa nije otvoreno.</p>
-      <button type="button" class="link-btn" id="resetFilters">Prikaži sve poslovnice</button>
     </div>
   </section>
 
@@ -196,6 +166,42 @@
           </li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ POSLOVNICE ============ -->
+  <section id="poslovnice" class="section units" aria-labelledby="h-poslovnice">
+    <div class="units__head">
+      <div class="head">
+        <span class="eyebrow">Poslovnice</span>
+        <h2 id="h-poslovnice" class="h2">Naše poslovnice</h2>
+      </div>
+      <span class="season"><span class="ms ms--xs" id="seasonIcon" aria-hidden="true">sunny</span><span id="seasonLabel"></span></span>
+    </div>
+
+    <div class="filters">
+      <div class="filters__tabs" id="filters" role="toolbar" aria-label="Filtriraj poslovnice"></div>
+      <button type="button" class="open-only" id="openOnly" aria-pressed="false">
+        <span class="switch" aria-hidden="true"><span class="switch__knob"></span></span>Otvoreno sada
+      </button>
+    </div>
+
+    <div class="cards" id="cards"><!-- static:units - generated from data/units.js by tools/static-fallback.js; do not edit here: change the data and run node tools/static-fallback.js -->
+<ul class="static">
+<li><h3><a href="hiper-novalis/"><span translate="no">Hiper Novalis</span></a></h3><p>Na 14.000 m² nalaze se supermarket, veleprodaja pića, salon namještaja, odjel tehnike, mobilni i fiksni telefoni te oprema za mobitele i još mnogo toga. Kupujte u 7.000 m² zatvorenog prostora na dvije etaže, uz veliko natkriveno parkiralište.</p><p>Čiponjac III/2, Novalja</p><p><a href="tel:+38553663300">Nazovi: <span translate="no">053 663 300</span></a></p><p><a href="mailto:hiper.novalis@novalis.com.hr">Pošalji e-poruku: <span translate="no">hiper.novalis@novalis.com.hr</span></a></p></li>
+<li><h3><a href="market-novalis/"><span translate="no">Market Novalis</span></a></h3><p>Trgovina prehrambenih proizvoda i robe svakodnevne potrošnje na 600 m², u zgradi robne kuće Novalis.</p><p>Josipa Kunkere 8, Novalja</p><p><a href="tel:+38598441149">Nazovi: <span translate="no">098 441 149</span></a></p><p><a href="mailto:robnakucanovalis@gmail.com">Pošalji e-poruku: <span translate="no">robnakucanovalis@gmail.com</span></a></p></li>
+<li><h3><a href="hiper-bau/"><span translate="no">Hiper Bau</span></a></h3><p>Otvoren 2019. u gospodarskoj zoni: 15.000 m², s 8.000 m² zatvorenog prostora i natkrivenim parkingom. Građevinski materijal, krovni sustavi, suha gradnja, salon keramike, alati i nautika.</p><p>Čiponjac III/3, Novalja</p><p><a href="tel:+385995476792">Nazovi: <span translate="no">099 5476 792</span></a></p><p><a href="mailto:hiperbau@novalis.hr">Pošalji e-poruku: <span translate="no">hiperbau@novalis.hr</span></a></p></li>
+<li><h3><a href="hotel-novalis/"><span translate="no">B&amp;B Novalis</span></a></h3><p>Uređen pomno i s ljubavlju, u samom centru Novalje. Odmorite se u udobnim sobama s king size krevetima ili u hidromasažnoj kadi na krovnoj terasi, uz pogled na more ili novaljske krovove i zvonike.</p><p>Josipa Kunkere 8, Novalja</p><p><a href="tel:+38553662222">Nazovi: <span translate="no">053 662 222</span></a></p><p><a href="mailto:hotel@novalis.hr">Pošalji e-poruku: <span translate="no">hotel@novalis.hr</span></a></p></li>
+<li><h3><a href="valis/"><span translate="no">Bistro i slastičarna Valis</span></a></h3><p>Naš sladoled iz vlastite proizvodnje nadaleko je poznat. Uživajte u njemu na velikoj terasi caffea, a za vrhunsku kavu i vino svratite u kavanu na prvom katu.</p><p>Trg Bazilike 3, Novalja</p><p><a href="tel:+38553663546">Nazovi: <span translate="no">053 663 546</span></a></p><p><a href="mailto:valis@novalis.hr">Pošalji e-poruku: <span translate="no">valis@novalis.hr</span></a></p></li>
+<li><h3><a href="pod-zvon/"><span translate="no">Bistro Pod Zvon</span></a></h3><p>Konoba i pizzerija u samom centru Novalje, za najizbirljivije goste. Svratite na dalmatinska jela s kaminskog ložišta, pizzu iz krušne peći ili čašu vina.</p><p>Ulica kralja Zvonimira 1a, Novalja</p><p><a href="tel:+38553679555">Nazovi: <span translate="no">053 679 555</span></a></p><p><a href="mailto:zvon@novalis.com.hr">Pošalji e-poruku: <span translate="no">zvon@novalis.com.hr</span></a></p></li>
+<li><h3><a href="veleprodaja/"><span translate="no">Veleprodaja</span></a></h3><p>Na jednom mjestu nabavite sve što vam je potrebno za poslovanje, od voća, povrća i namirnica za ugostiteljstvo do opreme, pića i kave.</p><p>Novalja</p><p><a href="tel:+38553663300">Nazovi: <span translate="no">053 663 300</span></a></p><p><a href="mailto:veleprodaja@novalis.com.hr">Pošalji e-poruku: <span translate="no">veleprodaja@novalis.com.hr</span></a></p></li>
+</ul>
+<!-- /static:units --></div>
+
+    <p class="vh" id="noResultsLive" role="status"></p>
+    <div class="no-results" id="noResults" hidden>
+      <p>U ovoj kategoriji trenutno ništa nije otvoreno.</p>
+      <button type="button" class="link-btn" id="resetFilters">Prikaži sve poslovnice</button>
     </div>
   </section>
 
@@ -313,12 +319,12 @@
   </nav>
 </div>
 
-<script src="js/brand-paths.js?v=20261026"></script>
-<script src="data/units.js?v=20261026"></script>
-<script src="js/schema.js?v=20261026"></script>
-<script src="js/site.js?v=20261026"></script>
-<script src="js/map.js?v=20261026"></script>
-<script src="js/occasions.js?v=20261026"></script>
-<script src="js/app.js?v=20261026"></script>
+<script src="js/brand-paths.js?v=20261117-2"></script>
+<script src="data/units.js?v=20261117-2"></script>
+<script src="js/schema.js?v=20261117-2"></script>
+<script src="js/site.js?v=20261117-2"></script>
+<script src="js/map.js?v=20261117-2"></script>
+<script src="js/occasions.js?v=20261117-2"></script>
+<script src="js/app.js?v=20261117-2"></script>
 </body>
 </html>

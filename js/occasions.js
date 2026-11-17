@@ -15,28 +15,51 @@
   };
   var T = TEXTS[NV.LANG] || TEXTS.hr;
 
-  // Outline icons for this section only (24 grid, drawn in currentColor; the DS pictograms in brand-paths.js are solid).
+  // The "+" of a closed card is an outline icon (24 grid, drawn in currentColor); everything else here is a solid pictogram.
   var OCC_ICON = {
-    gradnja: '<path d="M2.5 11 12 3l9.5 8"/><path d="M5 9.5V20h12a2 2 0 0 0 2-2V9.5"/><path d="m13.11 9.71 3.68 3.68-1.7 1.7-3.68-3.68Z"/><path d="M13.25 13.25 8.5 18"/>',
-    proslave: '<path d="M3 20.5h18"/><path d="M4.5 20.5V15A1.5 1.5 0 0 1 6 13.5h12a1.5 1.5 0 0 1 1.5 1.5v5.5"/><path d="M7.5 13.5V11A1.5 1.5 0 0 1 9 9.5h6a1.5 1.5 0 0 1 1.5 1.5v2.5"/><path d="M4.5 16.6c1.25 1.2 2.5 1.2 3.75 0s2.5-1.2 3.75 0 2.5 1.2 3.75 0 2.5-1.2 3.75 0"/><path d="M12 9.5V7"/><path d="M12 3.3c.9.8 1.1 1.7.6 2.3a.8.8 0 0 1-1.2 0c-.5-.6-.3-1.5.6-2.3Z"/>',
-    boravak: '<circle cx="8" cy="8" r="4.75"/><circle cx="8" cy="8" r="1.1"/><path d="M11.36 11.36 20.5 20.5"/><path d="m15.9 15.9-2.1 2.1m4.7.5-2.1 2.1"/>',
-    go: '<path d="M4 12h15M13 6l6 6-6 6"/>',                                                    // store page or own website
     plus: '<path d="M12 5v14M5 12h14"/>'                                                         // closed card (desktop)
   };
   function icoSVG(name, cls) {
     return '<svg class="occ-ico' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (OCC_ICON[name] || '') + '</svg>';
   }
 
-  // A step: number, then what you need as the main line and under it the unit that has it, as a link
-  // (name, arrow; a unit's own website opens in a new tab and says so to screen readers).
+  // The eight pictograms the brand set lacks, drawn in its style (100 grid, solid, rounded, evenodd cut-outs); the rest
+  // come from window.NV_PATHS: "p-name" = pictos, "i-name" = icons, "n-name" = this table.
+  var OCC_PICTO = {
+    house: ["M46.8 12.6a5 5 0 0 1 6.4 0l36.6 31.2a4 4 0 0 1-2.6 7H82v33.2a6 6 0 0 1-6 6H24a6 6 0 0 1-6-6V50.8h-5.2a4 4 0 0 1-2.6-7zM41 90V69a9 9 0 0 1 18 0v21z"],
+    gift: ["M18 34h64a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-64a4 4 0 0 1 -4 -4v-8a4 4 0 0 1 4 -4zM25 54h50a5 5 0 0 1 5 5v24a5 5 0 0 1 -5 5h-50a5 5 0 0 1 -5 -5v-24a5 5 0 0 1 5 -5zM46 34h8v54h-8z", "M50 33c-3-10-12-16-19-13-5 2-4 9 2 11 5 2 11 2 17 2zm0 0c3-10 12-16 19-13 5 2 4 9-2 11-5 2-11 2-17 2z"],
+    bricks: ["M14 18h30a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-30a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM56 18h30a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-30a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM14 41h9a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-9a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM35 41h30a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-30a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM77 41h9a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-9a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM14 64h30a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-30a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4zM56 64h30a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-30a4 4 0 0 1 -4 -4v-10a4 4 0 0 1 4 -4z"],
+    tiles: ["M18 12h24a6 6 0 0 1 6 6v24a6 6 0 0 1 -6 6h-24a6 6 0 0 1 -6 -6v-24a6 6 0 0 1 6 -6zM58 12h24a6 6 0 0 1 6 6v24a6 6 0 0 1 -6 6h-24a6 6 0 0 1 -6 -6v-24a6 6 0 0 1 6 -6zM18 52h24a6 6 0 0 1 6 6v24a6 6 0 0 1 -6 6h-24a6 6 0 0 1 -6 -6v-24a6 6 0 0 1 6 -6zM58 52h24a6 6 0 0 1 6 6v24a6 6 0 0 1 -6 6h-24a6 6 0 0 1 -6 -6v-24a6 6 0 0 1 6 -6zM23 30a7 7 0 1 0 14 0a7 7 0 1 0 -14 0zM63 70a7 7 0 1 0 14 0a7 7 0 1 0 -14 0z"],
+    sofa: ["M31 22h38a9 9 0 0 1 9 9v16a9 9 0 0 1 -9 9h-38a9 9 0 0 1 -9 -9v-16a9 9 0 0 1 9 -9z", "M16 40h2a8 8 0 0 1 8 8v22a8 8 0 0 1 -8 8h-2a8 8 0 0 1 -8 -8v-22a8 8 0 0 1 8 -8z", "M82 40h2a8 8 0 0 1 8 8v22a8 8 0 0 1 -8 8h-2a8 8 0 0 1 -8 -8v-22a8 8 0 0 1 8 -8z", "M28 58h44a4 4 0 0 1 4 4v12a4 4 0 0 1 -4 4h-44a4 4 0 0 1 -4 -4v-12a4 4 0 0 1 4 -4z", "M17 76h3a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-3a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z", "M80 76h3a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-3a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z"],
+    washer: ["M27 8h46a9 9 0 0 1 9 9v66a9 9 0 0 1 -9 9h-46a9 9 0 0 1 -9 -9v-66a9 9 0 0 1 9 -9zM27 57a23 23 0 1 0 46 0a23 23 0 1 0 -46 0zM35 57a15 15 0 1 0 30 0a15 15 0 1 0 -30 0zM26.5 22a4.5 4.5 0 1 0 9.0 0a4.5 4.5 0 1 0 -9.0 0zM48 18h20a4 4 0 0 1 4 4v0a4 4 0 0 1 -4 4h-20a4 4 0 0 1 -4 -4v-0a4 4 0 0 1 4 -4z"],
+    cake: ["M20 56h60a6 6 0 0 1 6 6v18a6 6 0 0 1 -6 6h-60a6 6 0 0 1 -6 -6v-18a6 6 0 0 1 6 -6z", "M32 34h36a5 5 0 0 1 5 5v8a5 5 0 0 1 -5 5h-36a5 5 0 0 1 -5 -5v-8a5 5 0 0 1 5 -5z", "M49 18h2a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2z", "M50 4c4 5 6 8 6 10a6 6 0 0 1-12 0c0-2 2-5 6-10z", "M11 89h78a3 3 0 0 1 3 3v0a3 3 0 0 1 -3 3h-78a3 3 0 0 1 -3 -3v-0a3 3 0 0 1 3 -3z"],
+    bath: ["M8 46h84a4 4 0 0 1 4 4v6a26 26 0 0 1-26 26H30A26 26 0 0 1 4 56v-6a4 4 0 0 1 4-4z", "M25 80h3a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-3a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z", "M72 80h3a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-3a3 3 0 0 1 -3 -3v-6a3 3 0 0 1 3 -3z", "M17 16h0a4 4 0 0 1 4 4v22a4 4 0 0 1 -4 4h-0a4 4 0 0 1 -4 -4v-22a4 4 0 0 1 4 -4z", "M17 12h16a4 4 0 0 1 4 4v0a4 4 0 0 1 -4 4h-16a4 4 0 0 1 -4 -4v-0a4 4 0 0 1 4 -4z", "M45 34a5 5 0 1 0 10 0a5 5 0 1 0 -10 0z", "M60 26a4 4 0 1 0 8 0a4 4 0 1 0 -8 0z", "M71 35a6 6 0 1 0 12 0a6 6 0 1 0 -12 0z"]
+  };
+  function pictoSVG(key, cls) {
+    var kind = key.slice(0, 2), name = key.slice(2), vb = '0 0 100 100', d = '';
+    if (kind === 'n-') d = OCC_PICTO[name];
+    else if (kind === 'p-' && NV_PATHS.pictos[name]) { vb = NV_PATHS.pictos[name].vb; d = NV_PATHS.pictos[name].d; }
+    else if (kind === 'i-' && NV_PATHS.icons[name]) { var ic = NV_PATHS.icons[name]; vb = '0 0 ' + ic.w + ' ' + ic.h; d = ic.p; }
+    if (!d) return '';
+    if (Array.isArray(d)) d = d.join('');
+    return '<svg class="' + cls + '" viewBox="' + vb + '" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="' + esc(d) + '"/></svg>';
+  }
+
+  // A step: a tab with its pictogram, then one sentence whose [[...]] part is the link to the unit (name in translate="no";
+  // a unit's own website opens in a new tab and says so to screen readers). The link can open the sentence or sit inside
+  // it; a short word right before it ("u" / "at") stays with it on one line.
   function occStepHTML(st, k) {
     var u = NV.byId[st.unit], ext = !!u.external;
-    return '<li class="occ-step" style="--k:' + k + '"><span class="occ-step__n" aria-hidden="true">' + (k + 1) + '</span><div class="occ-step__body">' +
-      '<p class="occ-step__need">' + esc(tx(st, 'text')) + '</p>' +
-      '<a class="occ-step__link" href="' + esc(NV.unitHref(u)) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
-        '<span class="occ-step__name" translate="no">' + esc(st.label || tx(u, 'name')) + '</span>' +
-        icoSVG('go', 'occ-step__go occ-step__go--in') + (ext ? NV.NEW_TAB : '') +
-      '</a></div></li>';
+    var m = /^(.*?)\[\[(.+?)\]\](.*)$/.exec(tx(st, 'text')) || [];
+    if (m.length) {                                    // split off a short word before the link: [all, before, keep, name, after]
+      var w = /(^|\s)(\S{1,2}\s+)$/.exec(m[1]);
+      m = w ? [m[0], m[1].slice(0, w.index) + w[1], w[2], m[2], m[3]] : [m[0], m[1], '', m[2], m[3]];
+    }
+    var link = '<a class="occ-step__link" href="' + esc(NV.unitHref(u)) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+      '<span translate="no">' + esc(m[3] || tx(u, 'name')) + '</span>' + (ext ? NV.NEW_TAB : '') + '</a>';
+    var text = m.length ? esc(m[1]) + '<span class="occ-step__keep">' + (m[2] ? esc(m[2]) : '') + link + '</span>' + esc(m[4]) : esc(tx(st, 'text')) + ' ' + link;
+    return '<li class="occ-step" style="--k:' + k + '"><span class="occ-step__tab" aria-hidden="true">' + pictoSVG(st.picto || '', 'occ-step__ico') + '</span>' +
+      '<p class="occ-step__text">' + text + '</p></li>';
   }
 
   // A card: photo (or its placeholder), and on the red panel the icon, title, description and the units in order.
@@ -51,12 +74,12 @@
       '<div class="occ-card__media" aria-hidden="true">' + NV.slotHTML(NV.asset(o.photo), tx(o, 'photoHint') || '', '') + '</div>' +
       '<span class="occ-card__plus" aria-hidden="true">' + icoSVG('plus') + '</span>' +
       '<div class="occ-card__body">' +
-        '<span class="occ-card__icon">' + icoSVG(o.icon) + '</span>' +
+        '<span class="occ-card__icon">' + pictoSVG(o.icon, 'occ-card__pic') + '</span>' +
         '<h3 class="occ-card__h" id="h-' + esc(o.id) + '">' + esc(tx(o, 'title')) + '</h3>' +
         '<div class="occ-card__more"><div class="occ-card__more-in">' +
           '<p class="occ-card__desc">' + esc(tx(o, 'desc')) + '</p>' +
           // role="list": Safari drops list semantics from lists styled with list-style: none
-          '<ol class="occ-steps" role="list">' + steps.map(occStepHTML).join('') + '</ol>' +
+          '<ul class="occ-steps" role="list">' + steps.map(occStepHTML).join('') + '</ul>' +
         '</div></div>' +
       '</div>' +
     '</article>';
@@ -130,7 +153,7 @@
     }, { passive: true });
     wide.addEventListener('change', function () { show(wide.matches ? cur : 0); });
 
-    // /#proslave opens that card (on the swipe row the browser already scrolls it into view)
+    // /#gradnja, /#proslave or /#boravak opens that card (on the swipe row the browser already scrolls it into view)
     function fromHash() {
       var k = cards.map(function (c) { return '#' + c.id; }).indexOf(location.hash);
       if (k >= 0 && wide.matches) show(k);

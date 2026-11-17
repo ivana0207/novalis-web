@@ -651,60 +651,196 @@
       }
     ],
     // "Novalis za svaku priliku" (landing and O nama pages, #prilike): one card per need, with the units that cover it in order.
-    // id is the card's anchor (/#gradnja) · icon: an outline icon in js/occasions.js · photo: the card's picture (null = a
-    // placeholder showing photoHint until the real photo exists) · a step names a unit by id and links to its store page
-    // (or website); label shortens the unit name where the copy does.
+    // id is the card's anchor (/#gradnja) · icon: the card's solid pictogram (js/occasions.js: p- brand pictos, n- the section's own) ·
+    // photo: the card's picture (null = a placeholder showing photoHint until the real photo exists) · desc: a short subtitle ·
+    // a step names a unit by id, its pictogram (p- NV_PATHS.pictos, i- NV_PATHS.icons, n- new) and a sentence in which
+    // [[...]] marks the store link (to the unit's store page or website).
     occasions: [
       {
-        id: 'gradnja', icon: 'gradnja', title: 'Gradnja i uređenje',
+        id: 'gradnja', icon: 'n-house', title: 'Gradnja i uređenje',
         photo: null, photoHint: 'Foto: uređenje doma - pločice, alati, svjetlo kroz prozor',
-        desc: 'Od građevinskog materijala do namještaja po mjeri - cijeli projekt u Novalji, bez odlaska na kopno.',
+        desc: 'Cijeli projekt u Novalji, bez odlaska na kopno.',
         en: {
           title: 'Building and home improvement',
           photoHint: 'Photo: home improvement - tiles, tools, light through a window',
-          desc: 'From building materials to made-to-measure furniture - your whole project in Novalja, with no trip to the mainland.'
+          desc: 'Your whole project in Novalja, with no trip to the mainland.'
         },
         steps: [
-          { unit: 'hiper-bau', text: 'Građevinski materijal, suha gradnja, podne obloge, boje, stolarija i alati', en: { text: 'Building materials, drywall, floor coverings, paints, joinery and tools' } },
-          { unit: 'hiper-novalis', text: 'Keramika, uvoz iz Italije prema narudžbi', en: { text: 'Ceramics, imported from Italy to order' } },
-          { unit: 'hiper-novalis', text: 'Namještaj po mjeri s montažom', en: { text: 'Made-to-measure furniture with installation' } },
-          { unit: 'hiper-novalis', text: 'Sanitarije i bijela tehnika', en: { text: 'Sanitaryware and white goods' } },
-          { unit: 'hiper-novalis', text: 'Tekstil i opremanje', en: { text: 'Textiles and furnishings' } }
+          { unit: 'hiper-bau', picto: 'n-bricks', text: '[[Hiper Bau]] nudi građevinski materijal za gradnju i izolaciju, krovne sustave i suhu gradnju.', en: { text: '[[Hiper Bau]] offers materials for building and insulation, roofing systems and drywall.' } },
+          { unit: 'hiper-bau', picto: 'n-tiles', text: 'U salonu keramike [[Hiper Baua]] su pločice i podne obloge, uz alat i materijal za postavljanje.', en: { text: 'The [[Hiper Bau]] ceramics showroom has tiles and floor coverings, with tools and materials for laying them.' } },
+          { unit: 'hiper-bau', picto: 'i-vijci', text: 'Boje i lakovi za zidove, fasade, drvo i metal te ručni i električni alati dostupni su u [[Hiper Bauu]].', en: { text: 'Paints and varnishes for walls, facades, wood and metal, and hand and power tools, are at [[Hiper Bau]].' } },
+          { unit: 'hiper-novalis', picto: 'n-sofa', text: '[[Hiper Novalis]] izrađuje namještaj po mjeri s montažom i po narudžbi uvozi keramiku iz Italije.', en: { text: '[[Hiper Novalis]] makes and installs made-to-measure furniture and imports ceramics from Italy to order.' } },
+          { unit: 'hiper-novalis', picto: 'n-washer', text: 'Sanitarije, bijela tehnika i kućni tekstil zaokružuju opremanje doma u [[Hiper Novalisu]].', en: { text: 'Sanitaryware, white goods and home textiles complete the furnishing of a home at [[Hiper Novalis]].' } }
         ]
       },
       {
-        id: 'proslave', icon: 'proslave', title: 'Proslave i događanja',
+        id: 'proslave', icon: 'n-gift', title: 'Proslave i događanja',
         photo: null, photoHint: 'Foto: obiteljsko slavlje, stol s tortom u Pod Zvonu',
-        desc: 'Pričesti, krizme, krštenja i obiteljska slavlja u Novalji - prostor za proslave, torta, smještaj za goste i nabava na jednom mjestu.',
+        desc: 'Pričesti, krizme, krštenja i obiteljska slavlja.',
         en: {
           title: 'Celebrations and events',
           photoHint: 'Photo: family celebration, a table with a cake at Pod Zvon',
-          desc: 'First communions, confirmations, christenings and family celebrations in Novalja - a venue, a cake, rooms for your guests and shopping, all in one place.'
+          desc: 'First communions, confirmations, christenings and family celebrations.'
         },
         steps: [
-          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Prostor za privatna događanja i proslave uz župnu crkvu, mediteranska i dalmatinska kuhinja', en: { text: 'A space for private events and celebrations beside the parish church, with Mediterranean and Dalmatian cuisine' } },
-          { unit: 'valis', label: 'Valis', text: 'Torte po narudžbi i kolači iz vlastite proizvodnje', en: { text: 'Cakes to order and pastries made in our own kitchen' } },
-          { unit: 'hotel-novalis', text: 'Smještaj za goste u samom centru Novalje', en: { text: 'Accommodation for guests in the very centre of Novalja' } },
-          { unit: 'hiper-novalis', text: 'Supermarket s namirnicama i pićem za proslavu kod kuće, uz veliko parkiralište', en: { text: 'A supermarket with food and drink for a celebration at home, and a large car park' } },
-          { unit: 'market-novalis', text: 'Sve što zatreba u zadnji čas, u centru grada', en: { text: 'Everything you need at the last minute, in the town centre' } }
+          { unit: 'pod-zvon', picto: 'p-cloche', text: '[[Pod Zvon]] nudi prostor za privatna događanja i proslave uz župnu crkvu, s dalmatinskom kuhinjom.', en: { text: '[[Pod Zvon]] offers a venue for private events beside the parish church, with Dalmatian cuisine.' } },
+          { unit: 'valis', picto: 'n-cake', text: '[[Valis]] izrađuje torte po narudžbi i kolače iz vlastite proizvodnje za obiteljske proslave.', en: { text: '[[Valis]] makes cakes to order and pastries in its own kitchen for family celebrations.' } },
+          { unit: 'hotel-novalis', picto: 'p-hotel', text: '[[B&B Novalis]] osigurava smještaj za goste u samom centru Novalje, u sobama s hidromasažnim kadama.', en: { text: '[[B&B Novalis]] provides rooms for guests in the very centre of Novalja, with hydromassage tubs.' } },
+          { unit: 'hiper-novalis', picto: 'p-drinks', text: '[[Hiper Novalis]] nudi namirnice i piće za proslavu kod kuće, uz veliko natkriveno parkiralište.', en: { text: '[[Hiper Novalis]] offers food and drink for a celebration at home, with a large covered car park.' } },
+          { unit: 'market-novalis', picto: 'p-shopping', text: '[[Market Novalis]] u centru grada nudi sve što zatreba u zadnji čas, od namirnica do drogerije.', en: { text: '[[Market Novalis]] in the town centre has everything needed at the last minute, from groceries to toiletries.' } }
         ]
       },
       {
-        id: 'boravak', icon: 'boravak', title: 'Boravak u Novalji',
+        id: 'boravak', icon: 'p-suitcase', title: 'Boravak u Novalji',
         photo: null, photoHint: 'Foto: jutarnja kava na terasi, pogled na Novalju',
-        desc: 'Smještaj, nabava, kava i večera - sve što vam treba za opušten boravak, na dohvat ruke.',
+        desc: 'Smještaj, nabava, kava i večera.',
         en: {
           title: 'Staying in Novalja',
           photoHint: 'Photo: morning coffee on a terrace, view of Novalja',
-          desc: 'Accommodation, shopping, coffee and dinner - everything you need for a relaxed stay, close at hand.'
+          desc: 'Accommodation, shopping, coffee and dinner.'
         },
         steps: [
-          { unit: 'hotel-novalis', text: 'Sobe u centru Novalje s hidromasažnim kadama na terasama', en: { text: 'Rooms in the centre of Novalja with hydromassage tubs on the terraces' } },
-          { unit: 'hiper-novalis', text: 'Velika nabava uz veliko parkiralište, izvan gužve u centru', en: { text: 'A big shop with a large car park, away from the crowds in the centre' } },
-          { unit: 'market-novalis', text: 'Namirnice i drogerija u centru', en: { text: 'Groceries and a drugstore in the town centre' } },
-          { unit: 'valis', label: 'Valis', text: 'Kava, domaći sladoled, bistro i kavana s izborom vina', en: { text: 'Coffee, home-made ice cream, a bistro and a café with a choice of wines' } },
-          { unit: 'pod-zvon', label: 'Pod Zvon', text: 'Napolitanska pizza i mediteranska kuhinja uz crkvu', en: { text: 'Neapolitan pizza and Mediterranean cuisine beside the church' } }
+          { unit: 'hotel-novalis', picto: 'n-bath', text: '[[B&B Novalis]] nudi sobe u centru Novalje s hidromasažnim kadama na terasama.', en: { text: '[[B&B Novalis]] offers rooms in the centre of Novalja with hydromassage tubs on the terraces.' } },
+          { unit: 'hiper-novalis', picto: 'p-cart', text: '[[Hiper Novalis]] omogućuje veliku nabavu na dvije etaže, uz natkriveno parkiralište izvan gužve.', en: { text: '[[Hiper Novalis]] makes a big shop easy on two floors, with a covered car park away from the crowds.' } },
+          { unit: 'market-novalis', picto: 'p-shopping', text: '[[Market Novalis]] u centru grada nudi namirnice i proizvode za domaćinstvo, a razinu niže drogeriju.', en: { text: '[[Market Novalis]] in the town centre offers groceries, household goods and a drugstore.' } },
+          { unit: 'valis', picto: 'i-kava', text: '[[Valis]] u centru Novalje spaja bistro, slastičarnu s domaćim sladoledom i kavanu s izborom vina.', en: { text: '[[Valis]] combines a bistro, a pastry shop with home-made ice cream and a wine café.' } },
+          { unit: 'pod-zvon', picto: 'i-restoran', text: '[[Pod Zvon]] uz župnu crkvu priprema napolitansku pizzu te mediteransku i dalmatinsku kuhinju.', en: { text: '[[Pod Zvon]] beside the parish church serves Neapolitan pizza and Dalmatian cuisine.' } }
         ]
+      }
+    ],
+    // The landing hero's slides (WEB-47), in order. The first is the hero written in index.html and en/index.html
+    // (html: true: the page's h1 and first photo, also shown without JavaScript); js/app.js adds the others after it.
+    // A slide links to a unit's store page (unit: id; on /en/ its English page) or to a part of the landing (href: '#id').
+    // photo: path from the site root, its real size, focus = the photo's object-position (focusPhone below 700 px);
+    // a slide without photo shows a placeholder with photoNote. from / to: optional 'YYYY-MM-DD', both days included,
+    // the date in Novalja: a seasonal slide switches itself on and off. Copy: drafts from the site's own facts until
+    // Novalis checks it (WEB-50); photos: novalis.hr's own until the photographer's.
+    heroSlides: [
+      { id: 'pag', html: true },
+      {
+        id: 'gradnja', href: '#gradnja',
+        photo: { src: 'assets/img/hero/gradnja.jpg', w: 1600, h: 981, focus: '50% 50%', focusPhone: '46% 50%' },
+        eyebrow: 'Hiper Bau i Hiper Novalis', title: 'Gradnja i uređenje doma',
+        line: 'Od građevinskog materijala i alata do namještaja po mjeri, sve u Novalji.', cta: 'Pogledajte ponudu',
+        en: {
+          eyebrow: 'Hiper Bau and Hiper Novalis', title: 'Building and home improvement',
+          line: 'From building materials and tools to made-to-measure furniture, all in Novalja.', cta: 'See what we offer'
+        }
+      },
+      {
+        id: 'uvoz', unit: 'hiper-novalis',
+        photo: { src: IMG + 'hiper-novalis.jpg', w: 761, h: 480, focus: '50% 62%', focusPhone: '6% 50%' },
+        eyebrow: 'Hiper Novalis', title: 'Vlastiti uvoz',
+        line: 'Sami nabavljamo i uvozimo artikle koje je na ovim prostorima teško naći.', cta: 'Ponuda Hiper Novalisa',
+        en: { title: 'Our own imports', line: 'We source and import items that are hard to find in this area ourselves.', cta: 'Hiper Novalis range' }
+      },
+      {
+        id: 'keramika', unit: 'hiper-bau',
+        photo: { src: 'assets/img/hero/keramika.jpg', w: 1868, h: 1400, focus: '56% 50%', focusPhone: '54% 50%' },
+        eyebrow: 'Hiper Bau', title: 'Keramika',
+        line: 'Pločice, zidne i podne obloge te alat i materijal za postavljanje.', cta: 'Ponuda Hiper Baua',
+        en: { title: 'Ceramics', line: 'Tiles, wall and floor coverings, and the tools and materials to lay them.', cta: 'Hiper Bau range' }
+      }
+    ],
+    // Seasonal catalogue (WEB-48): one season at a time on the page katalog/ (English: en/catalogue/). from / to:
+    // 'YYYY-MM-DD', both days included, the date in Novalja (the first catalogue whose dates hold today is the current
+    // one). While a season runs it is also the landing hero's first slide (slide), a block on the store pages of `units`
+    // (block, with the products in block.picks) and a Katalog link in every footer; outside its dates none of that shows
+    // and the page says a new offer is coming. The page reads like a printed leaflet: a cover, then one "page" per
+    // section (look: 'red' or 'green'; big: the product shown double size) and the holiday opening hours (hours.days,
+    // worked out from each unit's hours like everywhere else; units closed on all of those days are left out).
+    // products: name, desc, price in euros (null: not known yet, the tile says so), g: grams (for the price per kg),
+    // photo (from the site root), tag 'top' | 'new'. The decorations' prices are still missing. Prices: the shelf labels
+    // photographed in the shop on 2026-11-16; photos: cut from those pictures until the photographer's. Copy: drafts
+    // until Novalis checks them. A new season: a new entry here (put it first), its photos in assets/img/katalog/.
+    catalogues: [
+      {
+        id: 'bozic-2026', from: '2026-11-17', to: '2027-01-06',
+        units: ['hiper-novalis', 'market-novalis'],
+        products: {
+          nikola: { name: 'Čokolada Sveti Nikola', desc: '', g: 60, price: 0.99, photo: 'assets/img/katalog/nikola.jpg', tag: 'top', en: { name: 'St Nicholas chocolate' } },
+          diplick: { name: 'Santa Dip & Lick', desc: 'Lizalica s prahom', g: 50, price: 1.99, photo: 'assets/img/katalog/diplick.jpg', en: { desc: 'Lollipop with sherbet' } },
+          cizmica: { name: 'Poklon paket čizmica', desc: 'Slatkiši u čizmici', g: 268, price: 3.49, photo: 'assets/img/katalog/cizmica.jpg', tag: 'top', en: { name: 'Gift boot', desc: 'Sweets in a boot' } },
+          gumi: { name: 'Santa gumi + pop candy', desc: 'Gumeni i pucketavi bomboni', price: 1.59, photo: 'assets/img/katalog/gumi.jpg', en: { name: 'Santa gummies + pop candy', desc: 'Gummy sweets and popping candy' } },
+          mikrofon: { name: 'Mikrofon s bombonima', desc: 'Igračka i 5 g bombona', price: 2.99, photo: 'assets/img/katalog/mikrofon.jpg', en: { name: 'Microphone with sweets', desc: 'Toy and 5 g of sweets' } },
+          kocija: { name: 'Djedova kočija', desc: 'Igračka s bombonima', price: 2.99, photo: 'assets/img/katalog/kocija.jpg', en: { name: "Santa's carriage", desc: 'Toy with sweets' } },
+          lizalice: { name: 'Chooky lizalica', desc: 'Božićna lizalica', g: 22, price: 0.59, photo: 'assets/img/katalog/lizalice.jpg', en: { name: 'Chooky lollipop', desc: 'Christmas lollipop' } },
+          jumping: { name: 'Skakutavi Djed Božićnjak', desc: 'Igračka i 5 g bombona', price: 2.79, photo: 'assets/img/katalog/jumping.jpg', tag: 'new', en: { name: 'Jumping Santa', desc: 'Toy and 5 g of sweets' } },
+          carapa: { name: 'Čarapa za darove', desc: 'Crvena, s bijelim rubom', price: null, photo: 'assets/img/katalog/carapa.jpg', en: { name: 'Christmas stocking', desc: 'Red, with a white trim' } },
+          masna: { name: 'Ukrasna mašna', desc: 'Velika, sa šljokicama', price: null, photo: 'assets/img/katalog/masna.jpg', en: { name: 'Decorative bow', desc: 'Large, with glitter' } },
+          kuglice: { name: 'Kuglice za bor', desc: 'Set, biserne i zlatne', price: null, photo: 'assets/img/katalog/kuglice.jpg', en: { name: 'Tree baubles', desc: 'Set, pearl and gold' } },
+          vijenac: { name: 'Vijenac s bobicama', desc: 'Zeleni, s bijelim bobicama', price: null, photo: 'assets/img/katalog/vijenac.jpg', tag: 'new', en: { name: 'Berry wreath', desc: 'Green, with white berries' } },
+          medo: { name: 'Plišani medo', desc: 'S božićnom kapicom', price: null, photo: 'assets/img/katalog/medo.jpg', tag: 'new', en: { name: 'Teddy bear', desc: 'In a Christmas hat' } },
+          djed: { name: 'Djed Božićnjak s jelenom', desc: 'Ukrasne figure', price: null, photo: 'assets/img/katalog/djed.jpg', en: { name: 'Santa with reindeer', desc: 'Decorative figures' } },
+          snijeg: { name: 'Ukrasni sprej', desc: 'Snijeg, zlatni i srebrni', price: null, photo: 'assets/img/katalog/snijeg.jpg', en: { name: 'Decorative spray', desc: 'Snow, gold and silver' } },
+          otirac: { name: 'Otirač s jelenom', desc: 'Za ulazna vrata', price: null, photo: 'assets/img/katalog/otirac.jpg', en: { name: 'Reindeer doormat', desc: 'For the front door' } }
+        },
+        // the landing hero's first slide: the shop display photo and two products beside the copy
+        slide: {
+          eyebrow: 'Blagdanska ponuda · 1. 12. - 6. 1.', script: 'Sretni blagdani', title: ['Božić počinje', 'u Novalisu.'],
+          line: 'Ukrasi za dom i bor, slatki darovi za Svetog Nikolu i igračke za najmlađe već su na našim policama.',
+          cta: 'Pogledajte božićnu ponudu', photo: 'assets/img/katalog/izlog.jpg', photoTag: 'Već na policama', picks: ['nikola', 'cizmica'],
+          en: {
+            eyebrow: 'Holiday offer · 1 Dec - 6 Jan', script: 'Happy holidays', title: ['Christmas starts', 'at Novalis.'],
+            line: 'Decorations for your home and tree, sweet treats for St Nicholas and toys for the little ones are already on our shelves.',
+            cta: 'See the Christmas offer', photoTag: 'On the shelves now'
+          }
+        },
+        cover: {
+          chip: 'Blagdanski katalog · od 1. 12. do 6. 1.', script: 'Sretan', title: 'Božić!',
+          lead: 'Ukrasi za dom i bor, slatki darovi za Svetog Nikolu i igračke za najmlađe: izdvojili smo blagdansku ponudu iz naših trgovina.',
+          picks: ['djed', 'jumping', 'vijenac', 'diplick'], hoursChip: 'Radno vrijeme za blagdane',
+          en: {
+            chip: 'Holiday catalogue · 1 Dec to 6 Jan', script: 'Merry', title: 'Christmas!',
+            lead: 'Decorations for your home and tree, sweet treats for St Nicholas and toys for the little ones: our pick of the holiday offer from our shops.',
+            hoursChip: 'Holiday opening hours'
+          }
+        },
+        sections: [
+          {
+            id: 'sveti-nikola', look: 'red', chip: 'Za Svetog Nikolu', dates: 'Od 1. 12. do 6. 12.', script: 'Sveti Nikola dolazi 6. 12.',
+            title: 'Za čizmice i male darove', line: 'Slatkiši i igračke već od 0,59 €',
+            photo: 'assets/img/katalog/polica.jpg', photoAlt: 'Polica sa slatkišima i igračkama za Svetog Nikolu u trgovini Novalis',
+            big: 'cizmica', items: ['nikola', 'diplick', 'gumi', 'mikrofon', 'kocija', 'lizalice', 'jumping'],
+            promo: { big: ['6.', '12.'], title: 'Sveti Nikola dolazi', text: 'Napunite čizmice slatkišima i igračkama iz naše ponude.' },
+            fine: 'Cijene su u eurima i uključuju PDV. Ponuda vrijedi od 1. 12. do 6. 12. ili do isteka zaliha.',
+            en: {
+              chip: 'For St Nicholas', dates: 'From 1 to 6 Dec', script: 'St Nicholas comes on 6 Dec', title: 'Little gifts for St Nicholas',
+              line: 'Sweets and toys from €0.59', photoAlt: 'A shelf of sweets and toys for St Nicholas in a Novalis shop',
+              promo: { big: ['6', 'Dec'], title: 'St Nicholas is coming', text: 'Fill the boots with sweets and toys from our shelves.' },
+              fine: 'Prices in euros, VAT included. Offer valid from 1 to 6 December or while stocks last.'
+            }
+          },
+          {
+            id: 'ukrasi', look: 'green', chip: 'Ukrasi za dom', script: 'Blagdanska čarolija', title: 'Okitite dom za blagdane',
+            line: 'Ukrasi, dekoracije i sitni darovi iz naših trgovina',
+            photo: 'assets/img/katalog/izlog.jpg', photoAlt: 'Blagdanski ukrasi, čarape, mašne i figure na polici u trgovini Novalis', photoTag: 'Već na policama',
+            items: ['carapa', 'masna', 'kuglice', 'vijenac', 'medo', 'djed', 'snijeg', 'otirac'],
+            fine: 'Cijene su u eurima i uključuju PDV. Ponuda vrijedi od 1. 12. do 6. 1. ili do isteka zaliha.',
+            en: {
+              chip: 'Home decorations', script: 'Holiday magic', title: 'Deck your home for the holidays',
+              line: 'Decorations, ornaments and small gifts from our shops',
+              photoAlt: 'Christmas decorations, stockings, bows and figures on a shelf in a Novalis shop', photoTag: 'On the shelves now',
+              fine: 'Prices in euros, VAT included. Offer valid from 1 December to 6 January or while stocks last.'
+            }
+          }
+        ],
+        hours: {
+          title: 'Radno vrijeme za blagdane', lead: 'Ostalim danima vrijedi redovno radno vrijeme sa stranice poslovnice.',
+          days: [['2026-12-24', 'Badnjak', 'Christmas Eve'], ['2026-12-25', 'Božić', 'Christmas Day'], ['2026-12-26', 'Sveti Stjepan', "St Stephen's Day"],
+            ['2026-12-31', 'Stara godina', "New Year's Eve"], ['2027-01-01', 'Nova godina', "New Year's Day"], ['2027-01-06', 'Sveta tri kralja', 'Epiphany']],
+          en: { title: 'Holiday opening hours', lead: "On all other days, each shop's regular opening hours apply." }
+        },
+        // the store pages' block (units above), under the hero
+        block: {
+          label: 'Božićna ponuda · do 6. 1.', script: 'Sretni blagdani', title: 'Za čizmice i male darove',
+          text: 'Slatkiši i igračke za Svetog Nikolu već su na našim policama. Izdvajamo iz kataloga:', cta: 'Cijeli katalog',
+          picks: ['nikola', 'cizmica', 'jumping'],
+          en: {
+            label: 'Christmas offer · until 6 Jan', script: 'Happy holidays', title: 'Little gifts for St Nicholas',
+            text: 'Sweets and toys for St Nicholas are already on our shelves. Picks from the catalogue:', cta: 'Full catalogue'
+          }
+        }
       }
     ]
   };

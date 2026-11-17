@@ -50,8 +50,17 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   without floor signs (Krovne terase, Sobe), and Sobe after it (`page.rooms`: one row, three rooms opening their pages on hotelnovalis.hr in a new tab, plus a
   "Pogledajte sve sobe" tile). Copy and photos come from hotelnovalis.hr (Novalis's own site).
 - **Cache busting:** every page loads CSS/JS with `?v=YYYYMMDD` (`-2`, `-3` … for later changes the same day). When you change any CSS or JS file, bump that version in all HTML pages
-  (`index.html`, `o-nama/index.html`, `pravila-o-privatnosti/index.html`, `zaposli-se/index.html`, the seven store `index.html` files, their ten English twins under `en/`
-  (`en/index.html`, `en/about-us/`, `en/careers/`, `en/privacy-policy/`, the seven `en/<slug>/`), `404.html`: nine times there, three inside its scripts), or browsers mix cached old scripts with new pages.
+  (`index.html`, `o-nama/index.html`, `pravila-o-privatnosti/index.html`, `zaposli-se/index.html`, `katalog/index.html`, the seven store `index.html` files, their eleven English twins under `en/`
+  (`en/index.html`, `en/about-us/`, `en/careers/`, `en/privacy-policy/`, `en/catalogue/`, the seven `en/<slug>/`), `404.html`: nine times there, three inside its scripts), or browsers mix cached old scripts with new pages.
+- **Seasonal catalogue (`katalog/`, `en/catalogue/`, WEB-48, built 2026-11-17, design https://claude.ai/artifact/3qSTJbV6SkY2LjjY2uM3Q4):** one season at a time from
+  `data/units.js` `catalogues` (the first whose `from`/`to` hold today in Novalja: `NV.catalogue()`). While it runs: the landing hero's first slide (red, fir garland
+  `assets/img/blagdani/girlanda.svg`, snow, two priced products; the written hero becomes slide 2, js/app.js), the page (js/katalog.js: a leaflet-style cover with a
+  gift-tag headline, one "page" per section, `look` red or green, prices with raised cents, holiday hours from `dayHours` for `hours.days`, units closed on all of them
+  left out; snow over the whole screen), a block under the hero of the store pages in `units` (js/poslovnica.js) and a Katalog link above Cjenici in every footer
+  (js/site.js). Outside the dates none of it shows and the page says a new catalogue is coming. Snow is CSS (`.snow i:nth-child`), never with reduced motion. Products:
+  `price` in euros (null shows "Cijena u trgovini"), `g` for the price per kg, photos in `assets/img/katalog/` (Christmas 2026: cut from the user's shop photos of
+  2026-11-16, prices from the shelf labels; decorations' prices still missing). The page `<head>` (title, description, og) is written per season. A new season:
+  a new entry first in `catalogues`, its photos, the head tags, then `node tools/static-fallback.js` (writes the products into `<main id="katalog">`).
 - **Zaposli se (`zaposli-se/`, WEB-23, 2026-10-22):** Novalis's jobs text from novalis.hr and a CV form (`js/zaposli-se.js`, styles under `.jobs`). It posts to the
   site's only server code, the Vercel function `api/apply.mjs` (helpers in `api/_lib/`, no npm dependencies): it checks the fields, the file's real content
   (PDF/DOC/DOCX, max 4 MB, no macros), a honeypot and a per-instance rate limit, then e-mails the CV through Brevo to `kadrovska@novalis.com.hr`. The file
@@ -85,7 +94,7 @@ Bistro Pod Zvon, Hotel Novalis — Novalja, otok Pag). Plain HTML/CSS/JS, no bui
   `js/schema.js`, the hr/en tables in site.js/poslovnica.js, the footer markup or a canonical, run `node tools/static-fallback.js` (`--check` only reports;
   smoke fails "static fallback out of date"). With JS a `<head>` script sets `html.js`, CSS hides `.static`, the page scripts replace it, and
   `<main id="store">` keeps its screen-high min-height until poslovnica.js marks `.store`. `tools/` is not deployed (`.vercelignore`).
-- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 22 pages (11 Croatian, 11 English), `o-nama.html`, `robots.txt`,
+- **Moving to novalis.hr later:** replace `https://novalis-web.vercel.app/` with `https://novalis.hr/` in the 24 pages (12 Croatian, 12 English), `o-nama.html`, `robots.txt`,
   `sitemap.xml`, `llms.txt`, `seo.canonicalBase` in `.claude/workflow/project.json` and `PAGE` in `api/_lib/mail.mjs` (plus `ALLOWED_ORIGINS` if the function is reached from another host),
   then run `node tools/static-fallback.js --check`; verify the domain in Google Search Console and Bing Webmaster Tools and submit the sitemap; add 301s in `vercel.json` for old WordPress URLs (`/bistro-i-slasticarna-valis/` → `/valis/`, `/about/` → `/o-nama/`,
   `/kontakt/` → `/#upit`, old news posts → `/`; `/hotel-novalis/` is now a page here too). Blockers: the daily price-list CSVs
