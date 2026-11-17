@@ -12,14 +12,14 @@
 
   var TEXTS = {
     hr: {
-      crumbs: 'Putanja', home: 'Početna', here: 'Katalog', jump: 'U katalogu', unit: 'Poslovnica', closed: 'Zatvoreno',
+      crumbs: 'Putanja', home: 'Početna', here: 'Katalog', jump: 'U katalogu', browse: 'Pogledajte katalog', unit: 'Poslovnica', closed: 'Zatvoreno',
       noneEyebrow: 'Katalog', none: 'Novi katalog stiže uskoro', noneLead: 'Trenutno nema aktualnog kataloga. Do tada vas čekamo u našim poslovnicama.',
       toHome: 'Na početnu',
       wd: ['Pon', 'Uto', 'Sri', 'Čet', 'Pet', 'Sub', 'Ned'],
       date: function (d, m) { return d + '. ' + m + '.'; }
     },
     en: {
-      crumbs: 'Breadcrumb', home: 'Home', here: 'Catalogue', jump: 'In this catalogue', unit: 'Shop', closed: 'Closed',
+      crumbs: 'Breadcrumb', home: 'Home', here: 'Catalogue', jump: 'In this catalogue', browse: 'See the catalogue', unit: 'Shop', closed: 'Closed',
       noneEyebrow: 'Catalogue', none: 'A new catalogue is coming soon', noneLead: 'There is no current catalogue right now. Until then, we look forward to seeing you in our shops.',
       toHome: 'Go to the home page',
       wd: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -62,8 +62,8 @@
           '<h1 class="xm-gift' + (tx(cv, 'title').length > 7 ? ' xm-gift--long' : '') + '" id="h-katalog"><span class="xm-gift__s">' + esc(tx(cv, 'script')) + '</span> <span class="xm-gift__b">' + esc(tx(cv, 'title')) + '</span></h1>' +
           '<p class="xm-cover__lead">' + esc(tx(cv, 'lead')) + '</p>' +
           '<nav class="xm-jump" aria-label="' + T.jump + '">' +
-            c.sections.map(function (s) { return '<a href="#' + esc(s.id) + '">' + esc(tx(s, 'chip')) + '</a>'; }).join('') +
-            '<a class="xm-jump__y" href="#radno-vrijeme">' + CLOCK + esc(tx(cv, 'hoursChip')) + '</a>' +
+            '<a class="xm-jump__y" href="#' + esc(c.sections[0].id) + '">' + T.browse + '</a>' +
+            '<a href="#radno-vrijeme">' + CLOCK + esc(tx(cv, 'hoursChip')) + '</a>' +
           '</nav>' +
         '</div>' +
         '<div class="xm-collage">' + cv.picks.map(tileHTML).join('') + '</div>' +
@@ -116,7 +116,7 @@
     }
     return '<section class="xm-sec xm-hours" id="radno-vrijeme" aria-labelledby="h-rv">' +
       '<h2 class="h2" id="h-rv">' + esc(tx(h, 'title')) + '</h2><p class="xm-hours__lead">' + esc(tx(h, 'lead')) + '</p>' +
-      '<div class="xm-hours__wrap" tabindex="0" role="region" aria-labelledby="h-rv"><table class="xm-hours__t">' +
+      '<div class="xm-hours__box"><div class="xm-hours__wrap" tabindex="0" role="region" aria-labelledby="h-rv"><table class="xm-hours__t">' +
         '<thead><tr><th scope="col">' + T.unit + '</th>' + days.map(function (d) {
           return '<th scope="col"><span class="xm-hours__d">' + T.wd[d.day.day] + ' ' + T.date(+d.day.iso.slice(8, 10), +d.day.iso.slice(5, 7)) + '</span>' +
             '<span class="xm-hours__n">' + esc(d.name) + '</span></th>';
@@ -125,10 +125,49 @@
           return '<tr><th scope="row"><a href="' + esc(NV.unitHref(u)) + '" translate="no">' + esc(tx(u, 'name')) + '</a></th>' +
             days.map(function (d) { return cell(u, d); }).join('') + '</tr>';
         }).join('') + '</tbody>' +
-      '</table></div></section>';
+      '</table></div></div><div class="xm-hours__bar" aria-hidden="true" hidden><span class="xm-hours__thumb"></span></div></section>';
+  }
+
+  // The table scrolls sideways on narrow screens, where phones and macOS hide their scroll bars: a bar of our own under
+  // it (drag it or tap the track) and a fade on the cut edge show there is more. Both only while the table overflows;
+  // the keyboard scrolls the focused table itself, so the bar is hidden from assistive tech.
+  function hoursBar() {
+    var box = $('.xm-hours__box', main), wrap = $('.xm-hours__wrap', main), bar = $('.xm-hours__bar', main), thumb = bar.firstChild;
+    function max() { return wrap.scrollWidth - wrap.clientWidth; }
+    function update() {
+      var m = max(), over = m > 1;
+      bar.hidden = !over;
+      box.classList.toggle('is-more', over && wrap.scrollLeft < m - 1);
+      box.classList.toggle('is-less', over && wrap.scrollLeft > 1);
+      if (!over) return;
+      var w = bar.clientWidth, tw = Math.max(48, w * wrap.clientWidth / wrap.scrollWidth);
+      thumb.style.width = tw + 'px';
+      thumb.style.transform = 'translateX(' + ((w - tw) * wrap.scrollLeft / m) + 'px)';
+    }
+    bar.addEventListener('pointerdown', function (e) {
+      if (e.button) return;
+      var r = bar.getBoundingClientRect(), tw = thumb.offsetWidth, k = max() / Math.max(1, r.width - tw);
+      if (e.target !== thumb) wrap.scrollLeft = (e.clientX - r.left - tw / 2) * k; // a tap on the track brings the thumb there
+      var x0 = e.clientX, s0 = wrap.scrollLeft;
+      function move(ev) { wrap.scrollLeft = s0 + (ev.clientX - x0) * k; }
+      function end() {
+        bar.classList.remove('is-drag');
+        bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', end); bar.removeEventListener('pointercancel', end);
+      }
+      bar.setPointerCapture(e.pointerId);
+      bar.classList.add('is-drag');
+      bar.addEventListener('pointermove', move); bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+      e.preventDefault();
+    });
+    wrap.addEventListener('scroll', update, { passive: true });
+    if (window.ResizeObserver) { var ro = new ResizeObserver(update); ro.observe(wrap); ro.observe(wrap.firstChild); }
+    else window.addEventListener('resize', update);
+    if (document.fonts) document.fonts.ready.then(update);
+    update();
   }
 
   main.innerHTML = coverHTML() + '<div class="xm-wrap xm-body">' + c.sections.map(sectionHTML).join('') + hoursHTML() + '</div>';
   main.classList.add('is-ready');
+  hoursBar();
   document.body.insertAdjacentHTML('beforeend', NV.snowHTML(140, 'snow--screen'));
 })();

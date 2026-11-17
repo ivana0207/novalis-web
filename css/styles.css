@@ -2741,7 +2741,28 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
 
 /* the holiday opening hours: a table that scrolls sideways on narrow screens */
 .xm-hours__lead { margin: 12px 0 0; max-width: 40rem; font: 400 18px/1.55 var(--font-primary); color: var(--nv-gray-700); }
-.xm-hours__wrap { margin-top: 32px; overflow-x: auto; border: 1px solid var(--nv-gray-150); border-radius: var(--shape-tab); }
+.xm-hours__box { position: relative; margin-top: 32px; }
+.xm-hours__wrap { overflow-x: auto; border: 1px solid var(--nv-gray-150); border-radius: var(--shape-tab); scrollbar-width: none; }
+.xm-hours__wrap::-webkit-scrollbar { display: none; }
+.xm-hours__wrap:focus-visible { outline-offset: -3px; }
+/* while the table overflows (js/katalog.js): a fade on each cut edge, and our own scroll bar under it */
+.xm-hours__box::before, .xm-hours__box::after {
+  content: ""; position: absolute; top: 1px; bottom: 1px; z-index: 1; width: 56px; pointer-events: none; opacity: 0; transition: opacity .2s;
+}
+.xm-hours__box::before { left: 1px; border-radius: calc(var(--radius-tab) - 1px) 0 0 0; background: linear-gradient(to left, rgba(255,255,255,0), #fff); }
+.xm-hours__box::after { right: 1px; border-radius: 0 calc(var(--radius-tab) - 1px) calc(var(--radius-tab) - 1px) 0; background: linear-gradient(to right, rgba(255,255,255,0), #fff); }
+.xm-hours__box.is-less::before, .xm-hours__box.is-more::after { opacity: 1; }
+.xm-hours__bar { position: relative; height: 24px; margin-top: 6px; cursor: pointer; touch-action: none; }
+.xm-hours__bar[hidden] { display: none; }
+.xm-hours__bar::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 6px; border-radius: 3px; background: var(--nv-gray-150); }
+.xm-hours__thumb { position: absolute; left: 0; top: 9px; height: 6px; border-radius: 3px; background: var(--nv-red); transition: height .15s, top .15s; }
+.xm-hours__bar:hover .xm-hours__thumb, .xm-hours__bar.is-drag .xm-hours__thumb { top: 7px; height: 10px; border-radius: 5px; }
+.xm-hours__bar.is-drag { cursor: grabbing; }
+@media (forced-colors: active) {
+  .xm-hours__box::before, .xm-hours__box::after { display: none; }
+  .xm-hours__bar::before { background: CanvasText; }
+  .xm-hours__thumb { background: Highlight; forced-color-adjust: none; }
+}
 .xm-hours__t { width: 100%; border-collapse: collapse; font: 400 16px/1.4 var(--font-primary); color: var(--ink); }
 .xm-hours__t th, .xm-hours__t td { padding: 16px 20px; text-align: left; white-space: nowrap; }
 .xm-hours__t thead th { vertical-align: bottom; background: var(--nv-gray-50); }
@@ -2773,8 +2794,6 @@ html.has-lightbox { overflow: hidden; scrollbar-gutter: stable; }
   .xm-gift::before { left: 20px; top: 16px; width: 11px; height: 11px; }
   .xm-gift::after { left: 25px; top: -46px; height: 64px; }
   .xm-gift__s { padding-left: 22px; }
-  .xm-jump { flex-wrap: nowrap; overflow-x: auto; margin-right: calc(-1 * var(--gut)); padding-right: var(--gut); scrollbar-width: none; }
-  .xm-jump a { flex: none; }
   .xm-collage .xm-tile { aspect-ratio: auto; height: 160px; }
   .xm-collage .xm-tile:nth-child(2n) { margin-top: 0; }
   .xm-collage .xm-tile:nth-child(n+3) { display: none; }
