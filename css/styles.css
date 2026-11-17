@@ -2682,10 +2682,15 @@ body.xm-top:has(.hero--xmas:not([data-cur="0"])) .site-header { border-bottom-co
 /* ---- the catalogue page ---- */
 .xm-main { min-height: 100vh; }
 .xm-main.is-ready { min-height: 0; }
+/* --xm-g: the garland's height, 280 where there is room and less on screens of little height (laptops), like the
+   landing's season slide; the copy starts 18px under its lowest bauble (--pt; user, 2026-11-17: the gap was too big) */
+body:has(.xm-cover) { --xm-g: clamp(200px, calc(var(--hero-h) * .32), 280px); }
 .xm-cover {
-  position: relative; isolation: isolate; overflow: hidden; color: #fff; padding: 230px 0 clamp(64px, 7vw, 96px);
+  --pt: calc(var(--xm-g, 280px) * 208 / 280 + 18px);
+  position: relative; isolation: isolate; overflow: hidden; color: #fff; padding: var(--pt) 0 clamp(64px, 7vw, 96px);
   background: linear-gradient(var(--nv-red), transparent 300px), var(--grad-red);
 }
+.xm-cover .xm-garland { top: calc(var(--xm-g) * -24 / 280); height: var(--xm-g); background-size: auto var(--xm-g); }
 /* the garland hangs over the header's lower edge while the page is at its top (NV.garlandTop sets body.xm-top): the
    header draws the garland's top strip, behind its logo and buttons, has no hairline, and the cover starts in the
    header's red (above). Once the page scrolls or a menu opens, the garland goes under the header like everything else */
@@ -2727,6 +2732,33 @@ body.xm-top .site-header::after, body:has(.hero--xmas) .site-header::after {
 .xm-collage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .xm-collage .xm-tile { aspect-ratio: 1 / .92; }
 .xm-collage .xm-tile:nth-child(2n) { margin-top: 44px; }
+/* from 1101 the cover fits the first screen (user, 2026-11-17: on a laptop it was taller than the screen): the copy
+   hangs right under the garland, its headline, lead and gaps shrink with the screen's height (--hero-h), and the
+   photos keep their staggered pairs, as tall as the column is wide where there is room, else what the screen leaves */
+@media (min-width: 1101px) {
+  .xm-cover { --pb: clamp(32px, min(7vw, calc(var(--hero-h) * .07)), 96px); padding-bottom: var(--pb); }
+  .xm-cover__inner { align-items: start; }
+  .xm-gift {
+    --m1: clamp(30px, calc(var(--hero-h) * .045), 46px);   /* the string from the chip */
+    margin-top: var(--m1); padding-top: clamp(18px, calc(var(--hero-h) * .035), 26px); padding-bottom: clamp(20px, calc(var(--hero-h) * .04), 30px);
+  }
+  .xm-gift::after { top: calc(-14px - var(--m1)); height: calc(38px + var(--m1)); }
+  .xm-gift__s { font-size: clamp(36px, min(4vw, calc(var(--hero-h) * .075)), 58px); }
+  .xm-gift__b { font-size: clamp(64px, min(8vw, calc(var(--hero-h) * .135)), 118px); }
+  .xm-gift--long .xm-gift__b { font-size: clamp(46px, min(10.5vw, calc(var(--hero-h) * .096)), 84px); }
+  .xm-cover__lead {
+    margin: clamp(24px, calc(var(--hero-h) * .05), 36px) 0 clamp(20px, calc(var(--hero-h) * .04), 30px);
+    font-size: clamp(16px, min(1.4vw, calc(var(--hero-h) * .028)), 20px);
+  }
+  .xm-collage {
+    --st: clamp(24px, calc(var(--hero-h) * .06), 44px);   /* how much lower the right-hand photos sit */
+    width: 100%; aspect-ratio: 1 / 1.07; min-height: 0; max-height: max(380px, calc(var(--hero-h) - var(--pt) - var(--pb)));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+  .xm-collage .xm-tile { aspect-ratio: auto; }
+  .xm-collage .xm-tile:nth-child(2n+1) { margin-bottom: var(--st); }
+  .xm-collage .xm-tile:nth-child(2n) { margin-top: var(--st); }
+}
 
 .xm-body { padding-bottom: clamp(64px, 7vw, 96px); }
 .xm-sec { margin-top: clamp(64px, 7vw, 96px); scroll-margin-top: 96px; }
@@ -2835,6 +2867,8 @@ body.xm-top .site-header::after, body:has(.hero--xmas) .site-header::after {
 @media (max-width: 699px) {
   .xm-garland { top: -14px; height: 190px; background-size: auto 190px; }
   body.xm-top .site-header::after, body:has(.hero--xmas) .site-header::after { height: 14px; background-size: auto 190px; }
+  body:has(.xm-cover) { --xm-g: 190px; }
+  .xm-cover .xm-garland { top: -14px; }
   .xm-cover { padding-top: 165px; }
   .xm-chip { font-size: 15px; padding: 9px 14px; }
   .xm-gift { margin-top: 36px; padding: 18px 28px 20px 26px; border-radius: 22px 22px 22px 0; }
